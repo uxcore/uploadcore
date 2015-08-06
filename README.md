@@ -28,7 +28,7 @@ options = {
         // 上传文件字段名称
         name: 'file',
         // 上传目标
-        url: 'http://up.django.t.taobao.com/rest/1.0/file',
+        url: 'http://demo.com/rest/1.0/file',
         // 上传文件额外参数
         params: {},
         // 上传文件额外头

@@ -1,0 +1,51 @@
+{
+  "name": "uxcore-uploader",
+  "version": "1.0.6",
+  "description": "uxcore uploader core layer",
+  "main": "dist/uploader.js",
+  "scripts": {
+    "test": "mocha --recursive --reporter spec --require should",
+    "dev": "webpack-dev-server --config webpack.test --progress --colors --port 9090",
+    "build": "npm install && gulp && gulp min"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:uxcore/uxcore-uploader.git"
+  },
+  "bugs": {
+    "url": "http://github.com/uxcore/uxcore-uploader/issues"
+  },
+  "keywords": [
+    "uploader",
+    "es6"
+  ],
+  "devDependencies": {
+    "babel-core": "^5.1.13",
+    "babel-loader": "^5.0.0",
+    "exports-loader": "^0.6.2",
+    "gulp": "^3.8.11",
+    "gulp-concat": "~2.5.2",
+    "gulp-webpack": "~1.4.0",
+    "jquery": "2.1.4",
+    "jsdom": "5.1.0",
+    "mocha": "^2.2.1",
+    "should": "^6.0.1",
+    "webpack": "^1.8.4",
+    "webpack-dev-middleware": "^1.0.11",
+    "webpack-dev-server": "1.6.6",
+    "node-libs-browser": "^0.5.2"
+  },
+  "dependencies": {
+    "es6-promise": "^2.1.1",
+    "object-assign": "^2.0.0",
+    "jquery": "~2.1.4",
+    "spark-md5": "^1.0.0"
+  },
+  "author": "onbing",
+  "contributors": [],
+  "license": "MIT",
+  "homepage": "https://github.com/uxcore/uxcore-uploader",
+  "directories": {
+    "example": "example"
+  }
+}

@@ -10,9 +10,15 @@ module.exports = {
         filename: '[name].js',
         sourceMapFilename: "[name].js.map"
     },
-    devtool: '#source-map', // 这个配置要和output.sourceMapFilename一起使用
+    devtool: '#source-map',
     module: {
-        loaders: require('./loaders.config')
+        loaders: {
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loaders: [
+                'babel-loader'
+            ]
+        }
     },
     externals: {
         'jquery': 'jQuery',
@@ -20,18 +26,5 @@ module.exports = {
     },
     resolve: {
         extensions: ['', '.js']
-    },
-    plugins: [
-        new webpack.IgnorePlugin(/vertx/)
-    ],
-
-    devServer: {    
-        info: true,
-        quiet: false,
-
-        stats: {
-            colors: true,
-            progress: true
-        }
     }
 };

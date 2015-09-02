@@ -4,8 +4,6 @@
   "description": "uxcore uploader core layer",
   "main": "dist/uploader.js",
   "scripts": {
-    "test": "mocha --recursive --reporter spec --require should",
-    "dev": "webpack-dev-server --config webpack.test --progress --colors --port 9090",
     "build": "npm install && gulp && gulp min"
   },
   "repository": {

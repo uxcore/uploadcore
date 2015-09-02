@@ -1,5 +1,3 @@
-bower_components/
-build/
 *.cfg
 node_modules/
 nohup.out
@@ -22,8 +20,5 @@ Thumbs.db
 *.swo
 *.pyc
 *.pyo
-build
 node_modules
-_site
-spm_modules
 .cache

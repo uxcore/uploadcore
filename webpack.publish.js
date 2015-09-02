@@ -15,8 +15,7 @@ module.exports = {
         loaders: require('./loaders.config')
     },
     externals: {
-        'jquery': 'jQuery',
-        'spark-md5': 'SparkMD5'
+        'jquery': 'jQuery'
     },
     resolve: {
         extensions: ['', '.js']

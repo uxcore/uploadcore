@@ -1,6 +1,6 @@
 {
   "name": "uxcore-uploader",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "uxcore uploader core layer",
   "main": "dist/uploader.js",
   "scripts": {
@@ -38,8 +38,7 @@
   "dependencies": {
     "es6-promise": "^2.1.1",
     "object-assign": "^2.0.0",
-    "jquery": "~2.1.4",
-    "spark-md5": "^1.0.0"
+    "jquery": "~2.1.4"
   },
   "author": "onbing",
   "contributors": [],

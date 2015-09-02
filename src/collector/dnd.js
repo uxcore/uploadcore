@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import Emitter from '../Emitter';
-import Runtime from '../Html5/Runtime';
-import File from '../File';
+import Emitter from '../emitter';
+import Runtime from '../html5/runtime';
+import File from '../file';
 
 function createReader(collector) {
     function reader(dataTransfer, responders) {
@@ -73,7 +73,7 @@ function prepare() {
             return;
         }
         file = new File(runtime, file);
-        responders.some((responder) => responder.recieve(file));
+        responders.some((responder) => responder.recieve(file) > 0);
     });
 
     const start = (e) => {
@@ -147,7 +147,7 @@ export default class DndCollector {
         }
         Collectors.push(this);
 
-        this.context = context;
+        this.queue = context.getQueue();
         this.areas = [];
     }
 
@@ -170,18 +170,25 @@ export default class DndCollector {
     }
 
     start(e) {
-        const allowed = !this.context.isLimit();
+        const allowed = !this.queue.isLimit();
         this.areas.forEach((area) => area.start(e, allowed));
     }
 
     response(e) {
-        const allowed = !this.context.isLimit(),
+        const allowed = !this.queue.isLimit(),
             res = this.areas.map((area) => area.response(e, allowed));
         return allowed && res.some((r) => !!r);
     }
 
     recieve(file) {
-        return this.context.add(file);
+        if (this.queue.isLimit()) {
+            return -1;
+        }
+        if (this.queue.isAllow(file) && this.queue.add(file) > 0) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     end(e) {

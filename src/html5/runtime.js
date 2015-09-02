@@ -1,6 +1,7 @@
 import {Deferred} from 'jquery';
-import Runtime from '../Runtime';
-import Transport from './Transport';
+import Runtime from '../runtime';
+import SparkMD5 from './sparkmd5';
+import Transport from './transport';
 
 let instance;
 
@@ -59,14 +60,8 @@ export default class Html5Runtime extends Runtime {
     }
 
     md5(blob) {
-        const i = Deferred();
-
-        if (!window.SparkMD5) {
-            i.reject();
-            return i.promise();
-        }
-
-        let chunkSize = 2 * 1024 * 1024,
+        let i = Deferred(),
+            chunkSize = 2 * 1024 * 1024,
             chunks = Math.ceil(blob.size / chunkSize),
             chunk = 0,
             spark = new SparkMD5.ArrayBuffer(),

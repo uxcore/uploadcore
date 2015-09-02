@@ -1,7 +1,9 @@
-import {TimeoutError, AbortError, NetworkError} from '../Errors';
+import {TimeoutError, AbortError, NetworkError} from '../errors';
 import {Deferred} from 'jquery';
 
 export default class Html5Transport {
+    constructor() {}
+
     /**
      * @param {ChunkRequest} request
      * @returns {*}

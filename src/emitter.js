@@ -1,5 +1,3 @@
-import {Deferred} from 'jquery';
-
 export default class Emitter {
 
     on(event, listener) {
@@ -68,117 +66,19 @@ export default class Emitter {
         return this;
     }
 
-    setPropagationTarget(emitter) {
-        if (emitter instanceof Emitter) {
-            this.propagationTarget = emitter;
-        }
-    }
-
     emit(event, ...args) {
-        this.applyEmit(event, args);
-
-        return this;
-    }
-
-    applyEmit(event, args) {
-        event = event.toLowerCase();
-
-        let listeners;
-
-        if (this._events && (listeners = this._events[event])) {
-            listeners.slice(0).forEach(fn => fn.apply(this, args));
-        }
-
-        if (this.propagationTarget) {
-            const pArgs = args.slice(0);
-            pArgs.unshift(this);
-            this.propagationTarget.applyEmit(event, pArgs);
-        }
-
-        return this;
-    }
-
-    invoke(event, data) {
         event = event.toLowerCase();
 
         let listeners;
 
         if (!this._events || !(listeners = this._events[event])) {
-            listeners = [];
+            return this;
         }
 
-        return HookRevoker(listeners.slice(0), data, this);
+        listeners = listeners.slice(0);
+
+        listeners.forEach(fn => fn.apply(this, args));
+
+        return this;
     }
 }
-
-function HookRevoker(hooks, initialData, context) {
-    let _data = initialData;
-    let _error = null;
-    let _aborted;
-
-    const i = Deferred();
-    const ret = i.promise();
-
-    ret.abort = () => {
-        _aborted = true;
-    };
-
-    const fail = (e) => {
-        if (_aborted) return;
-        if (e) {
-            _error = e instanceof Error ? e : new Error(e);
-        }
-        i.reject(_error || new Error('Unknown'));
-    };
-
-    const done = () => {
-        if (_aborted) return;
-        if (_error != null) {
-            fail();
-        } else {
-            i.resolve(_data);
-        }
-    };
-
-    const setData = (data) => {
-        if (data != null && (_data == null || data.constructor === _data.constructor)) {
-            _data = data;
-        }
-    };
-
-    const next = (data) => {
-        if (_aborted) return;
-
-        if (data instanceof Error) {
-            _error = data;
-        }
-
-        if (_error != null) {
-            return fail();
-        }
-
-        setData(data);
-
-        const hook = hooks.shift();
-        if (!hook) {
-            return done();
-        }
-        let res;
-        try {
-            res = hook.call(context, _data);
-        } catch (e) {
-            return fail(e);
-        }
-
-        if (res && res.then) {
-            res.then(next, fail);
-        } else {
-            next(res);
-        }
-    };
-
-    setTimeout(next, 1);
-
-    return ret;
-}
-

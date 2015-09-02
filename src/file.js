@@ -1,6 +1,7 @@
-import Emitter from './Emitter';
-import Events from './Events';
-import Status, {StatusName} from './Status';
+import Emitter from './emitter';
+import Events from './events';
+import Aspects from './fileaspects';
+import Status from './filestatus';
 import {Deferred} from 'jquery';
 
 let uid = 0;
@@ -76,7 +77,6 @@ export default class File extends Emitter {
 
     setContext(context) {
         this.context = context;
-        this.setPropagationTarget(context);
     }
 
     getRuntime() {
@@ -98,14 +98,6 @@ export default class File extends Emitter {
 
     getStatus() {
         return this.status;
-    }
-
-    getStatusName() {
-        if (this.status in StatusName) {
-            return StatusName[this.status];
-        } else {
-            return 'unknow';
-        }
     }
 
     getSource() {
@@ -150,13 +142,10 @@ export default class File extends Emitter {
             while (flow = this._flows.shift()) {
                 flow.abort();
             }
-
             if (error instanceof Error) {
                 this.setStatus(Status.ERROR);
                 this.emit(Events.FILE_UPLOAD_ERROR, error);
             }
-        }).always(() => {
-            this.emit(Events.FILE_UPLOAD_COMPLETED, this.getStatus());
         });
 
         this._flows = [];
@@ -174,17 +163,13 @@ export default class File extends Emitter {
         this.session();
         this.setStatus(Status.PROGRESS);
 
-        this.emit(Events.FILE_UPLOAD_START);
-
         this.request = this.context.createFileRequest(this);
 
-        const prepare = this.context.invoke(Events.FILE_UPLOAD_PREPARING, this.request);
+        const prepare = this.context.aspect(Aspects.PREPARE).invoke(this.request);
 
         this._flows.push(prepare);
 
         prepare.then((request) => {
-            this.emit(Events.FILE_UPLOAD_PREPARED, request);
-
             const upload = this.runtime.getUploading().generate(request);
 
             this._flows.push(upload);
@@ -197,6 +182,8 @@ export default class File extends Emitter {
 
             return upload;
         }).then((response) => this.complete(response), this._session.reject);
+
+        this.emit(Events.FILE_UPLOAD_START);
 
         return true;
     }
@@ -214,10 +201,10 @@ export default class File extends Emitter {
 
         response = this.request.createFileResponse(response);
 
-        this.setStatus(Status.END);
-        this.emit(Events.FILE_UPLOAD_END);
+        this.setStatus(Status.COMPLETE);
+        this.emit(Events.FILE_UPLOAD_COMPLETE, response);
 
-        const complete = this.context.invoke(Events.FILE_UPLOAD_COMPLETING, response);
+        const complete = this.context.aspect(Aspects.COMPLETE).invoke(response);
 
         this._flows.push(complete);
 
@@ -244,7 +231,7 @@ export default class File extends Emitter {
         this.abort();
         this.runtime.cancel(this.source);
         this._dataUrlPromise && this._dataUrlPromise.abort();
-        this._md5Promise && this._md5Promise.abort && this._md5Promise.abort();
+        this._md5Promise && this._md5Promise.abort();
         this.removeAllListeners();
     }
 

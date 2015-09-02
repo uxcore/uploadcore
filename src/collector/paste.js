@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import Emitter from '../Emitter';
-import Runtime from '../Html5/Runtime';
-import File from '../File';
+import Emitter from '../emitter';
+import Runtime from '../html5/runtime';
+import File from '../file';
 
 export default class PasteCollector {
     static isSupport() {
@@ -9,14 +9,14 @@ export default class PasteCollector {
     }
 
     constructor(context) {
-        this.context = context;
+        this.queue = context.getQueue();
         this.runtime = Runtime.getInstance();
     }
 
     addArea(area) {
         area = area.on ? area : $(area);
 
-        const context = this.context,
+        const queue = this.queue,
             runtime = this.runtime,
             emitter = new Emitter;
 
@@ -40,19 +40,19 @@ export default class PasteCollector {
             if (files && files.length) {
                 // safari has files
                 prevent = files.length > 0;
-                for (i = 0, l = files.length; i < l && !context.isLimit(); i++) {
+                for (i = 0, l = files.length; i < l && !queue.isLimit(); i++) {
                     file = new File(runtime, files[i]);
 
                     prevent = 1;
 
-                    if (context.add(file) && !context.isMultiple()) {
+                    if (queue.isAllow(file) && queue.add(file) && !queue.isMultiple()) {
                         break;
                     }
                 }
             } else if (items && items.length) {
                 // chrome has items
                 let filename = clipboardData.getData('text/plain');
-                for (i = 0, l = items.length; i < l && !context.isLimit(); i++) {
+                for (i = 0, l = items.length; i < l && !queue.isLimit(); i++) {
                     item = items[i];
 
                     if (item.kind !== 'file' || !(file = item.getAsFile())) {
@@ -64,7 +64,7 @@ export default class PasteCollector {
 
                     prevent = 1;
 
-                    if (context.add(file) && !context.isMultiple()) {
+                    if (queue.isAllow(file) && queue.add(file) && !queue.isMultiple()) {
                         break;
                     }
                 }

@@ -1,5 +1,5 @@
-import Runtime from '../Runtime';
-import Transport from './Transport';
+import Runtime from '../runtime';
+import Transport from './transport';
 
 function getFlashVersion() {
     let version;

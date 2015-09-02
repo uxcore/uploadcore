@@ -1,13 +1,13 @@
 import $ from 'jquery';
-import Emitter from '../Emitter';
-import Html5Runtime from '../Html5/Runtime';
-import FlashRuntime from '../Flash/Runtime';
-import File from '../File';
+import Emitter from '../emitter';
+import Html5Runtime from '../html5/runtime';
+import FlashRuntime from '../flash/runtime';
+import File from '../file';
 
 let SWF_URL = '';
 
 class FlashTriggerCollection {
-    constructor(context, onFiles) {
+    constructor(context, onFiles, swf) {
         let overlay = $('<label></label>');
         overlay.css({
             position: 'fixed',
@@ -22,10 +22,11 @@ class FlashTriggerCollection {
             overflow: 'hidden',
             zIndex: 99999
         });
-        const runtime = new FlashRuntime(overlay, SWF_URL, () => {
+        const queue = context.getQueue(),
+            runtime = new FlashRuntime(overlay, swf, () => {
                 return {
-                    accept: context.getAccept(),
-                    multiple: context.isMultiple()
+                    accept: queue.getAccept(),
+                    multiple: queue.isMultiple()
                 };
             });
 
@@ -84,7 +85,8 @@ class FlashTriggerCollection {
 
 class Html5TriggerCollection {
     constructor(context, onFiles) {
-        const runtime = Html5Runtime.getInstance();
+        const runtime = Html5Runtime.getInstance(),
+            queue = context.getQueue();
 
         this._createInput = (label) => {
             let input = $(document.createElement('input'));
@@ -95,7 +97,7 @@ class Html5TriggerCollection {
                 clip: 'rect(1px 1px 1px 1px)'
             });
 
-            let accept = context.getAccept();
+            let accept = queue.getAccept();
             if (accept && accept.length > 0) {
                 accept = accept.map(function (item) {
                     return item.mimeTypes;
@@ -103,7 +105,7 @@ class Html5TriggerCollection {
 
                 input.attr('accept', accept.join(','));
             }
-            if (context.isMultiple()) {
+            if (queue.isMultiple()) {
                 input.attr('multiple', 'multiple');
             }
 
@@ -146,18 +148,19 @@ export default class PickerCollector {
     static setSWF(url) {
         SWF_URL = url;
     }
-    constructor(context) {
+    constructor(context, swf) {
+        const queue = context.getQueue();
 
         const onFiles = (files, runtime) => {
-            for (let i = 0, l = files.length; i < l && !context.isLimit(); i++) {
-                context.add(new File(runtime, files[i]));
+            for (let i = 0, l = files.length; i < l && !queue.isLimit(); i++) {
+                queue.add(new File(runtime, files[i]));
             }
         };
 
         if (('DataTransfer' in window) && ('FileList' in window)) {
             this.triggerCollection = new Html5TriggerCollection(context, onFiles);
         } else {
-            this.triggerCollection = new FlashTriggerCollection(context, onFiles);
+            this.triggerCollection = new FlashTriggerCollection(context, onFiles, swf || SWF_URL);
         }
     }
 

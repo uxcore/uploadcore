@@ -1,6 +1,6 @@
 import {Deferred} from 'jquery';
-import Runtime from '../Runtime';
-import Transport from './Transport';
+import Runtime from '../runtime';
+import Transport from './transport';
 
 let instance;
 

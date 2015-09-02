@@ -1,4 +1,4 @@
-import {TimeoutError, AbortError, NetworkError} from '../Errors';
+import {TimeoutError, AbortError, NetworkError} from '../errors';
 import {Deferred} from 'jquery';
 
 export default class FlashTransport {

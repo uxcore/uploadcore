@@ -1,6 +1,6 @@
-import Emitter from './Emitter';
-import Events from './Events';
-import Status, {StatusName} from './Status';
+import Emitter from './emitter';
+import Events from './events';
+import Status, {StatusName} from './status';
 import {Deferred} from 'jquery';
 
 let uid = 0;

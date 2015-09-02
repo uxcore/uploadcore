@@ -1,11 +1,11 @@
-import Emitter from './Emitter';
-import Events from './Events';
-import Status from './Status';
-import {QueueLimitError, DuplicateError, FileExtensionError, FileSizeError} from './Errors';
-import FileRequest from './FileRequest';
-import DndCollector from './Collector/Dnd';
-import PasteCollector from './Collector/Paste';
-import PickerCollector from './Collector/Picker';
+import Emitter from './emitter';
+import Events from './events';
+import Status from './status';
+import {QueueLimitError, DuplicateError, FileExtensionError, FileSizeError} from './errors';
+import FileRequest from './filerequest';
+import DndCollector from './collector/dnd';
+import PasteCollector from './collector/paste';
+import PickerCollector from './collector/picker';
 
 export default class Context extends Emitter {
 

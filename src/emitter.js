@@ -107,11 +107,11 @@ export default class Emitter {
             listeners = [];
         }
 
-        return HookRevoker(listeners.slice(0), data, this);
+        return HookInvoker(listeners.slice(0), data, this);
     }
 }
 
-function HookRevoker(hooks, initialData, context) {
+function HookInvoker(hooks, initialData, context) {
     let _data = initialData;
     let _error = null;
     let _aborted;

@@ -1,8 +1,8 @@
 import $ from 'jquery';
-import Emitter from '../Emitter';
-import Html5Runtime from '../Html5/Runtime';
-import FlashRuntime from '../Flash/Runtime';
-import File from '../File';
+import Emitter from '../emitter';
+import Html5Runtime from '../html5/runtime';
+import FlashRuntime from '../flash/runtime';
+import File from '../file';
 
 let SWF_URL = '';
 

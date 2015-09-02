@@ -1,7 +1,7 @@
 import $ from 'jquery';
-import Emitter from '../Emitter';
-import Runtime from '../Html5/Runtime';
-import File from '../File';
+import Emitter from '../emitter';
+import Runtime from '../html5/runtime';
+import File from '../file';
 
 export default class PasteCollector {
     static isSupport() {

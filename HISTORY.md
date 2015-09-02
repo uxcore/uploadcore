@@ -2,6 +2,10 @@
 
 ------------
 
+## 2.0.0
+
+`IMPROVED` restruct project.
+
 ## 1.0.6
 
 `FIXED` bug in aspector.

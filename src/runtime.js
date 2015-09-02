@@ -1,6 +1,6 @@
-import Emitter from './Emitter';
-import Events from './Events';
-import {NetworkError} from './Errors';
+import Emitter from './emitter';
+import Events from './events';
+import {NetworkError} from './errors';
 import {Deferred} from 'jquery';
 
 export default class Runtime extends Emitter {

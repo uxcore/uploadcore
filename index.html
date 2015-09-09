@@ -27,45 +27,108 @@
 <div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>path/to/jquery.js<span class="pl-pds">"</span></span> /&gt;
 &lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>path/to/uxuploader.js<span class="pl-pds">"</span></span> /&gt;</pre></div>
 
-<p><strong>创建对象</strong></p>
+<p><strong>一个按钮的上传</strong></p>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-k">import</span> Uploader, {Events, Status} <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>uxuploader<span class="pl-pds">'</span></span>;
-<span class="pl-k">var</span> up <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Uploader</span>({
+<div class="highlight highlight-javascript"><pre><span class="pl-k">import</span> jQuery <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>jquery<span class="pl-pds">'</span></span>;
+<span class="pl-k">import</span> Uploader, {Events, Status} <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>uxuploader<span class="pl-pds">'</span></span>;
+<span class="pl-k">const</span> <span class="pl-c1">up</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Uploader</span>({
     request<span class="pl-k">:</span> {
         name<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>file<span class="pl-pds">'</span></span>,
-        url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>http://test.yanbingbing.com/upload.php<span class="pl-pds">'</span></span>,
-        params<span class="pl-k">:</span> {},
-        headers<span class="pl-k">:</span> <span class="pl-c1">null</span>,
-        withCredentials<span class="pl-k">:</span> <span class="pl-c1">false</span>,
-        timeout<span class="pl-k">:</span> <span class="pl-c1">0</span>,
-        chunkEnable<span class="pl-k">:</span> <span class="pl-c1">false</span>
-    },
-    processThreads<span class="pl-k">:</span> <span class="pl-c1">3</span>,
-    autoPending<span class="pl-k">:</span> <span class="pl-c1">true</span>,
-    queueCapcity<span class="pl-k">:</span> <span class="pl-c1">0</span>,
-    multiple<span class="pl-k">:</span> <span class="pl-c1">true</span>,
-    accept<span class="pl-k">:</span> <span class="pl-c1">null</span>,
-    sizeLimit<span class="pl-k">:</span> <span class="pl-c1">0</span>,
-    preventDuplicate<span class="pl-k">:</span> <span class="pl-c1">false</span>
+        url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>http://test.yanbingbing.com/upload.php<span class="pl-pds">'</span></span>
+    }
+});
+
+<span class="pl-c">// 事件监听</span>
+up.on(Events.FILE_UPLOAD_COMPLETED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-k">if</span> (file.getStatusName() <span class="pl-k">===</span> Status.SUCCESS) {
+        <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>上传成功<span class="pl-pds">'</span></span>);
+        <span class="pl-en">console</span><span class="pl-c1">.info</span>(file.response.json());
+    } <span class="pl-k">else</span> {
+        <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>上传失败<span class="pl-pds">'</span></span>);
+    }
+});
+
+<span class="pl-c">// 添加触发区域</span>
+<span class="pl-k">const</span> <span class="pl-c1">picker</span> <span class="pl-k">=</span> up.getPickerCollector();
+picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>clickarea<span class="pl-pds">'</span></span>));</pre></div>
+
+<h3>
+<a id="拖拽上传" class="anchor" href="#%E6%8B%96%E6%8B%BD%E4%B8%8A%E4%BC%A0" aria-hidden="true"><span class="octicon octicon-link"></span></a>拖拽上传</h3>
+
+<div class="highlight highlight-js"><pre><span class="pl-k">const</span> <span class="pl-c1">dnd</span> <span class="pl-k">=</span> up.getDndCollector();
+<span class="pl-k">const</span> <span class="pl-c1">elem</span> <span class="pl-k">=</span> <span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>droparea<span class="pl-pds">'</span></span>);
+<span class="pl-k">const</span> <span class="pl-c1">area</span> <span class="pl-k">=</span> dnd.addArea(elem);
+
+area.on(<span class="pl-s"><span class="pl-pds">'</span>start<span class="pl-pds">'</span></span>, ()<span class="pl-k"> =&gt;</span> {
+    elem.classList.<span class="pl-c1">add</span>(<span class="pl-s"><span class="pl-pds">'</span>highlight<span class="pl-pds">'</span></span>);
+}).on(<span class="pl-s"><span class="pl-pds">'</span>end<span class="pl-pds">'</span></span>, ()<span class="pl-k"> =&gt;</span> {
+    elem.classList.remove(<span class="pl-s"><span class="pl-pds">'</span>highlight<span class="pl-pds">'</span></span>);
 });</pre></div>
 
-<p><strong>事件监听</strong></p>
+<h3>
+<a id="粘贴上传" class="anchor" href="#%E7%B2%98%E8%B4%B4%E4%B8%8A%E4%BC%A0" aria-hidden="true"><span class="octicon octicon-link"></span></a>粘贴上传</h3>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-c">// 队列错误</span>
-up.on(Events.QUEUE_ERROR, (<span class="pl-smi">error</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueerror<span class="pl-pds">'</span></span>, error)
-})
-<span class="pl-c">// 队列添加</span>
-.on(Events.QUEUE_ADD, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueadd<span class="pl-pds">'</span></span>, file)
-})
-<span class="pl-c">// 队列上传开始</span>
-.on(Events.QUEUE_UPLOAD_START, ()<span class="pl-k"> =&gt;</span> {
+<div class="highlight highlight-js"><pre><span class="pl-k">const</span> <span class="pl-c1">paster</span> <span class="pl-k">=</span> up.getPasteCollector();
+
+paster.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>pastearea<span class="pl-pds">'</span></span>));</pre></div>
+
+<h3>
+<a id="多触发区域" class="anchor" href="#%E5%A4%9A%E8%A7%A6%E5%8F%91%E5%8C%BA%E5%9F%9F" aria-hidden="true"><span class="octicon octicon-link"></span></a>多触发区域</h3>
+
+<div class="highlight highlight-js"><pre><span class="pl-k">const</span> <span class="pl-c1">picker</span> <span class="pl-k">=</span> up.getPickerCollector();
+picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>clickarea1<span class="pl-pds">'</span></span>));
+picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>clickarea2<span class="pl-pds">'</span></span>));</pre></div>
+
+<h3>
+<a id="上传准备时获取token" class="anchor" href="#%E4%B8%8A%E4%BC%A0%E5%87%86%E5%A4%87%E6%97%B6%E8%8E%B7%E5%8F%96token" aria-hidden="true"><span class="octicon octicon-link"></span></a>上传准备时：获取token</h3>
+
+<div class="highlight highlight-js"><pre>up.on(Events.FILE_UPLOAD_PREPARING, (<span class="pl-smi">request</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-k">const</span> <span class="pl-c1">i</span> <span class="pl-k">=</span> jQuery.Defferd();
+    jQuery.getJSON(<span class="pl-s"><span class="pl-pds">"</span>http://test.yanbingbing.com/token.php<span class="pl-pds">"</span></span>, (<span class="pl-smi">json</span>)<span class="pl-k"> =&gt;</span> {
+        request.setParam(<span class="pl-s"><span class="pl-pds">'</span>token<span class="pl-pds">'</span></span>, json.token);
+        i.resolve();
+    });
+    <span class="pl-k">return</span> i;
+});</pre></div>
+
+<h3>
+<a id="上传完成时数据修正" class="anchor" href="#%E4%B8%8A%E4%BC%A0%E5%AE%8C%E6%88%90%E6%97%B6%E6%95%B0%E6%8D%AE%E4%BF%AE%E6%AD%A3" aria-hidden="true"><span class="octicon octicon-link"></span></a>上传完成时：数据修正</h3>
+
+<div class="highlight highlight-js"><pre>up.on(Events.FILE_UPLOAD_COMPLETING, (<span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-k">const</span> <span class="pl-c1">json</span> <span class="pl-k">=</span> response.json();
+    <span class="pl-k">if</span> (json.<span class="pl-c1">code</span> <span class="pl-k">!==</span> <span class="pl-c1">0</span>) {
+        <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-en">Error</span>(json.msg <span class="pl-k">||</span> <span class="pl-s"><span class="pl-pds">'</span>error<span class="pl-pds">'</span></span>);
+    }
+});</pre></div>
+
+<h3>
+<a id="分片上传" class="anchor" href="#%E5%88%86%E7%89%87%E4%B8%8A%E4%BC%A0" aria-hidden="true"><span class="octicon octicon-link"></span></a>分片上传</h3>
+
+<div class="highlight highlight-js"><pre><span class="pl-c">// 这里是代码</span></pre></div>
+
+<h3>
+<a id="妙传例子" class="anchor" href="#%E5%A6%99%E4%BC%A0%E4%BE%8B%E5%AD%90" aria-hidden="true"><span class="octicon octicon-link"></span></a>妙传例子</h3>
+
+<div class="highlight highlight-js"><pre><span class="pl-c">// 这里是代码</span></pre></div>
+
+<h3>
+<a id="事件监听" class="anchor" href="#%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC" aria-hidden="true"><span class="octicon octicon-link"></span></a>事件监听</h3>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// 队列上传开始</span>
+up.on(Events.QUEUE_UPLOAD_START, ()<span class="pl-k"> =&gt;</span> {
    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueuploadstart<span class="pl-pds">'</span></span>);
 })
 <span class="pl-c">// 队列上传结束</span>
 .on(Events.QUEUE_UPLOAD_END, ()<span class="pl-k"> =&gt;</span> {
     <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueuploadend<span class="pl-pds">'</span></span>);
+})
+<span class="pl-c">// 队列错误</span>
+.on(Events.QUEUE_ERROR, (<span class="pl-smi">error</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueerror<span class="pl-pds">'</span></span>, error)
+})
+<span class="pl-c">// 队列添加</span>
+.on(Events.QUEUE_ADD, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueadd<span class="pl-pds">'</span></span>, file)
 })
 <span class="pl-c">// 队列统计变化</span>
 .on(Events.QUEUE_STAT_CHANGE, (<span class="pl-smi">stat</span>)<span class="pl-k"> =&gt;</span> {
@@ -104,37 +167,25 @@ up.on(Events.QUEUE_ERROR, (<span class="pl-smi">error</span>)<span class="pl-k">
     <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleting<span class="pl-pds">'</span></span>, response);
 })
 <span class="pl-c">// 文件上传成功</span>
-.on(Events.FILE_UPLOAD_SUCCESS, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadsuccess<span class="pl-pds">'</span></span>, file);
+.on(Events.FILE_UPLOAD_SUCCESS, (<span class="pl-smi">file</span>, <span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadsuccess<span class="pl-pds">'</span></span>, file, response);
 })
 <span class="pl-c">// 文件上传错误</span>
-.on(Events.FILE_UPLOAD_ERROR, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploaderror<span class="pl-pds">'</span></span>, file);
+.on(Events.FILE_UPLOAD_ERROR, (<span class="pl-smi">file</span>, <span class="pl-smi">error</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploaderror<span class="pl-pds">'</span></span>, file, error);
 })
 <span class="pl-c">// 文件上传完成</span>
-.on(Events.FILE_UPLOAD_COMPLETED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleted<span class="pl-pds">'</span></span>, file);
+.on(Events.FILE_UPLOAD_COMPLETED, (<span class="pl-smi">file</span>, <span class="pl-smi">status</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleted<span class="pl-pds">'</span></span>, file, status);
 })
 <span class="pl-c">// 文件取消</span>
 .on(Events.FILE_CANCEL, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
     <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filecancel<span class="pl-pds">'</span></span>, file);
 })
 <span class="pl-c">// 文件状态变化</span>
-.on(Events.FILE_STATUS_CHANGE, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filestatuschange<span class="pl-pds">'</span></span>, file, file.getStatusName());
+.on(Events.FILE_STATUS_CHANGE, (<span class="pl-smi">file</span>, <span class="pl-smi">status</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filestatuschange<span class="pl-pds">'</span></span>, file, status, file.getStatusName());
 });</pre></div>
-
-<p><strong>添加触发区域</strong></p>
-
-<div class="highlight highlight-javascript"><pre><span class="pl-c">// 初始化拖拽上传控制</span>
-<span class="pl-k">const</span> <span class="pl-c1">dnd</span> <span class="pl-k">=</span> up.getDndCollector();
-<span class="pl-c">// 添加拖拽上传区域</span>
-dnd.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">documentElement</span>);
-
-<span class="pl-c">// 初始化拾取器</span>
-<span class="pl-k">const</span> <span class="pl-c1">picker</span> <span class="pl-k">=</span> up.getPickerCollector();
-<span class="pl-c">// 添加鼠标触发区域</span>
-picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>button<span class="pl-pds">'</span></span>));</pre></div>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/uxcore/uxcore-uploader">uxcore-uploader</a> is maintained by <a href="https://github.com/uxcore">uxcore</a>.</span>

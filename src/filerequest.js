@@ -17,6 +17,10 @@ class ChunkResponse {
         return this.response || this.rawResponse;
     }
 
+    json() {
+        return this.rawResponse ? JSON.parse(this.rawResponse) : null;
+    }
+
     setResponse(response) {
         this.response = response;
         return this;
@@ -142,7 +146,14 @@ class FileResponse {
     }
 
     getResponse() {
-        return this.response || this.rawResponse;
+        return this.response == null ? this.rawResponse : this.response;
+    }
+
+    json() {
+        if (!this.rawResponse) {
+            return null;
+        }
+        return this.rawResponse.json ? this.rawResponse.json() : JSON.parse(this.rawResponse);
     }
 
     setResponse(response) {

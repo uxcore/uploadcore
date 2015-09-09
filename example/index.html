@@ -2,14 +2,28 @@
 
 <html>
 <head>
-    <title>React Uploader</title>
+    <meta charset="utf-8" />
+    <title>Example</title>
 
+    <style>
+        #button {
+            background: pink;
+            border: 1px solid black;
+            height: 50px;
+            width: 100px;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+            line-height: 50px;
+        }
+    </style>
     <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="http://localhost:8080/assets/uploader.js"></script>
 </head>
 <body>
 
-    <div id="content"></div>
+    <div id="button">上传</div>
 
     <script src="http://localhost:8080/webpack-dev-server.js"></script>
     <script src="http://localhost:8080/assets/example.js"></script>

@@ -1,0 +1,14 @@
+node_modules/
+.idea/
+*~
+~*
+*.diff
+*.log
+*.patch
+*.bak
+.DS_Store
+Thumbs.db
+.project
+.*proj
+*.swp
+node_modules

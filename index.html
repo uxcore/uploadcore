@@ -42,7 +42,7 @@
 up.on(Events.FILE_UPLOAD_COMPLETED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
     <span class="pl-k">if</span> (file.getStatusName() <span class="pl-k">===</span> Status.SUCCESS) {
         <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>上传成功<span class="pl-pds">'</span></span>);
-        <span class="pl-en">console</span><span class="pl-c1">.info</span>(file.response.json());
+        <span class="pl-en">console</span><span class="pl-c1">.info</span>(file.response.getJson());
     } <span class="pl-k">else</span> {
         <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>上传失败<span class="pl-pds">'</span></span>);
     }
@@ -95,7 +95,7 @@ picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElemen
 <a id="上传完成时数据修正" class="anchor" href="#%E4%B8%8A%E4%BC%A0%E5%AE%8C%E6%88%90%E6%97%B6%E6%95%B0%E6%8D%AE%E4%BF%AE%E6%AD%A3" aria-hidden="true"><span class="octicon octicon-link"></span></a>上传完成时：数据修正</h3>
 
 <div class="highlight highlight-js"><pre>up.on(Events.FILE_UPLOAD_COMPLETING, (<span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-k">const</span> <span class="pl-c1">json</span> <span class="pl-k">=</span> response.json();
+    <span class="pl-k">const</span> <span class="pl-c1">json</span> <span class="pl-k">=</span> response.getJson();
     <span class="pl-k">if</span> (json.<span class="pl-c1">code</span> <span class="pl-k">!==</span> <span class="pl-c1">0</span>) {
         <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-en">Error</span>(json.msg <span class="pl-k">||</span> <span class="pl-s"><span class="pl-pds">'</span>error<span class="pl-pds">'</span></span>);
     }

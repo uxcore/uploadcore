@@ -1,28 +1,42 @@
-#Uxcore-Uploader
-
-新的上传组件
+# Uxcore-Uploader
 
 特性：
 
 1. md5（用于秒传）
 2. 分片上传
-3. 切面编程（AOP）
-4. html5-runtime，flash-runtime
-5. 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
-6. 基于es6，jquery
-
-设计理念：
-
-1. AOP
-2. 高度抽象，减少黑盒子
+3. html5-runtime，flash-runtime
+4. 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
+5. 基于es6，jquery
 
 ------
 
-## Context(options)
+## 最佳实践
 
-### Options
+```js
+import Uploader, {Events, Status} from 'uxuploader';
+const up = new Uploader({
+    request: {
+        name: 'file',
+        url: 'http://test.yanbingbing.com/upload.php'
+    }
+});
 
+up.on(Events.FILE_UPLOAD_COMPLETED, (file) => {
+	if (file.getStatusName() === Status.SUCCESS) {
+		alert('上传成功');
+		console.info(file.response.json());
+	} else {
+		alert('上传失败');
+	}
+});
+
+const picker = up.getPickerCollector();
+picker.addArea(document.getElementById('clickarea'));
 ```
+
+## Options 配置
+
+```js
 options = {
     request: {
         // 上传文件字段名称
@@ -63,48 +77,43 @@ options = {
 }
 ```
 
-#### options.request.params
+**options.request.params**
 
 上传文件额外参数，支持俩种赋值方式
 
-**赋值一(Object)**
-
-```
+```js
+// 赋值一(Object)
 params = {
     foo: 'bar'
 }
-```
 
-**赋值二(Array)**
-
-```
+// 赋值二(Array)
 params = [
     {name:'foo', value:'bar'}
 ]
+
 ```
 
-
-#### options.request.headers
+**options.request.headers**
 
 上传文件请求头，格式如下：
 
-```
+```js
 headers = [
     {name:'X-Requested-With', value:'XMLHttpRequest'}
 ]
 ```
 
-#### options.request.chunkSize
+**options.request.chunkSize**
 
 文件分片大小，单位byte，默认0，小于256K时，不可分片。
 
-#### options.accept
+**options.accept**
 
-允许文件格式，赋值方式：
+允许文件格式，赋值方式如下：
 
-**图像文件**
-
-```
+```js
+// 图像文件
 accept = [
     {
         title: 'Images',
@@ -112,35 +121,26 @@ accept = [
         mimeTypes: 'image/*'
     }
 ];
-```
 
-**音频文件**
-
-```
+// 音频文件
 accept = [
     {
         title: 'Audios',
         extensions: 'mp3,mp4,ogg,flac,wav,midi',
         mimeTypes: 'audio/*'
     }
-]
-```
+];
 
-**视频文件**
-
-```
+// 视频文件
 accept = [
     {
         title: 'Videos',
         extensions: 'mp4,mpeg,mov,flv,wmv,avi,mkv,ogv',
         mimeTypes: 'audio/*'
     }
-]
-```
+];
 
-**JPG文件**
-
-```
+// JPG文件
 accept = [
     {
         title: 'JPG',
@@ -150,59 +150,45 @@ accept = [
 ];
 ```
 
-
-
 mimetypes相关文档[MIME](http://webdesign.about.com/od/multimedia/a/mime-types-by-content-type.htm)
 
-### getQueue()
+## APIs 接口
 
-获得队列[Queue](#queue)
+### Uploader.addLimit
 
-### createFileRequest({[File](#file)} file)
+添加限制函数。
 
-创建[FileRequest](#filerequest)
+参数 | 类型 | 描述
+--- |----- | ------
+limit | `Function` | 约束函数
 
-### aspect(aspect[, hook])
+limit函数如下：
 
-获得相关切面[Aspect](#aspect)
-
-### getPickerCollector(swf)
-
-获得[PickerCollector](#pickercollector)单列。
-
-### getDndCollector()
-
-获得[DndCollector](#dndcollector)单列。
-
-### getPasteCollector()
-
-获得[PasteCollector](#pastecollector)单列。
-
-## Queue
-
-### APIs
-
-#### addLimit({Function} limit)
-
-添加限制函数。limit函数如下：
-
-```
+```js
 limit = function () {
     return true;
 }
 ```
 
-limit函数返回true时表示受到限制，否则不，函数闭包中this指向当前`{queue}`。
+limit函数返回true时表示受到限制，否则不，函数闭包中this指向当前`{Uploader}`。
 
-#### isLimit()
+### Uploader.isLimit
 
-将所有[添加的limit](#addlimitfunction-limit)运行之后判断，是否已经限制添加更多的文件。
+运行通过`Uploader.addLimit`添加的约束，判断是否已经限制添加更多的文件。
 
-#### addFilter({Function} filter)
+**返回** `bool`，`true`表示限制添加。
 
-添加文件过滤函数。filter函数如下：
+### Uploader.addFilter
 
-```
+添加文件过滤函数。
+
+参数 | 类型 | 描述
+--- |----- | ------
+filter | `Function` | 过滤函数
+
+filter函数如下：
+
+```js
 filter = function () {
    return 'error string';
 }
@@ -228,69 +214,268 @@ return new Error('some error');
 throw new Error('some error');
 ```
 
-#### isAllow({[File](#file)} file)
+### Uploader.isAllow
 
-经过[添加的filter](#addfilterfunction-filter)过滤，判断是否仍然允许此文件。
+运行通过`Uploader.addFilter`添加的过滤，判断是否仍然允许此文件。
 
-#### add({[File](#file)} file)
+参数 | 类型 | 描述
+--- |----- | ------
+file | `File` | 文件对象
 
-添加一个文件。添加过程中会经过[isLimit](#islimit)，[isAllow](#isallowfile-file)判断。
+**返回** `bool`，`true`表示允许。
 
-可能触发[事件](#queueevents)：
+### Uploader.add
 
-* QUEUE_ERROR
-* QUEUE_ADD
-* QUEUE_STAT_CHANGE
+添加一个文件。
 
-#### setAutoPending({Boolean} flag)
+参数 | 类型 | 描述
+--- |----- | ------
+file | `File` | 文件对象
 
-设置自动上传，文件添加后，自动设为[FileStatus.PENDING](#filestatuspending)状态，等待上传。
+### Uploader.setAutoPending
 
-#### setMultiple({Boolean} flag)
+设置自动上传，文件添加后，自动设为`Status.PENDING`状态，等待上传。
+
+参数 | 类型 | 描述
+--- |----- | ------
+flag | `bool` | 开关
+
+### Uploader.setMultiple
 
 设置是否多选。
 
-#### isMultiple()
+参数 | 类型 | 描述
+--- |----- | ------
+flag | `bool` | 开关
+
+### Uploader.isMultiple
 
 是否多选。
 
-#### getAccept()
+**返回** `bool`，`true`表示多选。
 
-获得允许文件类型[Accept](#optionsaccept)。
+### Uploader.getAccept
 
-#### getStat()
+获得允许文件类型。
 
-获得[Stat](#stat)。
+**返回**
 
-### Events
-
-见[QueueEvents](#queueevents)。
-
-### Errors
-
-见[QueueErrors](#queueerrors)。
-
-### Stat
-
-队列文件的统计，参与统计的文件状态不包括`FileStatus.CANCELLED`和`FileStatus.INITED`。
-
-#### getFiles(flag)
-
-获得状态为flag的文件集合。flag支持[FileStatus](#filestatus)位操作：
-
-```
-flag = FileStatus.ALL ^ FileStatus.CANCELLED;
-flag = FileStatus.SUCCESS | FileStatus.ERROR;
+```js
+[
+    {
+        title: 'Videos',
+        extensions: 'mp4,mpeg,mov,flv,wmv,avi,mkv,ogv',
+        mimeTypes: 'audio/*'
+    },
+    ....
+]
 ```
 
-`flag`为`null`相当于`FileStatus.ALL`
+### Uploader.getStat
 
-#### stat(flag)
+获得文件统计。
+
+**返回** `Stat`
+
+### Uploader.setSWF (静态方法)
+
+设置flashpicker的url地址，用于不支持h5上传的浏览器。
+
+参数 | 类型 | 描述
+--- |----- | ------
+url | `string` | flashpicker的url地址
+
+### Uploader.getPickerCollector
+
+获得`PickerCollector`单列。
+
+### Uploader.getDndCollector
+
+获得`DndCollector`单列。
+
+### Uploader.getPasteCollector
+
+获得`PasteCollector`单列。
+
+### Uploader.on
+
+添加事件监听。
+
+参数 | 类型 | 描述
+--- |----- | ------
+event | `string` | 事件名称
+fn | `function` | 事件处理函数
+
+## Events 事件
+
+**队列事件**
+
+名称 | 触发对象 | 参数 | 描述
+--- | --- | --- | ---
+`QUEUE_UPLOAD_START` | `Uploader` | 无 | 队列上传开始
+`QUEUE_UPLOAD_END` | `Uploader` | 无 | 队列上传结束
+`QUEUE_ADD` | `Uploader` | `File` | 队列添加了一个文件
+`QUEUE_ERROR` | `Uploader` | `Error` | 队列错误
+`QUEUE_STAT_CHANGE` | `Uploader` | `Stat` | 统计发生变化
+
+**正在进行时事件**
+
+名称 | 触发对象 | 参数 | 描述
+--- | --- | --- | ---
+`FILE_UPLOAD_PREPARING`| `Uploader` | `FileRequest` | 文件上传准备时
+`CHUNK_UPLOAD_PREPARING`| `Uploader` | `ChunkRequest` |  分块上传准备时
+`CHUNK_UPLOAD_COMPLETING`|`Uploader` | `ChunkResponse` |  分块上传结束时
+`FILE_UPLOAD_COMPLETING`|`Uploader` | `FileResponse` |  文件上传结束时
+
+正在进行时事件可以理解为普通事件的增强版，支持Promise返回值，添加的事件严格按照顺序执行。
+
+```js
+up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
+    return new Promise((resolve) => {
+        jQuery.getJSON('http://test.yanbingbing.com/token.php').done((token) => {
+            request.setParam('token', token);
+            resolve();
+        });
+    });
+}).on(Events.FILE_UPLOAD_PREPARING, (request) => {
+    console.info(request.getParam('token'));
+});
+```
+
+**文件事件**
+
+文件事件同时在`Uploader`与`File`上触发，当在`Uploader`上触发时，函数第一参数均为`File`。
+
+名称 | 触发对象 | 参数 | 描述
+--- | --- | --- | ---
+`FILE_UPLOAD_START` | `Uploader`, `File` | [`File`] | 文件上传开始
+`FILE_UPLOAD_PREPARED` | `Uploader`, `File` | [`File`], `FileRequest` |文件上传准备好了
+`FILE_UPLOAD_PROGRESS` | `Uploader`, `File` | [`File`], `Progress` | 文件上传进度中
+`FILE_UPLOAD_END` | `Uploader`, `File` | [`File`] | 文件上传结束
+`FILE_UPLOAD_SUCCESS` | `Uploader`, `File` | [`File`], `FileResponse` | 文件上传成功
+`FILE_UPLOAD_ERROR` | `Uploader`, `File` | [`File`], `Error` | 文件上传失败
+`FILE_UPLOAD_COMPLETED` | `Uploader`, `File` | [`File`], `Status`| 文件上传完成了
+`FILE_CANCEL` | `Uploader`, `File` | [`File`] | 文件退出
+`FILE_STATUS_CHANGE` | `Uploader`, `File` | [`File`], `Status` | 文件状态发生变化
+
+
+## Errors
+
+我们定义了以下错误，方便错误发生时分辨。
+
+**AbortError 中断错误**
+
+* **name:** AbortError
+* **message:** (message)
+
+**TimeoutError 超时错误**
+
+* **name:** TimeoutError
+* **message:** (message)
+
+**NetworkError 网络错误**
+
+* **status:** http status
+* **name:** NetworkError
+* **message:** (message)
+
+**QueueLimitError 队列限制错误**
+
+* **name:** QueueLimitError
+* **message:** queue limit
+
+**FilterError 过滤错误**
+
+* **file:** `File`
+* **name:** FilterError
+* **message:** (message)
+
+**DuplicateError 文件重复错误**
+
+继承自`FilterError`。
+
+* **file:** `File`
+* **name:** DuplicateError
+* **message:** (message)
+
+**FileExtensionError 文件扩展名错误**
+
+继承自`FilterError`。
+
+* **file:** `File`
+* **name:** FileExtensionError
+* **message:** (message)
+
+**FileSizeError 文件大小错误**
+
+继承自`FilterError`。
+
+* **file:** `File`
+* **name:** FileSizeError
+* **message:** (message)
+
+## Status 状态
+
+文件在上传过程中经历的状态值。
+
+名称 | 值 | 描述
+--- | --- | ---
+ALL | 255 | 所有状态
+PROCESS | 31 |  包含状态 `INITED` 至 `END`
+INITED | 1 | 初始状态
+QUEUED | 2 | 进入队列
+PENDING | 4 | 队列中等待
+PROGRESS | 8 | 上传中
+END | 16 | 上传完成, 等待后续处理
+SUCCESS | 32 | 上传成功
+ERROR | 64 | 上传出错
+CANCELLED | 128 | 上传取消 和 `QUEUED` 相反, 退出队列
+
+-------
+
+以下为更详细的抽象，均在运行时创建，不对外暴露。
+
+## Stat 统计
+
+队列文件的统计。
+
+### Stat.getTotal
+
+获得参与统计的文件个数。
+
+### Stat.getFile
+
+参数 | 类型 | 描述
+--- |----- | ------
+flag | `Status` | 状态mask
+
+获得状态为flag的文件集合。flag支持`Status`位操作：
+
+```js
+flag = Status.ALL ^ Status.CANCELLED;
+flag = Status.SUCCESS | Status.ERROR;
+```
+
+`flag`为`null`相当于`Status.ALL`
+
+**返回**
+
+```js
+[File, File, ...]
+```
+
+
+### Stat.stat
+
+参数 | 类型 | 描述
+--- |----- | ------
+flag | `Status` | 状态mask
+
 
 统计状态为flag的文件数目；flag赋值同上，例如：
 
-```
-stat(FileStatus.SUCCESS | FileStatus.ERROR)
+```js
+stat(Status.SUCCESS | Status.ERROR)
 ```
 
 **返回**
@@ -303,7 +488,7 @@ stat(FileStatus.SUCCESS | FileStatus.ERROR)
 }
 ```
 
-## File
+## File 文件
 
 ### Properties
 
@@ -313,7 +498,7 @@ stat(FileStatus.SUCCESS | FileStatus.ERROR)
 
 **name(string)**
 
-文件名称。对于从[粘贴](#pastecollector)进来的文件资源，有些情况没有文件名，取用`id.ext`作为文件名。
+文件名称。对于从粘贴进来的文件资源，有些情况没有文件名，取用`id.ext`作为文件名。
 
 **ext(string)**
 
@@ -331,41 +516,47 @@ stat(FileStatus.SUCCESS | FileStatus.ERROR)
 
 文件大小，单位byte。eg. `1024`。
 
-**progress([Progress](#progress))**
+**progress(Progress)**
 
 文件上传进度。
 
-### APIs
+### File.getContext
 
-#### getContext()
+获取上下文`Uploader`。
 
-获取上下文[Context](#contextoptions)。
-
-#### isImage()
+### File.isImage
 
 判断是否是图像文件。`mimetype`为`image/jpg, image/jpeg, image/gif, image/png, image/bmp`其中一种，即为图像。
 
-#### getStatus()
+### File.getStatus
 
-获取当前文件状态，参见[FileStatus](#filestatus)。
+获取当前文件状态，参见`Status`。
 
-#### getSource()
+### File.getStatusName
+
+获取当前文件状态标识。
+
+### File.getSource
 
 获取源文件资源。
 
-#### getAsDataUrl(timeout)
+### File.getAsDataUrl
+
+参数 | 类型 | 描述
+--- |----- | ------
+timeout | `int` | 超时时间
 
 异步获取文件dataurl内容，返回`jQuery-Promise`。
 
-#### md5()
+### File.md5
 
 异步计算文件MD5值，返回`jQuery-Promise`。
 
-#### session()
+### File.session
 
 获取一个文件上传的会话，返回一个`jQuery-Promise`，让我们除了可以绑定事件外，还可以用session方式来绑定相关动作。
 
-```
+```js
 file.session().done(function (response) {
    // 上传成功了
 }).fail(function (error) {
@@ -377,29 +568,34 @@ file.session().done(function (response) {
 
 为了某些场景的设计，`session`方式不需要、也不支持解除绑定，等当次上传会话结束后，会自动失效当前`session-promise`。
 
-如果你绑定的操作需要解除绑定或者不希望会失效，请考虑使用[绑定事件](#fileevents)方式。
+如果你绑定的操作需要解除绑定或者不希望会失效，请考虑使用绑定事件方式。
 
-#### complete({[ChunkResponse](#chunkresponse)|*} response)
+### File.complete
 
-结束并完成上传会话，一般情况下，这个函数用于秒传。
+参数 | 类型 | 描述
+--- |----- | ------
+response | `ChunkResponse` or `*` | 用于构造`FileResponse`的原始数据
 
-#### pending()
+结束并完成上传会话，这个函数大多数由内部调用，其它情况如秒传时会直接调用。
+
+### File.pending
 
 让文件等待上传，一般用于手动上传、错误重传。
 
-#### cancel()
+### File.cancel
 
 结束上传会话，退出文件上传队列。
 
-### Events
+### File.on
 
-见[FileEvents](#fileevents)
+添加事件监听。
 
-### Errors
+参数 | 类型 | 描述
+--- |----- | ------
+event | `string` | 事件名称
+fn | `function` | 事件处理函数
 
-见[FileErrors](#fileerrors)
-
-### Progress
+## Progress 进度
 
 文件上传进度对象。
 
@@ -416,573 +612,460 @@ file.session().done(function (response) {
 已经上传的百分比`0-100`。
 
 
-## Aspect
+## FileRequest 文件请求
 
-传统的事件机制是发生了某事件，通知一下，满足不了及时改变它并应用到后续。所以我们这里提出切面机制，这个概念很像hook，但稍微和传统的hook有些区别，因为在`我们的hook`中可以异步完成一些事情后，然后进行后续调用。
+文件上传请求参数控制，上传时由内部基于`options.request`创建，作为事件`FILE_UPLOAD_PREPARING`的唯一参数。
 
-### add({Function} hook)
+### FileRequest.getFile
 
-在定义的切面中追加hook。hook函数闭包中this指向[AspectHook](#aspecthook)实例，hook函数中可以控制俩种走向：`下一步`、`错误拒绝`，函数调用完成没有`错误拒绝`即为`下一步`，`错误拒绝`的几种方式：
+获得请求中的文件对象`File`。
 
-**返回Error**
+**返回** `File`
 
-```
-add(function (data) {
-    return new Error('something error');
-});
-```
+### FileRequest.setName
 
-**抛出异常**
+设置上传文件的字段名称，服务端用此字段接收文件。
 
-```
-add(function (data) {
-    throw new Error('something error');
-});
-```
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 上传文件的字段名称
 
-**Promise-reject**
-
-```
-add(function (data) {
-   var i = $.Deferred();
-   setTimeout(function () {
-       i.reject(error);
-   }, 3000);
-   return i;
-});
-```
-**设置Error**
-
-```
-add(function (data) {
-    this.setError(error);
-});
-```
-
-此外我们对于hook函数的返回值还有一些约定，如果希望返回的的值可用并应用到下一步，这个返回值一定要和[invoke](#invodedata)传入的初始值类型一样，我们会在内部如此检查：`newdata.constructor === lastdata.constructor`，返回值也有三种方式：
-
-**返回空值：沿用上次数据**
-
-```
-add(function (data) {
-   return null; // 其实这句可以不要
-});
-```
-
-**Promise-resolve**
-
-```
-add(function (data) {
-   var i = $.Deferred();
-   setTimeout(function () {
-       i.resolve(newdata);
-   }, 3000);
-   return i;
-})
-```
-
-**设置Data**
-
-```
-add(function (data) {
-    this.setData(data);
-});
-```
-
-### invoke(data)
-
-此函数供内部调用，基于当前切面的定义创建[AspectHook](#aspecthook)，
-
-### AspectHook
-
-切面钩子机制。
-
-#### setError(error)
-
-设置返回错误。
-
-#### setData(data)
-
-设置返回数据。
-
-
-## File Request & Response
-
-### FileRequest
-
-文件上传请求参数控制，上传[FileAspects.PREPARE](#fileaspectsprepare)时由内部基于[Options](#options)创建，创建的实例配合[Aspect](#aspect)使用。
-
-#### getFile()
-
-获得正在上传的文件对象[File](#file)。
-
-#### setName(name)
-
-设置上传文件的字段名称。服务端用此字段接收文件。
-
-#### getName()
+### FileRequest.getName
 
 获取上传文件的字段名称。
 
-#### setUrl(url)
+**返回** `string`
 
-设置上传服务器端位置url。
+### FileRequest.setUrl
 
-#### getUrl()
+设置上传服务器端响应url。
 
-获得上传服务器端位置。
+参数 | 类型 | 描述
+--- |----- | ------
+url | `string` | 服务器端响应地址
 
-#### getParams()
+### FileRequest.getUrl
 
-获得参数[Params](#params)。
+获得上传服务器端响应。
 
-#### getParam(name)
+**返回** `string`
 
-获得字段为name的参数集合，同[Params](#params)。
+### FileRequest.getParams
 
-#### setParam(name, value)
+获得参数`Params`。
 
-设置参数值，同[Params](#params)。
+**返回** `Params`
 
-#### getHeaders()
+### FileRequest.getParam
+
+获得字段为name的参数集合，同`Params`。
+
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
+
+**返回**
+
+```js
+[
+	{name:'name', value:'value1'},
+	{name:'name', value:'value2'},
+	...
+]
+```
+
+### FileRequest.setParam
+
+设置参数值，同`Params`。
+
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
+value | `*` | 字段值
+
+### FileRequest.getHeaders
 
 获取文件上传时附带的请求头信息。
 
-#### setHeader(name, value)
+**返回**
+
+```js
+[
+	{name:'header1', value:'value1'},
+	{name:'header2', value:'value2'},
+	...
+]
+```
+
+### FileRequest.setHeader(name, value)
 
 设置一个附带请求头信息。
 
-#### setWithCredentials(flag)
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
+value | `*` | 字段值
+
+### FileRequest.setWithCredentials
 
 设置是否上传时附带cookie等验证信息。
 
-#### isWithCredentials()
+参数 | 类型 | 描述
+--- |----- | ------
+flag | `bool` | 开关
+
+### FileRequest.isWithCredentials
 
 是否上传时附带cookie等验证信息。
 
-#### setTimeout(timeout)
+**返回** `bool`
 
-设置上传超时。
+### FileRequest.setTimeout
 
-#### getTimeout()
+设置上传超时时间。
 
-获取上传超时。
+参数 | 类型 | 描述
+--- |----- | ------
+timeout | `int` | 超时时间，单位ms
 
-#### setChunkSize(size)
+### FileRequest.getTimeout
+
+获取上传超时时间。
+
+**返回** `int`，上传超时时间，单位ms。
+
+### FileRequest.setChunkSize
 
 设置分片大小。
 
-#### getChunkSize()
+参数 | 类型 | 描述
+--- |----- | ------
+size | `int` | 分片大小，单位byte
+
+### FileRequest.getChunkSize
 
 获取分片大小。
 
-#### setChunkRetries(retries)
+**返回** `int`，分片大小，单位byte。
+
+### FileRequest.setChunkRetries
 
 设置分片上传网络出错重试次数。
 
-#### getChunkRetries()
+参数 | 类型 | 描述
+--- |----- | ------
+retries | `int` | 重试次数
+
+### FileRequest.getChunkRetries
 
 获取分片上传网络出错重试次数。
 
-#### setChunkEnable(flag)
+**返回** `int`，重试次数。
+
+### FileRequest.setChunkEnable
 
 设置是否开启分片上传。
 
-#### isChunkEnable()
+参数 | 类型 | 描述
+--- |----- | ------
+flag | `bool` | 开关
+
+### FileRequest.isChunkEnable
 
 判断是否分片上传，需要同时满足`开启了分片上传`、`分片大小大于256K`及`文件大小大于分片大小`三个条件。
 
-#### setChunkProcessThreads(threads)
+**返回** `bool`
+
+### FileRequest.setChunkProcessThreads
 
 设置分片上传并发数，一个文件分为多块上传时，同时上传的数量。
 
-#### getChunkProcessThreads
+参数 | 类型 | 描述
+--- |----- | ------
+threads | `int` | 并发数
+
+### FileRequest.getChunkProcessThreads
 
 获取分片上传并发数。
 
-### FileResponse
+**返回** `int`，并发数。
 
-文件上传完成[FileAspects.COMPLETE](#fileaspectscomplete)时由内部创建，创建的实例配合[Aspect](#aspect)使用。
+## FileResponse 文件响应
 
-#### getFileRequest()
+文件上传完成时由内部创建，作为事件`FILE_UPLOAD_COMPLETING`的唯一参数。
 
-获得[FileRequest](#filerequest)。
+### FileResponse.getFileRequest
 
-#### isFromMultiChunkResponse()
+获得`FileRequest`。
 
-判断是否由多个分片上传完成后响应的数据并实例化而来；正常的分片上传，我们会把最后完成的分片响应数据[ChunkResponse](#chunkresponse)作为`FileResponse`的原始响应数据；以下俩种情况此返回值为否：
+**返回** `FileRequest`
+
+### FileResponse.isFromMultiChunkResponse
+
+判断是否由多个分片上传完成后响应的数据并实例化而来；正常的分片上传，我们会把最后完成的分片响应数据`ChunkResponse`作为`FileResponse`的原始响应数据；以下俩种情况此返回值为否：
 
 * 无论是否使用多个分片上传时，秒传完成-即直接调用`complete(response)`方式；
 * 文件过小、或者未开启分片上传，上传过程没有多个分片。
 
-#### getRawResponse()
+### FileResponse.getRawResponse
 
 获得原生响应数据。
 
-#### getResponse()
+**返回** `ChunkResponse` | `string` | `null` 
+
+### FileResponse.getJson
+
+尝试返回JSON格式的响应数据。
+
+**返回** `JSON` | `null`
+
+### FileResponse.getResponse
 
 获得响应数据。
 
-#### setResponse(response)
+**返回** `string` | `*`
+
+### FileResponse.setResponse
 
 设置响应数据，一般为JSON数据。
 
-### ChunkRequest
+参数 | 类型 | 描述
+--- |----- | ------
+response | `JSON` or `*` | 响应数据
 
-文件分片上传[FileAspects.CHUNK_PREPARE](#fileaspectschunk_prepare)时由内部[FileRequest](#filerequest)派生创建，大多数能获取的数值采用改变时从`FileRequest`复制方式来使用，创建的实例配合[Aspect](#aspect)使用。
+## ChunkRequest 文件块请求
 
-#### getFileRequest()
+文件分片上传时由内部`FileRequest`派生创建，大多数能获取的数值采用改变时从`FileRequest`复制方式来使用，作为事件`CHUNK_UPLOAD_PREPARING`的唯一参数。
 
-获取[FileRequest](#filerequest)。
+### ChunkRequest.getFileRequest
 
-#### getFile()
+获取`FileRequest`。
 
-获得正在上传的文件对象[File](#file)。
+**返回** `FileRequest`
 
-#### getBlob()
+### ChunkRequest.getBlob
 
 获取切片对象。
 
-#### getIndex()
+**返回** `Blob`
 
-获得切片索引，从0开始。
+### ChunkRequest.getIndex
 
-#### getName()
+获得切片索引。
 
-获取上传文件的字段名称。
+**返回** `int`，切片索引，从0开始。
 
-#### isMultiChunk()
+### ChunkRequest.isMultiChunk
 
 是否是多分片上传。
 
-#### setUrl(url)
+**返回** `bool`
 
-设置上传服务器端位置url。
+### ChunkRequest.getFile
 
-#### getUrl()
+获得请求中的文件对象`File`，同`FileRequest.getFile`。
 
-获得上传服务器端位置。
+### ChunkRequest.getName
 
-#### getParams()
+获取上传文件的字段名称，同`FileRequest.getName`。
 
-获得参数[Params](#params)。
+### ChunkRequest.setUrl
 
-#### getParam(name)
+设置上传服务器端响应地址，同`FileRequest.setUrl`。
 
-获得字段为name的参数集合，同[Params](#params)。
+### ChunkRequest.getUrl
 
-#### setParam(name, value)
+获得上传服务器端响应地址，同`FileRequest.getUrl`。
 
-设置参数值，同[Params](#params)。
+### ChunkRequest.getParams
 
-#### getHeaders()
+获得参数，同`FileRequest.getParams`。
 
-获取文件上传时附带的请求头信息。
+### ChunkRequest.getParam
 
-#### setHeader(name, value)
+获得字段为name的参数集合，同`FileRequest.getParam`。
 
-设置一个附带请求头信息。
+### ChunkRequest.setParam
 
-#### isWithCredentials()
+设置参数值，同`FileRequest.setParam`。
 
-是否上传时附带cookie等验证信息。
+### ChunkRequest.getHeaders
 
-#### getTimeout()
+获取文件上传时附带的请求头信息，同`FileRequest.getHeaders`。
 
-获取上传超时。
+### ChunkRequest.setHeader
 
-### ChunkResponse
+设置一个附带请求头信息，同`FileRequest.setHeaders`。
 
-文件分片上传完成[FileAspects.CHUNK_COMPLETE](#fileaspectschunk_complete)时由内部创建，创建的实例配合[Aspect](#aspect)使用。
+### ChunkRequest.isWithCredentials
 
-#### getChunkRequest()
+是否上传时附带cookie等验证信息，同`FileRequest.isWithCredentials`。
 
-获取[ChunkRequest](#chunkrequest)。
+### ChunkRequest.getTimeout()
 
-#### getRawResponse()
+获取上传超时，同`FileRequest.getTimeout`。
+
+## ChunkResponse 文件块响应
+
+文件分片上传完成时由内部创建，作为事件`CHUNK_UPLOAD_COMPLETING`的唯一参数。
+
+### ChunkResponse.getChunkRequest
+
+获取`ChunkRequest`。
+
+**返回** `ChunkRequest`
+
+### ChunkResponse.getRawResponse
 
 获得原生响应数据。
 
-#### getResponse()
+**返回** `string` | `null`
+
+### ChunkResponse.getResponse
 
 获得响应数据。
 
-#### setResponse(response)
+**返回** `string` | `*`
+
+### ChunkResponse.getJson
+
+尝试返回JSON格式的响应数据。
+
+**返回** `JSON` | `null`
+
+### ChunkResponse.setResponse
 
 设置响应数据，一般为JSON数据。
 
-### Params
+参数 | 类型 | 描述
+--- |----- | ------
+response | `JSON` or `*` | 响应数据
 
-用于发送的Form Data数据维护，内部由[FileRequest](#filerequest)基于[options.request.params](#optionsrequestparams)创建。
+## Params 请求参数
 
-#### addParam(name, value)
+用于发送的Form Data数据维护，内部由`FileRequest`基于`options.request.params`创建。
+
+### Params.addParam(name, value)
 
 添加参数值。
 
-#### removeParam(name)
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
+value | `*` | 字段值
+
+### Params.removeParam
 
 删除键名为`name`的所有值设置。
 
-#### setParam(name, value)
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
 
-设置参数值，删除键名为`name`的所有值设置，新添加一个值为`value`的设置。
-
-#### getParam(name[, {Boolean} single = false])
+### Params.getParam
 
 获得字段name的值设置，`single`为true返回单个值，否则以数组形式返回多个。
 
-#### clone()
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
+single | `bool` `可选` | 是否返回单个值
 
-基于当前实例创建新[Params](#params)
+**返回**
 
-#### toArray()
+```js
+// 多值
+[
+	{name:'name', value:'value1'},
+	{name:'name', value:'value2'},
+	...
+]
 
-以Array格式导出数据，结果为：
-
+// 单个值
+'value1'
 ```
+
+### Params.setParam
+
+设置参数值，删除键名为`name`的所有值设置，新添加一个值为`value`的设置。
+
+参数 | 类型 | 描述
+--- |----- | ------
+name | `string` | 字段名称
+value | `*` | 字段值
+
+### Params.clone
+
+基于当前实例创建新`Params`。
+
+**返回** `Params`
+
+### Params.toArray
+
+以Array格式导出数据。
+
+**返回**
+
+```js
 params = [
   {name: 'foo', value: 'bar'},
   {name: 'foo', value: 'bar1'}
 ]
 ```
 
-#### toString()
+### Params.toString
 
-以querystring格式返回：
+以querystring格式返回。
+
+**返回**
 
 ```
 foo=bar&foo=bar1
 ```
 
-## FileStatus
-
-文件在上传过程中的状态值。
-
-### FileStatus.ALL
-
-值`255`，所有状态。
-
-### FileStatus.PROCESS
-
-值`31`，过程状态`FileStatus.INITED` -> `FileStatus.COMPLETE`。
-
-### FileStatus.INITED
-
-值`1`，初始状态。
-
-### FileStatus.QUEUED
-
-值`2`，进入队列
-
-### FileStatus.PENDING
-
-值`4`，队列中等待
-
-### FileStatus.PROGRESS
-
-值`8`，上传中
-
-### FileStatus.COMPLETE
-
-值`16`，上传完成, 等待后续处理
-
-### FileStatus.SUCCESS
-
-值`32`，上传成功
-
-### FileStatus.ERROR
-
-值`64`，上传出错
-
-### FileStatus.CANCELLED
-
-值`128`，上传取消 和 queued 相反, 退出队列
-
-## FileAspects
-
-文件上传的各个阶段。
-
-### FileAspects.PREPARE
-
-值`prepare`，文件上传准备阶段。
-
-### FileAspects.CHUNK_PREPARE
-
-值`chunkprepare`，文件分片上传准备阶段。
-
-### FileAspects.CHUNK_COMPLETE
-
-值`chunkcomplete`，文件分片上传完成阶段。
-
-### FileAspects.COMPLETE
-
-值`complete`，文件上传完成阶段。
-
-## Events
-
-### QueueEvents
-
-#### on(Events.QUEUE_UPLOAD_START)
-
-队列开始上传。
-
-#### on(Events.QUEUE_UPLOAD_PROGRESS)
-
-队列上传进度中。
-
-#### on(Events.QUEUE_UPLOAD_END)
-
-队列上传结束。
-
-#### on(Events.QUEUE_ADD, ({[File](#file)} file))
-
-队列添加了一个文件。
-
-#### on(Events.QUEUE_ERROR, ({[Error](#queueerrors)} eror))
-
-队列抛出一个[错误](#queueerrors)。
-
-#### on(Events.QUEUE_STAT_CHANGE, ({[Stat](#stat)} stat))
-
-队列统计信息发生变化。
-
-### FileEvents
-
-#### on(Events.FILE_UPLOAD_START)
-
-文件开始上传。
-   
-#### on(Events.FILE_UPLOAD_PROGRESS, ({[Progress](#progress)} progress))
-
-文件上传进度中。
-
-#### on(Events.FILE_UPLOAD_COMPLETE, ({[FileResponse](#fileresponse)} response))
-
-文件上传完成中。
-
-#### on(Events.FILE_UPLOAD_SUCCESS, ({[FileResponse](#fileresponse)} response))
-
-文件上传成功。
-
-#### on(Events.FILE_UPLOAD_ERROR, ({[Error](#fileerrors)} error))
-
-文件上传失败。
-
-#### on(Events.FILE_CANCEL)
-
-文件退出。
-
-#### on(Events.FILE_STATUS_CHANGE, (newstatus, oldstatus))
-
-文件状态发生变化，`newstatus|oldstatus`值参见[FileStatus](#filestatus)。
-
-## Errors
-
-我们定义了以下错误，方便错误发生时分辨。
-
-### FileErrors
-
-#### AbortError
-
-中断错误。
-
-* **name:** AbortError
-* **message:** (message)
-
-#### TimeoutError
-
-超时错误。
-
-* **name:** TimeoutError
-* **message:** (message)
-
-#### NetworkError
-
-网络错误。
-
-* **status:** http status
-* **name:** NetworkError
-* **message:** (message)
-
-### QueueErrors
-
-#### QueueLimitError
-
-队列限制错误。
-
-* **name:** QueueLimitError
-* **message:** queue limit
-
-#### FilterError
-
-过滤错误。
-
-* **file:** {[File](#file)}
-* **name:** FilterError
-* **message:** (message)
-
-#### DuplicateError
-
-文件重复错误，继承自[FilterError](#filtererror)。
-
-* **file:** {[File](#file)}
-* **name:** DuplicateError
-* **message:** (message)
-
-#### FileExtensionError
-
-文件扩展名错误，继承自[FilterError](#filtererror)。
-
-* **file:** {[File](#file)}
-* **name:** FileExtensionError
-* **message:** (message)
-
-#### FileSizeError
-
-文件大小错误，继承自[FilterError](#filtererror)。
-
-* **file:** {[File](#file)}
-* **name:** FileSizeError
-* **message:** (message)
-
-
 ## Collector
 
 ### PickerCollector
 
-创建一个`input[type=file]`或者flash拾取器，当浏览器支持`DataTransfer&FileList`特性时，会优先使用`input`，拾取器会覆盖在trigger上方，点击弹出系统对话框以选择文件。
+创建一个`input[type=file]`或者`flash`拾取器，当浏览器支持`DataTransfer&FileList`特性时，会优先使用`input`，拾取器会覆盖在触发区域上方，点击弹出系统对话框以选择文件。
 
-#### PickerCollector.setSWF({URL} swf)
+**初始化**
 
-设置全局swf地址。
-
-#### constructor({[Context](#contextoptions)} context, {URL} swf)
-
-构造函数。
-
-#### addArea({DOMElement} area)
-
-一个`Context`实例只需对应一个`PickerCollector`，我们可以通过此方法添加多个触发区域。
-
-```
-var picker = new PickerCollector(context);
-var area = picker.addArea(document.getElementById('#upload-button'));
+```js
+const picker = <Uploader>.getPickerCollector();
 ```
 
-返回的结果area是一个`Emitter`：
+在不支持Html5上传时，需要预先提供`flashpicker.swf`的url地址。
 
+```js
+Uploader.setSWF(url);
 ```
-area.on('rollOver', function () {
 
-}).on('rollOut', function () {
+**添加触发区域**
+
+```js
+const area = picker.addArea(document.getElementById('upload-button'));
+```
+
+我们再添加一个触发区域，或者更多。
+
+```js
+const area2 = picker.addArea(document.getElementById('upload-button2'));
+```
+
+返回的结果area是一个`Emitter`，在`flash`环境下会响应`鼠标悬停(rollOver)`、`鼠标移出(rollOut)`事件。
+
+```js
+area.on('rollOver', () => {
+
+}).on('rollOut', () => {
 
 });
-// 以上仅在flash下会触发
 ```
 
-当这个添加的area不需要时，可以销毁：
+当这个添加的area不需要时，可以销毁。
 
-```
+```js
 area.destroy()
 ```
 
@@ -990,28 +1073,22 @@ area.destroy()
 
 拖放上传支持。
 
-#### DndCollector.isSupport()
+**初始化**
 
-判断浏览器是否支持该拾取器。
-
-#### constructor({[Context](#contextoptions)} context)
-
-构造函数。
-
-#### addArea({DOMElement} area)
-
-实例方法，为`Context`添加一个拖放响应区域。
-
-```
-var dnd = DndCollector(context);
-
-var area = dnd.addArea(document.getElementById('#upload-responsearea'));
+```js
+const dnd = <Uploader>.getDndCollector();
 ```
 
-返回的结果area是一个`Emitter`：
+**添加响应区域**
 
+```js
+const area = dnd.addArea(document.getElementById('droparea'));
 ```
-area.on('start', function (e, allowed) {
+
+返回的结果area是一个`Emitter`，响应`开始拖拽(start)`, `响应拖拽(response)`, `拖拽结束(end)`事件。
+
+```js
+area.on('start', (e, allowed) =>{
 
 }).on('response', function (e, allowed) {
 
@@ -1020,9 +1097,9 @@ area.on('start', function (e, allowed) {
 });
 ```
 
-当这个添加的area不需要时，可以销毁：
+当这个添加的area不需要时，可以销毁。
 
-```
+```js
 area.destroy()
 ```
 
@@ -1030,97 +1107,30 @@ area.destroy()
 
 粘贴拾取器支持。
 
-#### PasteCollector.isSupport()
+**初始化**
 
-判断浏览器是否支持粘贴拾取器。
-
-#### constructor({[Context](#contextoptions)} context)
-
-构造函数。
-
-#### addArea({DOMElement} area)
-
-实例方法，为`Context`添加一个粘贴区域。
-
-```
-var paster = PasteCollector(context);
-
-var area = paster.addArea($('textarea')[0]);
+```js
+const paster = <Uploader>.getPasterCollector();
 ```
 
-返回的结果area是一个`Emitter`：
+**添加响应区域**
 
+```js
+const area = paster.addArea($('textarea')[0]);
 ```
-area.on('paste', function (clipboardData) {
+
+返回的结果area是一个`Emitter`，响应`粘贴(paste)`事件。
+
+```js
+area.on('paste', (clipboardData) => {
 
 });
 ```
 
-当这个添加的area不需要时，可以销毁：
+当这个添加的area不需要时，可以销毁。
 
-```
+```js
 area.destroy()
 ```
 
 
-## Examples
-
-```
-import $ from 'jquery';
-import {Context, FileAspects as Aspects, Events, FileStatus as Status, DndCollector, PasteCollector, PickerCollector} from 'uxcore-uploader/index';
-
-const context = new Context({
-    request: {
-        name: 'file',
-        url: 'http://localhost/upload.php',
-        params: {},
-        headers: null,
-        withCredentials: false,
-        timeout: 0
-    },
-    processThreads: 3,
-    autoPending: true,
-    queueCapcity: 0,
-    multiple: true,
-    accept: [{
-        title: 'Images',
-        extensions: 'gif,jpg,jpeg,bmp,png',
-        mimeTypes: 'image/*'
-    }],
-    sizeLimit: 0,
-    preventDuplicate: false
-});
-
-// 数据转换
-context.aspect(Aspects.CHUNK_COMPLETE).add((response) => {
-    let res = $.parseJSON(response.getRawResponse());
-    response.setResponse(res);
-});
-
-const queue = context.getQueue();
-// 监听
-queue.on(Events.QUEUE_ERROR, (error) => {
-    console.info(error)
-}).on(Events.QUEUE_ADD, (file) => {
-    file.on(Events.FILE_STATUS_CHANGE, (status) => {
-        console.info(status)
-    });
-    file.session().progress((progress) => {
-        console.info(progress);
-    }).fail((error) => {
-        throw error;
-    }).done((response) => {
-        console.info(response);
-    });
-});
-
-// 初始化拾取器
-const dnd = new DndCollector(context);
-
-dnd.addArea(document.documentElement);
-
-const picker = new PickerCollector(context, 'path/to/FlashPicker.swf');
-
-picker.addArea(document.getElementById('picker'));
-
-```

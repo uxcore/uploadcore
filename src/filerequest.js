@@ -1,5 +1,9 @@
 
 class ChunkResponse {
+    /**
+     * @param {string|null} rawResponse
+     * @param {ChunkRequest} chunkRequest
+     */
     constructor(rawResponse, chunkRequest) {
         this.rawResponse = rawResponse;
         this.chunkRequest = chunkRequest;
@@ -17,8 +21,18 @@ class ChunkResponse {
         return this.response || this.rawResponse;
     }
 
-    json() {
-        return this.rawResponse ? JSON.parse(this.rawResponse) : null;
+    getJson() {
+        const response = this.getResponse();
+        if (response == null) {
+            return null;
+        }
+        if (typeof response.getJson === 'function') {
+            return response.getJson();
+        }
+        if (typeof response === 'string') {
+            return response === '' ? null : JSON.parse(response);
+        }
+        return response;
     }
 
     setResponse(response) {
@@ -118,20 +132,16 @@ class ChunkRequest {
 
 class FileResponse {
     /**
-     * @param {string|ChunkResponse} rawResponse
+     * @param {ChunkResponse|Object|string} rawResponse
      * @param {FileRequest} fileRequest
      */
     constructor(rawResponse, fileRequest) {
         this.rawResponse = rawResponse;
-        if (rawResponse instanceof ChunkResponse) {
-            this.response = rawResponse.getResponse();
-            this.fromChunkResponse = true;
-        }
         this.fileRequest = fileRequest;
     }
 
     isFromMultiChunkResponse() {
-        if (this.fromChunkResponse) {
+        if (this.rawResponse instanceof ChunkResponse) {
             return this.rawResponse.getChunkRequest().isMultiChunk();
         }
         return false;
@@ -146,14 +156,28 @@ class FileResponse {
     }
 
     getResponse() {
-        return this.response == null ? this.rawResponse : this.response;
+        if (this.response != null) {
+            return this.response;
+        }
+        if (this.rawResponse instanceof ChunkResponse) {
+            return this.rawResponse.getResponse();
+        } else {
+            return this.rawResponse;
+        }
     }
 
-    json() {
-        if (!this.rawResponse) {
+    getJson() {
+        const response = this.getResponse();
+        if (response == null) {
             return null;
         }
-        return this.rawResponse.json ? this.rawResponse.json() : JSON.parse(this.rawResponse);
+        if (typeof response.getJson === 'function') {
+            return response.getJson();
+        }
+        if (typeof response === 'string') {
+            return response === '' ? null : JSON.parse(response);
+        }
+        return response;
     }
 
     setResponse(response) {

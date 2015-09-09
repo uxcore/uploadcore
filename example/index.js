@@ -28,7 +28,7 @@ const context = new Uploader({
 
 // 上传完成
 context.on(Events.FILE_UPLOAD_COMPLETING, response => {
-    let json = response.json();
+    let json = response.getJson();
     if (!json || json.code !== 0) {
         return new Error('error');
     }
@@ -45,7 +45,7 @@ context.on(Events.QUEUE_ADD, (file) => {
     }).fail((error) => {
         throw error
     }).done((response) => {
-        console.info(response.json())
+        console.info(response.getJson())
     });
 });
 

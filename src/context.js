@@ -162,7 +162,7 @@ export default class Context extends Emitter {
         return this.stat;
     }
 
-    setSWF(url) {
+    static setSWF(url) {
         PickerCollector.setSWF(url);
     }
 

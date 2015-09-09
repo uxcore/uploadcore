@@ -77,16 +77,16 @@ context.on(Events.FILE_UPLOAD_START, (file) => {
     console.info('fileuploadend', file);
 }).on(Events.FILE_UPLOAD_COMPLETING, (response) => {
     console.info('fileuploadcompleting', response);
-}).on(Events.FILE_UPLOAD_SUCCESS, (file) => {
-    console.info('fileuploadsuccess', file);
-}).on(Events.FILE_UPLOAD_ERROR, (file) => {
-    console.info('fileuploaderror', file);
-}).on(Events.FILE_UPLOAD_COMPLETED, (file) => {
-    console.info('fileuploadcompleted', file);
+}).on(Events.FILE_UPLOAD_SUCCESS, (file, response) => {
+    console.info('fileuploadsuccess', file, response);
+}).on(Events.FILE_UPLOAD_ERROR, (file, error) => {
+    console.info('fileuploaderror', file, error);
+}).on(Events.FILE_UPLOAD_COMPLETED, (file, status) => {
+    console.info('fileuploadcompleted', file, status);
 }).on(Events.FILE_CANCEL, (file) => {
     console.info('filecancel', file);
-}).on(Events.FILE_STATUS_CHANGE, (file) => {
-    console.info('filestatuschange', file, file.getStatusName());
+}).on(Events.FILE_STATUS_CHANGE, (file, status) => {
+    console.info('filestatuschange', file, status, file.getStatusName());
 });
 
 

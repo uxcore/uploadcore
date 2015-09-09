@@ -22,9 +22,9 @@ const up = new Uploader({
 });
 
 up.on(Events.FILE_UPLOAD_COMPLETED, (file) => {
-	if (file.getStatusName() === Status.SUCCESS) {
+	if (file.getStatus() === Status.SUCCESS) {
 		alert('上传成功');
-		console.info(file.response.json());
+		console.info(file.response.getJson());
 	} else {
 		alert('上传失败');
 	}
@@ -327,7 +327,7 @@ fn | `function` | 事件处理函数
 `CHUNK_UPLOAD_COMPLETING`|`Uploader` | `ChunkResponse` |  分块上传结束时
 `FILE_UPLOAD_COMPLETING`|`Uploader` | `FileResponse` |  文件上传结束时
 
-正在进行时事件可以理解为普通事件的增强版，支持Promise返回值，添加的事件严格按照顺序执行。
+正在进行时事件可以理解为普通事件的增强版，支持Promise返回值，注册的事件监听严格按照顺序执行。
 
 ```js
 up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
@@ -1032,7 +1032,7 @@ foo=bar&foo=bar1
 **初始化**
 
 ```js
-const picker = <Uploader>.getPickerCollector();
+const picker = up.getPickerCollector();
 ```
 
 在不支持Html5上传时，需要预先提供`flashpicker.swf`的url地址。
@@ -1076,7 +1076,7 @@ area.destroy()
 **初始化**
 
 ```js
-const dnd = <Uploader>.getDndCollector();
+const dnd = up.getDndCollector();
 ```
 
 **添加响应区域**
@@ -1110,7 +1110,7 @@ area.destroy()
 **初始化**
 
 ```js
-const paster = <Uploader>.getPasterCollector();
+const paster = up.getPasterCollector();
 ```
 
 **添加响应区域**

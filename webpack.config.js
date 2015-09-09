@@ -1,29 +1,29 @@
+var path = require("path");
 var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        uploader: './index.js'
+        'uploader': './index.js'
     },
     output: {
-        libraryTarget: "umd",
+        path: path.join(__dirname, "dist"),
+        libraryTarget: "var",
+        filename: "[name].js",
         library: "UXUploader",
-        filename: '[name].js',
-        sourceMapFilename: "[name].js.map"
+        sourceMapFilename: "[file].map"
     },
     devtool: '#source-map',
     module: {
-        loaders: {
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loaders: [
-                'babel-loader'
-            ]
-        }
+        loaders: [
+            {test: /\.js$/, loader: 'babel-loader'}
+        ]
     },
     externals: {
-        'jquery': 'jQuery',
-        'spark-md5': 'SparkMD5'
+        'jquery': 'var jQuery',
+        'spark-md5': 'var SparkMD5',
+        'uxuploader': 'var UXUploader'
     },
+    plugins:[],
     resolve: {
         extensions: ['', '.js']
     }

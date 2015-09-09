@@ -1,10 +1,12 @@
 {
+  "family": "alinw",
   "name": "uxcore-uploader",
-  "version": "1.0.6",
-  "description": "uxcore uploader core layer",
+  "version": "2.0.0",
+  "description": "uxcore uploader",
   "main": "dist/uploader.js",
   "scripts": {
-    "build": "npm install && gulp && gulp min"
+    "build": "gulp build && gulp spm2 & gulp flash",
+    "start": "gulp start"
   },
   "repository": {
     "type": "git",
@@ -22,16 +24,17 @@
     "babel-loader": "^5.0.0",
     "exports-loader": "^0.6.2",
     "gulp": "^3.8.11",
-    "gulp-concat": "~2.5.2",
-    "gulp-webpack": "~1.4.0",
+    "gulp-cmd-nice": "~0.3.25",
+    "gulp-sourcemaps": "~1.5.2",
+    "gulp-uglify": "^1.4.0",
+    "gulp-util": "^3.0.6",
+    "gulp-wrap": "~0.11.0",
     "jquery": "2.1.4",
-    "jsdom": "5.1.0",
-    "mocha": "^2.2.1",
-    "should": "^6.0.1",
+    "node-libs-browser": "^0.5.2",
     "webpack": "^1.8.4",
     "webpack-dev-middleware": "^1.0.11",
     "webpack-dev-server": "1.6.6",
-    "node-libs-browser": "^0.5.2"
+    "gulp-rename": "^1.2.2"
   },
   "dependencies": {
     "es6-promise": "^2.1.1",

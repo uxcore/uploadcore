@@ -435,6 +435,116 @@ CANCELLED | 128 | 上传取消 和 `QUEUED` 相反, 退出队列
 
 以下为更详细的抽象，均在运行时创建，不对外暴露。
 
+## Collector
+
+### PickerCollector
+
+创建一个`input[type=file]`或者`flash`拾取器，当浏览器支持`DataTransfer&FileList`特性时，会优先使用`input`，拾取器会覆盖在触发区域上方，点击弹出系统对话框以选择文件。
+
+**初始化**
+
+```js
+const picker = up.getPickerCollector();
+```
+
+在不支持Html5上传时，需要预先提供`flashpicker.swf`的url地址。
+
+```js
+Uploader.setSWF(url);
+```
+
+**添加触发区域**
+
+```js
+const area = picker.addArea(document.getElementById('upload-button'));
+```
+
+我们再添加一个触发区域，或者更多。
+
+```js
+const area2 = picker.addArea(document.getElementById('upload-button2'));
+```
+
+返回的结果area是一个`Emitter`，在`flash`环境下会响应`鼠标悬停(rollOver)`、`鼠标移出(rollOut)`事件。
+
+```js
+area.on('rollOver', () => {
+
+}).on('rollOut', () => {
+
+});
+```
+
+当这个添加的area不需要时，可以销毁。
+
+```js
+area.destroy()
+```
+
+### DndCollector
+
+拖放上传支持。
+
+**初始化**
+
+```js
+const dnd = up.getDndCollector();
+```
+
+**添加响应区域**
+
+```js
+const area = dnd.addArea(document.getElementById('droparea'));
+```
+
+返回的结果area是一个`Emitter`，响应`开始拖拽(start)`, `响应拖拽(response)`, `拖拽结束(end)`事件。
+
+```js
+area.on('start', (e, allowed) =>{
+
+}).on('response', function (e, allowed) {
+
+}).on('end', function (e) {
+
+});
+```
+
+当这个添加的area不需要时，可以销毁。
+
+```js
+area.destroy()
+```
+
+### PasteCollector
+
+粘贴拾取器支持。
+
+**初始化**
+
+```js
+const paster = up.getPasterCollector();
+```
+
+**添加响应区域**
+
+```js
+const area = paster.addArea($('textarea')[0]);
+```
+
+返回的结果area是一个`Emitter`，响应`粘贴(paste)`事件。
+
+```js
+area.on('paste', (clipboardData) => {
+
+});
+```
+
+当这个添加的area不需要时，可以销毁。
+
+```js
+area.destroy()
+```
+
 ## Stat 统计
 
 队列文件的统计。
@@ -1022,115 +1132,3 @@ params = [
 ```
 foo=bar&foo=bar1
 ```
-
-## Collector
-
-### PickerCollector
-
-创建一个`input[type=file]`或者`flash`拾取器，当浏览器支持`DataTransfer&FileList`特性时，会优先使用`input`，拾取器会覆盖在触发区域上方，点击弹出系统对话框以选择文件。
-
-**初始化**
-
-```js
-const picker = up.getPickerCollector();
-```
-
-在不支持Html5上传时，需要预先提供`flashpicker.swf`的url地址。
-
-```js
-Uploader.setSWF(url);
-```
-
-**添加触发区域**
-
-```js
-const area = picker.addArea(document.getElementById('upload-button'));
-```
-
-我们再添加一个触发区域，或者更多。
-
-```js
-const area2 = picker.addArea(document.getElementById('upload-button2'));
-```
-
-返回的结果area是一个`Emitter`，在`flash`环境下会响应`鼠标悬停(rollOver)`、`鼠标移出(rollOut)`事件。
-
-```js
-area.on('rollOver', () => {
-
-}).on('rollOut', () => {
-
-});
-```
-
-当这个添加的area不需要时，可以销毁。
-
-```js
-area.destroy()
-```
-
-### DndCollector
-
-拖放上传支持。
-
-**初始化**
-
-```js
-const dnd = up.getDndCollector();
-```
-
-**添加响应区域**
-
-```js
-const area = dnd.addArea(document.getElementById('droparea'));
-```
-
-返回的结果area是一个`Emitter`，响应`开始拖拽(start)`, `响应拖拽(response)`, `拖拽结束(end)`事件。
-
-```js
-area.on('start', (e, allowed) =>{
-
-}).on('response', function (e, allowed) {
-
-}).on('end', function (e) {
-
-});
-```
-
-当这个添加的area不需要时，可以销毁。
-
-```js
-area.destroy()
-```
-
-### PasteCollector
-
-粘贴拾取器支持。
-
-**初始化**
-
-```js
-const paster = up.getPasterCollector();
-```
-
-**添加响应区域**
-
-```js
-const area = paster.addArea($('textarea')[0]);
-```
-
-返回的结果area是一个`Emitter`，响应`粘贴(paste)`事件。
-
-```js
-area.on('paste', (clipboardData) => {
-
-});
-```
-
-当这个添加的area不需要时，可以销毁。
-
-```js
-area.destroy()
-```
-
-

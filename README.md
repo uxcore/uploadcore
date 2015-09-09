@@ -359,7 +359,7 @@ up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
 `FILE_STATUS_CHANGE` | `Uploader`, `File` | [`File`], `Status` | 文件状态发生变化
 
 
-## Errors
+## Errors 错误
 
 我们定义了以下错误，方便错误发生时分辨。
 
@@ -435,7 +435,7 @@ CANCELLED | 128 | 上传取消 和 `QUEUED` 相反, 退出队列
 
 以下为更详细的抽象，均在运行时创建，不对外暴露。
 
-## Collector
+## Collector 收集器
 
 ### PickerCollector
 
@@ -1132,3 +1132,5 @@ params = [
 ```
 foo=bar&foo=bar1
 ```
+
+

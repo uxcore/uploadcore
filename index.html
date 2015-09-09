@@ -124,6 +124,18 @@ up.on(Events.QUEUE_ERROR, (<span class="pl-smi">error</span>)<span class="pl-k">
     <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filestatuschange<span class="pl-pds">'</span></span>, file, file.getStatusName());
 });</pre></div>
 
+<p><strong>添加触发区域</strong></p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// 初始化拖拽上传控制</span>
+<span class="pl-k">const</span> <span class="pl-c1">dnd</span> <span class="pl-k">=</span> up.getDndCollector();
+<span class="pl-c">// 添加拖拽上传区域</span>
+dnd.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">documentElement</span>);
+
+<span class="pl-c">// 初始化拾取器</span>
+<span class="pl-k">const</span> <span class="pl-c1">picker</span> <span class="pl-k">=</span> up.getPickerCollector();
+<span class="pl-c">// 添加鼠标触发区域</span>
+picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>button<span class="pl-pds">'</span></span>));</pre></div>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/uxcore/uxcore-uploader">uxcore-uploader</a> is maintained by <a href="https://github.com/uxcore">uxcore</a>.</span>
 

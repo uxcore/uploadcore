@@ -49,6 +49,81 @@
     preventDuplicate<span class="pl-k">:</span> <span class="pl-c1">false</span>
 });</pre></div>
 
+<p><strong>事件监听</strong></p>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-c">// 队列错误</span>
+up.on(Events.QUEUE_ERROR, (<span class="pl-smi">error</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueerror<span class="pl-pds">'</span></span>, error)
+})
+<span class="pl-c">// 队列添加</span>
+.on(Events.QUEUE_ADD, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueadd<span class="pl-pds">'</span></span>, file)
+})
+<span class="pl-c">// 队列上传开始</span>
+.on(Events.QUEUE_UPLOAD_START, ()<span class="pl-k"> =&gt;</span> {
+   <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueuploadstart<span class="pl-pds">'</span></span>);
+})
+<span class="pl-c">// 队列上传结束</span>
+.on(Events.QUEUE_UPLOAD_END, ()<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueuploadend<span class="pl-pds">'</span></span>);
+})
+<span class="pl-c">// 队列统计变化</span>
+.on(Events.QUEUE_STAT_CHANGE, (<span class="pl-smi">stat</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>statchange<span class="pl-pds">'</span></span>, stat.stat());
+})
+<span class="pl-c">// 文件上传开始</span>
+.on(Events.FILE_UPLOAD_START, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadstart<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件上传准备中</span>
+.on(Events.FILE_UPLOAD_PREPARING, (<span class="pl-smi">request</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadpreparing<span class="pl-pds">'</span></span>, request);
+})
+<span class="pl-c">// 文件上传准备完毕</span>
+.on(Events.FILE_UPLOAD_PREPARED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadprepared<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件块上传准备中</span>
+.on(Events.CHUNK_UPLOAD_PREPARING, (<span class="pl-smi">request</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>chunkuploadpreparing<span class="pl-pds">'</span></span>, request);
+})
+<span class="pl-c">// 文件块上传完成中</span>
+.on(Events.CHUNK_UPLOAD_COMPLETING, (<span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>chunkuploadcompleting<span class="pl-pds">'</span></span>, response);
+})
+<span class="pl-c">// 文件上传进度</span>
+.on(Events.FILE_UPLOAD_PROGRESS, (<span class="pl-smi">file</span>, <span class="pl-smi">progress</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadprogress<span class="pl-pds">'</span></span>, file, progress);
+})
+<span class="pl-c">// 文件上传结束</span>
+.on(Events.FILE_UPLOAD_END, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadend<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件上传完成中</span>
+.on(Events.FILE_UPLOAD_COMPLETING, (<span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleting<span class="pl-pds">'</span></span>, response);
+})
+<span class="pl-c">// 文件上传成功</span>
+.on(Events.FILE_UPLOAD_SUCCESS, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadsuccess<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件上传错误</span>
+.on(Events.FILE_UPLOAD_ERROR, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploaderror<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件上传完成</span>
+.on(Events.FILE_UPLOAD_COMPLETED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleted<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件取消</span>
+.on(Events.FILE_CANCEL, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filecancel<span class="pl-pds">'</span></span>, file);
+})
+<span class="pl-c">// 文件状态变化</span>
+.on(Events.FILE_STATUS_CHANGE, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
+    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filestatuschange<span class="pl-pds">'</span></span>, file, file.getStatusName());
+});</pre></div>
+
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/uxcore/uxcore-uploader">uxcore-uploader</a> is maintained by <a href="https://github.com/uxcore">uxcore</a>.</span>
 

@@ -30,12 +30,17 @@ function guessType(ext) {
 
 export default class Progress {
     constructor(total, loaded) {
-        this.total = total;
-        this.loaded = loaded;
+        this.change(total, loaded);
     }
 
-    get percentage() {
-        return this.loaded === this.total ? 100 : Math.ceil(this.loaded / this.total * 100);
+    change(total, loaded) {
+        this.total = total;
+        this.loaded = loaded || 0;
+        this.percentage = this.loaded === this.total ? 100 : Math.ceil(this.loaded / this.total * 100)
+    }
+
+    done() {
+        this.change(this.total, this.total);
     }
 }
 
@@ -190,8 +195,7 @@ export default class File extends Emitter {
             this._flows.push(upload);
 
             upload.progress((e) => {
-                this.progress.total = e.total;
-                this.progress.loaded = e.loaded;
+                this.progress.change(e.total, e.loaded);
                 this._session.notify(this.progress);
             });
 
@@ -209,7 +213,7 @@ export default class File extends Emitter {
             flow.abort();
         }
 
-        this.progress.loaded = this.progress.total;
+        this.progress.done();
         this._session.notify(this.progress);
 
         response = this.request.createFileResponse(response);
@@ -226,8 +230,7 @@ export default class File extends Emitter {
 
     pending() {
         if (this.status === Status.ERROR || this.status === Status.QUEUED) {
-            this.progress.total = this.size;
-            this.progress.loaded = 0;
+            this.progress.change(this.size, 0);
             this.setStatus(Status.PENDING);
         }
     }

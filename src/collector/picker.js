@@ -18,16 +18,16 @@ class FlashTriggerCollection {
             height: 50,
             display: 'block',
             cursor: 'pointer',
-            background: '#fff',
+            background: 'black',
             overflow: 'hidden',
             zIndex: 99999
         });
         const runtime = new FlashRuntime(overlay, SWF_URL, () => {
-                return {
-                    accept: context.getAccept(),
-                    multiple: context.isMultiple()
-                };
-            });
+            return {
+                accept: context.getAccept(),
+                multiple: context.isMultiple()
+            };
+        });
 
         runtime.on('select', (e) => {
             onFiles(e.files, runtime);
@@ -60,8 +60,8 @@ class FlashTriggerCollection {
             overlay.css({
                 left: rect.left,
                 top: rect.top,
-                width: rect.width,
-                height: rect.height
+                width: rect.right - rect.left,
+                height: rect.bottom - rect.top
             });
             emitter.emit('rollOver');
             if (this.current && this.current !== emitter) {
@@ -149,8 +149,10 @@ export default class PickerCollector {
     constructor(context) {
 
         const onFiles = (files, runtime) => {
-            for (let i = 0, l = files.length; i < l && !context.isLimit(); i++) {
-                context.add(new File(runtime, files[i]));
+            for (let i = 0, l = files.length; i < l; i++) {
+                if (context.add(new File(runtime, files[i])) < 0) {
+                    break;
+                }
             }
         };
 

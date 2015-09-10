@@ -4,12 +4,14 @@ import Runtime from '../html5/runtime';
 import File from '../file';
 
 function createReader(collector) {
+    let _break = false;
     function reader(dataTransfer, responders) {
         var items = dataTransfer.items,
             files = dataTransfer.files,
             item;
 
         for (let i = 0, l = files.length; i < l; i++) {
+            if (_break) break;
             item = items && items[i];
 
             let entry = item && item.webkitGetAsEntry && item.webkitGetAsEntry();
@@ -17,16 +19,27 @@ function createReader(collector) {
             if (entry && entry.isDirectory) {
                 readEntry(entry, responders);
             } else {
-                collector(files[i], responders);
+                if (!collector(files[i], responders)) {
+                    _break = true;
+                    break;
+                }
             }
         }
     }
     function readEntry(entry, responders) {
+        if (_break) return;
         if (entry.isFile) {
-            entry.file((file) => collector(file, responders));
+            entry.file((file) => {
+                if (_break) return;
+                if (!collector(file, responders)) {
+                    _break = true;
+                }
+            });
         } else if (entry.isDirectory) {
             entry.createReader().readEntries((entries) => {
+                if (_break) return;
                 for (let i = 0, l = entries.length; i < l; i++) {
+                    if (_break) break;
                     readEntry(entries[i], responders);
                 }
             });
@@ -64,16 +77,30 @@ class Area extends Emitter {
 const Collectors = [];
 
 function prepare() {
+    if (!('DataTransfer' in window) || !('FileList' in window)) {
+        return;
+    }
+
     const $doc = $(document),
         runtime = Runtime.getInstance();
 
     let started = 0, enter = 0, endTimer;
     const dataTransferReader = createReader((file, responders) => {
         if (!responders || responders.length < 1) {
-            return;
+            return false;
         }
         file = new File(runtime, file);
-        responders.some((responder) => responder.recieve(file));
+        let total = responders.length;
+        return responders.some((responder) => {
+            const ret = responder.recieve(file);
+            if (ret > 0) {
+                return true;
+            }
+            if (ret < 0) {
+                total -= 1;
+            }
+            return false;
+        }) || total > 0;
     });
 
     const start = (e) => {
@@ -82,12 +109,12 @@ function prepare() {
     };
 
     const move = (e) => {
-        var allowed = Collectors.filter((responder) => responder.response(e));
+        const has = Collectors.filter(responder => responder.response(e)).length > 0;
 
-        var dataTransfer = (e.originalEvent || e).dataTransfer;
+        const dataTransfer = (e.originalEvent || e).dataTransfer;
 
         if (dataTransfer) {
-            dataTransfer.dropEffect = allowed.length ? 'copy' : 'none';
+            dataTransfer.dropEffect = has ? 'copy' : 'none';
         }
         e.preventDefault();
     };
@@ -137,9 +164,6 @@ function prepare() {
 }
 
 export default class DndCollector {
-    static isSupport() {
-        return ('DataTransfer' in window) && ('FileList' in window);
-    }
 
     constructor(context) {
         if (Collectors.length < 1) {
@@ -170,18 +194,20 @@ export default class DndCollector {
     }
 
     start(e) {
-        const allowed = !this.context.isLimit();
-        this.areas.forEach((area) => area.start(e, allowed));
+        this.areas.forEach((area) => area.start(e));
     }
 
     response(e) {
-        const allowed = !this.context.isLimit(),
-            res = this.areas.map((area) => area.response(e, allowed));
-        return allowed && res.some((r) => !!r);
+        return this.areas.map((area) => area.response(e)).some(r => r !== false);
     }
 
     recieve(file) {
-        return this.context.add(file);
+        const ret = this.context.add(file);
+        if (ret > 0 && !this.context.isMultiple()) {
+            return -1;
+        } else {
+            return ret;
+        }
     }
 
     end(e) {

@@ -4,10 +4,6 @@ import Runtime from '../html5/runtime';
 import File from '../file';
 
 export default class PasteCollector {
-    static isSupport() {
-        return ('DataTransfer' in window) && ('FileList' in window);
-    }
-
     constructor(context) {
         this.context = context;
         this.runtime = Runtime.getInstance();
@@ -25,27 +21,30 @@ export default class PasteCollector {
                 return;
             }
 
-            const clipboardData = (e.originalEvent || e).clipboardData,
+            const clipboardData = (e.originalEvent || e).clipboardData || window.clipboardData,
                 items = clipboardData.items,
                 files = clipboardData.files;
 
-            try {
-                if ((!items && !files) || clipboardData.getData('text/html')) {
-                    return;
-                }
-            } catch (ex) {}
+            if (!files) {
+                try {
+                    if (!items || clipboardData.getData('text/html')) {
+                        return;
+                    }
+                } catch (ex) {}
+            }
 
-            let prevent, i, l, file, item;
+            let prevent, i, l, file, item, addRet;
 
             if (files && files.length) {
                 // safari has files
                 prevent = files.length > 0;
-                for (i = 0, l = files.length; i < l && !context.isLimit(); i++) {
+                for (i = 0, l = files.length; i < l; i++) {
                     file = new File(runtime, files[i]);
 
                     prevent = 1;
 
-                    if (context.add(file) && !context.isMultiple()) {
+                    addRet = context.add(file);
+                    if (addRet < 0 || (addRet > 0 && !context.isMultiple())) {
                         break;
                     }
                 }
@@ -64,7 +63,8 @@ export default class PasteCollector {
 
                     prevent = 1;
 
-                    if (context.add(file) && !context.isMultiple()) {
+                    addRet = context.add(file);
+                    if (addRet < 0 || (addRet > 0 && !context.isMultiple())) {
                         break;
                     }
                 }
@@ -77,7 +77,9 @@ export default class PasteCollector {
             }
         };
 
-        area.on('paste', paste);
+        if (('DataTransfer' in window) && ('FileList' in window)) {
+            area.on('paste', paste);
+        }
 
         emitter.destroy = () => {
             emitter.removeAllListeners();

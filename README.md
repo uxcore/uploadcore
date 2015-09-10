@@ -1,16 +1,16 @@
-# Uxcore-Uploader
+# UX Core Uploader
 
-特性：
+**特性一览**
 
-1. md5（用于秒传）
-2. 分片上传
-3. html5-runtime，flash-runtime
-4. 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
-5. 基于es6，jquery
+* md5（用于秒传）
+* 分片上传
+* html5-runtime，flash-runtime
+* 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
+* 基于es6，jquery
 
 ------
 
-## 最佳实践
+## Usage 最佳实践
 
 ```js
 import Uploader, {Events, Status} from 'uxuploader';
@@ -34,6 +34,64 @@ const picker = up.getPickerCollector();
 picker.addArea(document.getElementById('clickarea'));
 ```
 
+如果你要在seajs中使用*（for alinw）*，我们需要先配置一下seajs环境
+
+```html
+<script src="https://alinw.alipayobjects.com/seajs/seajs/2.1.1/sea.js"></script>
+<script>
+seajs.config({
+    alias: {
+        "jquery" : "jquery/jquery/1.11.1/jquery",
+        "es5shim": "alinw/es5-shim/1.0.2/es5-shim",
+        "es5sham": "alinw/es5-sham/1.0.1/es5-sham",
+        "spark-md5": "alinw/spark-md5/1.0.0/spark-md5",
+        "uxuploader": "alinw/uxuploader/2.0.0/uploader"
+    },
+    preload: ["jquery", "es5shim", "es5sham"],
+    paths: {
+        "jquery": "https://alinw.alipayobjects.com/jquery",
+        "alinw": "https://alinw.alicdn.com/alinw"
+    },
+    comboSyntax: ["??", ","],
+    comboMaxLength: 2000
+});
+seajs.use('main')
+</script>    
+```
+
+之后就可以在`main.js`中直接`require('uxuploader')`
+
+```js
+define(function (require) {
+    var Uploader = require('uxuploader');
+    
+    // coding
+});
+```
+
+## Compatible 兼容处理
+
+完全的功能仅在最新的Chrome浏览器中支持，对于不支持的浏览器，在保证上传功能可用的情况下，采用不支持或降低处理。
+
+**特性支持一览**
+
+Feature  | Chrome | Firefox | Safari | Edage | IE11 | IE10 | IE9-
+-------- | ------ | ------- | ------ | ----- | ---- | ---- | ----
+基本上传  | html5  |  html5  | html5  | html5 | html5 | html5 | flash
+粘贴上传  | `复制文件`,`复制网页图像`,`截图` | `不支持` | `不支持` | `待测试` | `待测试` | `不支持` | `不支持`
+拖拽上传  | `目录`,`文件` | `文件` | `文件` | `待测试` | `待测试` | `待测试` | `不支持`
+秒传     | `支持` | `支持` | `支持` | `支持` | `支持` | `支持` | `不支持`
+分片上传  | `支持` | `支持` | `支持` | `支持` | `支持` | `支持` | `不支持`
+
+如果要保证能在所有浏览器中运行，我们需要引入[es5-shim](http://github.com/es-shims/es5-shim/)相关ployfill脚本。
+
+```html
+<script src="/path/to/es-shim.min.js"></script>
+<script src="/path/to/es-sham.min.js"></script>
+```
+
+
+
 ## Options 配置
 
 ```js
@@ -51,7 +109,7 @@ options = {
         withCredentials: false,
         // 上传超时
         timeout: 0,
-        // 文件分片大小, 单位b，0不分片
+        // 文件分片大小, 默认单位b，0不分片
         chunkSize: 0,
         // 文件分片上传重试次数
         chunkRetries: 0,
@@ -106,7 +164,22 @@ headers = [
 
 **options.request.chunkSize**
 
-文件分片大小，单位byte，默认0，小于256K时，不可分片。
+文件分片大小，默认单位byte，默认0，小于256K时，不可分片。
+
+允许`b,k,m,g,t`为单位（大小写不敏感）结尾的`string`或者`int`。
+
+```js
+size = 1; // 1字节
+size = '1b'; // 1字节
+size = '1k'; // 1千字节 = 1024b
+size = '1m'; // 1兆字节 = 1024k
+size = '1g'; // 1吉字节 = 1024m
+size = '1t'; // 1太字节 = 1024g
+```
+
+**options.sizeLimit**
+
+文件大小限制，默认单位byte，默认0，表示不限制，格式同`options.request.chunkSize`。
 
 **options.accept**
 
@@ -117,7 +190,7 @@ headers = [
 accept = [
     {
         title: 'Images',
-        extension: 'jpg,jpeg,png,gif,bmp',
+        extensions: 'jpg,jpeg,png,gif,bmp',
         mimeTypes: 'image/*'
     }
 ];
@@ -144,7 +217,7 @@ accept = [
 accept = [
     {
         title: 'JPG',
-        extension: 'jpg,jpeg',
+        extensions: 'jpg,jpeg',
         mimeTypes: 'image/jpeg'
     }
 ];
@@ -154,29 +227,29 @@ mimetypes相关文档[MIME](http://webdesign.about.com/od/multimedia/a/mime-type
 
 ## APIs 接口
 
-### Uploader.addLimit
+### Uploader.addConstraint
 
-添加限制函数。
+添加约束。
 
 参数 | 类型 | 描述
 --- |----- | ------
-limit | `Function` | 约束函数
+constraint | `function` | 约束函数
 
-limit函数如下：
+constraint函数如下：
 
 ```js
-limit = function () {
+constraint = function () {
     return true;
 }
 ```
 
-limit函数返回true时表示受到限制，否则不，函数闭包中this指向当前`{Uploader}`。
+constraint函数返回true时表示受到限制，否则不，函数闭包中this指向当前`Uploader`。
 
 ### Uploader.isLimit
 
-运行通过`Uploader.addLimit`添加的约束，判断是否已经限制添加更多的文件。
+运行通过`Uploader.addConstraint`添加的约束，判断是否限制了添加更多的文件。
 
-**返回** `bool`，`true`表示限制添加。
+**返回** `bool`，`true`表示受到约束。
 
 ### Uploader.addFilter
 
@@ -184,7 +257,7 @@ limit函数返回true时表示受到限制，否则不，函数闭包中this指�
 
 参数 | 类型 | 描述
 --- |----- | ------
-filter | `Function` | 过滤函数
+filter | `function` | 过滤函数
 
 filter函数如下：
 
@@ -213,40 +286,6 @@ return new Error('some error');
 ```
 throw new Error('some error');
 ```
-
-### Uploader.isAllow
-
-运行通过`Uploader.addFilter`添加的过滤，判断是否仍然允许此文件。
-
-参数 | 类型 | 描述
---- |----- | ------
-file | `File` | 文件对象
-
-**返回** `bool`，`true`表示允许。
-
-### Uploader.add
-
-添加一个文件。
-
-参数 | 类型 | 描述
---- |----- | ------
-file | `File` | 文件对象
-
-### Uploader.setAutoPending
-
-设置自动上传，文件添加后，自动设为`Status.PENDING`状态，等待上传。
-
-参数 | 类型 | 描述
---- |----- | ------
-flag | `bool` | 开关
-
-### Uploader.setMultiple
-
-设置是否多选。
-
-参数 | 类型 | 描述
---- |----- | ------
-flag | `bool` | 开关
 
 ### Uploader.isMultiple
 
@@ -314,9 +353,10 @@ fn | `function` | 事件处理函数
 --- | --- | --- | ---
 `QUEUE_UPLOAD_START` | `Uploader` | 无 | 队列上传开始
 `QUEUE_UPLOAD_END` | `Uploader` | 无 | 队列上传结束
-`QUEUE_ADD` | `Uploader` | `File` | 队列添加了一个文件
+`QUEUE_FILE_ADDED` | `Uploader` | `File` | 队列添加了一个文件
+`QUEUE_FILE_FILTERED` | `Uploader` | `File`, `Error` | 队列过滤了一个文件
 `QUEUE_ERROR` | `Uploader` | `Error` | 队列错误
-`QUEUE_STAT_CHANGE` | `Uploader` | `Stat` | 统计发生变化
+`QUEUE_STAT_CHANGE` | `Uploader` | `Stat` | 文件统计发生变化
 
 **正在进行时事件**
 
@@ -363,56 +403,35 @@ up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
 
 我们定义了以下错误，方便错误发生时分辨。
 
-**AbortError 中断错误**
-
-* **name:** AbortError
-* **message:** (message)
-
-**TimeoutError 超时错误**
-
-* **name:** TimeoutError
-* **message:** (message)
-
-**NetworkError 网络错误**
-
-* **status:** http status
-* **name:** NetworkError
-* **message:** (message)
-
-**QueueLimitError 队列限制错误**
-
-* **name:** QueueLimitError
-* **message:** queue limit
-
-**FilterError 过滤错误**
-
-* **file:** `File`
-* **name:** FilterError
-* **message:** (message)
-
-**DuplicateError 文件重复错误**
-
-继承自`FilterError`。
-
-* **file:** `File`
-* **name:** DuplicateError
-* **message:** (message)
-
-**FileExtensionError 文件扩展名错误**
-
-继承自`FilterError`。
-
-* **file:** `File`
-* **name:** FileExtensionError
-* **message:** (message)
-
-**FileSizeError 文件大小错误**
-
-继承自`FilterError`。
-
-* **file:** `File`
-* **name:** FileSizeError
-* **message:** (message)
+* `AbortError` 中断错误
+  - *name:* AbortError
+  - *message:* (message)
+* `TimeoutError` 超时错误
+  - *name:* TimeoutError
+  - *message:* (message)
+* `NetworkError` 网络错误
+  - *status:* http status
+  - *name:* NetworkError
+  - *message:* (message)
+* `QueueLimitError` 队列限制错误
+  - *name:* QueueLimitError
+  - *message:* queue limit
+* `FilterError` 过滤错误
+  - *file:* `File`
+  - *name:* FilterError
+  - *message:* (message)
+* `DuplicateError` 文件重复错误，继承自`FilterError`
+  - *file:* `File`
+  - *name:* DuplicateError
+  - *message:* (message)
+* `FileExtensionError` 文件扩展名错误，继承自`FilterError`
+  - *file:* `File`
+  - *name:* FileExtensionError
+  - *message:* (message)
+* `FileSizeError` 文件大小错误，继承自`FilterError`
+  - *file:* `File`
+  - *name:* FileSizeError
+  - *message:* (message)
 
 ## Status 状态
 
@@ -431,7 +450,7 @@ SUCCESS | 32 | 上传成功
 ERROR | 64 | 上传出错
 CANCELLED | 128 | 上传取消 和 `QUEUED` 相反, 退出队列
 
--------
+-----------------------------
 
 以下为更详细的抽象，均在运行时创建，不对外暴露。
 
@@ -500,11 +519,12 @@ const area = dnd.addArea(document.getElementById('droparea'));
 返回的结果area是一个`Emitter`，响应`开始拖拽(start)`, `响应拖拽(response)`, `拖拽结束(end)`事件。
 
 ```js
-area.on('start', (e, allowed) =>{
+area.on('start', (e) => {
 
-}).on('response', function (e, allowed) {
-
-}).on('end', function (e) {
+}).on('response', (e) => {
+   // 返回false值表示：拖拽的项目没有匹配或者未拖进响应区域
+   return false;
+}).on('end', (e) => {
 
 });
 ```
@@ -850,7 +870,7 @@ timeout | `int` | 超时时间，单位ms
 
 参数 | 类型 | 描述
 --- |----- | ------
-size | `int` | 分片大小，单位byte
+size | `string` or `int` | 分片大小，单位byte，格式见`options.request.chunkSize`
 
 ### FileRequest.getChunkSize
 

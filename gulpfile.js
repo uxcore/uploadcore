@@ -26,7 +26,7 @@ var webpackConfig = require("./webpack.config");
 
 var packageJson = require("./package.json");
 
-var publicPath = 'http://localhost:8080/assets';
+var publicPath = '/assets';
 
 var spm2Path = path.normalize(path.join(__dirname, 'spm2'));
 
@@ -35,7 +35,7 @@ var transportConfig = {
     useCache: false,
     rootPath: spm2Path,
     idRule: function (name) {
-        return packageJson.family + "/" + packageJson.name + "/" + packageJson.version + "/" + name;
+        return packageJson.family + "/uxuploader/" + packageJson.version + "/" + name;
     }
 };
 
@@ -60,11 +60,11 @@ gulp.task("webpack-dev-server", function (callback) {
             colors: true,
             progress: true
         }
-    }).listen(8080, "localhost", function (err) {
+    }).listen(8080, "0.0.0.0", function (err) {
         if (err) {
             throw new gutil.PluginError("webpack-dev-server", err);
         }
-        gutil.log("[webpack-dev-server]", "http://localhost:8080/example/index.html");
+        gutil.log("webpack-dev-server at 8080");
     });
 });
 
@@ -96,6 +96,7 @@ gulp.task('spm2', function (callback) {
     var myConfig = Object.create(webpackConfig);
 
     myConfig.output.path = spm2Path;
+    myConfig.output.filename = "[name].spm2.js";
     myConfig.devtool = '';
 
     webpack(myConfig, function (err, stats) {
@@ -108,8 +109,10 @@ gulp.task('spm2', function (callback) {
         }));
 
         setTimeout(function () {
-            gulp.src(['spm2/uploader.js'])
+            gulp.src(['spm2/uploader.spm2.js'])
                 .pipe(wrap({src:'./src/spm2.tpl'}))
+                .pipe(gulp.dest('./spm2'))
+                .pipe(rename('uploader.js'))
                 .pipe(cmdNice.cmdTransport(transportConfig))
                 .pipe(sourcemaps.init())
                 .pipe(uglify({

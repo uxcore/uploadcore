@@ -33,12 +33,13 @@
     "webpack": "^1.8.4",
     "webpack-dev-middleware": "^1.0.11",
     "webpack-dev-server": "^1.6.6",
-    "gulp-rename": "^1.2.2"
+    "gulp-rename": "^1.2.2",
+    "es5-shim": "^4.1.13"
   },
   "dependencies": {
     "es6-promise": "^2.1.1",
     "object-assign": "^2.0.0",
-    "jquery": "^2.1.4",
+    "jquery": "^1.11.3",
     "spark-md5": "^1.0.0"
   },
   "author": "onbing",

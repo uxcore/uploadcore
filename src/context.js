@@ -1,11 +1,45 @@
 import Emitter from './emitter';
 import Events from './events';
 import Status from './status';
-import {QueueLimitError, DuplicateError, FileExtensionError, FileSizeError} from './errors';
+import {QueueLimitError, FilterError, DuplicateError, FileExtensionError, FileSizeError} from './errors';
 import FileRequest from './filerequest';
 import DndCollector from './collector/dnd';
 import PasteCollector from './collector/paste';
 import PickerCollector from './collector/picker';
+
+function formatSize(size) {
+    size = parseFloat(size);
+    const prefixesSI = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+        base = 1024;
+    let index = size ? Math.floor(Math.log(size) / Math.log(base)) : 0;
+    index = Math.min(index, prefixesSI.length - 1);
+    let powedPrecision = Math.pow(10, index < 2 ? 0 : (index > 2 ? 2 : 1));
+    size = size / Math.pow(base, index);
+    size = Math.round(size * powedPrecision) / powedPrecision;
+    return size + prefixesSI[index] + 'B';
+}
+
+function parseSize(size) {
+    if (typeof size !== 'string') {
+        return size;
+    }
+
+    const units = {
+        t: 1099511627776,
+        g: 1073741824,
+        m: 1048576,
+        k: 1024
+    };
+
+    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
+    const u = size[2];
+    size = +size[1];
+
+    if (units.hasOwnProperty(u)) {
+        size *= units[u];
+    }
+    return size;
+}
 
 export default class Context extends Emitter {
 
@@ -15,15 +49,15 @@ export default class Context extends Emitter {
         let {processThreads, autoPending, queueCapcity, accept, sizeLimit, preventDuplicate, multiple} = options;
 
         this.stat = new Stat;
-        this.limiter = new Limiter;
-        this.filter = new Filter;
+        this.constraints = new Constraints;
+        this.filters = new Filters;
         this.accept = accept;
         this.autoPending = autoPending;
         this.multiple = multiple == null ? true : multiple;
         this.pending = new Pending(processThreads);
 
         if (queueCapcity && queueCapcity > 0) {
-            this.addLimit(() => this.stat.getTotal() >= queueCapcity);
+            this.addConstraint(() => this.stat.getTotal() >= queueCapcity);
         }
 
         if (accept && accept.length > 0) {
@@ -31,29 +65,27 @@ export default class Context extends Emitter {
                 if (!accept) {
                     return;
                 }
-                let allowed = accept.some((item) => {
+                if (accept.some((item) => {
                     return item.extensions && item.extensions.split(',').indexOf(file.ext) > -1
-                });
-                if (allowed) {
+                })) {
                     return;
                 }
-                return new FileExtensionError(file, file.ext + ' is not allowed.');
+                return new FileExtensionError(file, 'extension "' + file.ext + '" is not allowed');
             });
         }
 
-        if (sizeLimit && sizeLimit > 0) {
+        if (sizeLimit && (sizeLimit = parseSize(sizeLimit)) > 0) {
             this.addFilter((file) => {
                 if (file.size > sizeLimit) {
-                    return new FileSizeError(file, file.size + ' is greater than limit:' + sizeLimit);
+                    return new FileSizeError(file, 'filesize:' + formatSize(file.size) + ' is greater than limit:' + formatSize(sizeLimit));
                 }
             });
         }
 
         if (preventDuplicate) {
             this.addFilter((file) => {
-                let has = this.stat.getFiles().some((item) => item.name === file.name && item.size === file.size);
-                if (has) {
-                    return new DuplicateError(file, file.name + ' already in queue');
+                if (this.stat.getFiles().some((item) => item.name === file.name && item.size === file.size)) {
+                    return new DuplicateError(file, 'file "' + file.name + '" already in queue');
                 }
             });
         }
@@ -66,38 +98,34 @@ export default class Context extends Emitter {
     }
 
     isLimit() {
-        return this.limiter.isLimit();
+        return this.constraints.some();
     }
 
-    addLimit(limit) {
-        return this.limiter.add(limit);
+    addConstraint(constraint) {
+        return this.constraints.add(constraint);
     }
 
     addFilter(filter) {
-        return this.filter.add(filter);
-    }
-
-    isAllow(file) {
-        return this.filter.filter(file);
+        return this.filters.add(filter);
     }
 
     add(file) {
         if (this.isLimit()) {
             this.emit(Events.QUEUE_ERROR, new QueueLimitError);
-            return false;
+            return -1;
         }
 
-        if (!this.isAllow(file)) {
-            this.emit(Events.QUEUE_ERROR, this.filter.getError());
-            return false;
+        let error = this.filters.filter(file);
+        if (!error && !this.stat.add(file)) {
+            error = new DuplicateError(file, 'file "' + file.name + '" already in queue');
         }
 
-        if (!this.stat.add(file)) {
-            this.emit(Events.QUEUE_ERROR, new DuplicateError(file, file.name + ' already in queue'));
-            return false;
+        if (error) {
+            this.emit(Events.QUEUE_FILE_FILTERED, file, error);
+            this.emit(Events.QUEUE_ERROR, error);
+            return 0;
         }
 
-        file.setContext(this);
         file.setStatus(Status.QUEUED);
 
         file.on(Events.FILE_STATUS_CHANGE, (status) => {
@@ -118,7 +146,9 @@ export default class Context extends Emitter {
             }
         });
 
-        this.emit(Events.QUEUE_ADD, file);
+        file.setContext(this);
+
+        this.emit(Events.QUEUE_FILE_ADDED, file);
 
         this.emit(Events.QUEUE_STAT_CHANGE, this.stat);
 
@@ -126,28 +156,7 @@ export default class Context extends Emitter {
             file.pending();
         }
 
-        return true;
-    }
-
-    /**
-     * 设置自动上传
-     *
-     * @param {Boolean} flag
-     */
-    setAutoPending(flag) {
-        this.autoPending = flag;
-        if (this.autoPending) {
-            this.stat.getFiles(Status.QUEUED).forEach((file) => file.pending());
-        }
-    }
-
-    /**
-     * 设置是否多选上传
-     *
-     * @param {Boolean} flag
-     */
-    setMultiple(flag) {
-        this.multiple = flag;
+        return 1;
     }
 
     isMultiple() {
@@ -199,7 +208,7 @@ class Set {
      *
      * @returns {Number}
      */
-    get size() {
+    size() {
         return this._set.length;
     }
 
@@ -287,7 +296,7 @@ class Stat {
         this.files.remove(file);
     }
     getTotal() {
-        return this.files.size;
+        return this.files.size();
     }
     getFiles(flag) {
         var files = this.files.toArray();
@@ -312,27 +321,27 @@ class Stat {
     }
 }
 
-class Limiter {
+class Constraints {
     constructor() {
-        this.limits = new Set;
+        this.constraints = new Set;
     }
 
-    add(limit) {
-        this.limits.add(limit);
+    add(constraint) {
+        this.constraints.add(constraint);
         return this;
     }
 
-    remove(limit) {
-        this.limits.remove(limit);
+    remove(constraint) {
+        this.constraints.remove(constraint);
         return this;
     }
 
-    isLimit() {
-        return this.limits.toArray().some((fn) => fn.call(this));
+    some() {
+        return this.constraints.toArray().some((fn) => fn.call(this));
     }
 }
 
-class Filter {
+class Filters {
     constructor() {
         this.filters = new Set;
     }
@@ -348,8 +357,8 @@ class Filter {
     }
 
     filter(file) {
-        this.error = null;
-        return this.filters.toArray().every((filter) => {
+        let error = null;
+        this.filters.toArray().every((filter) => {
             let ret;
             try {
                 ret = filter(file);
@@ -357,18 +366,15 @@ class Filter {
                 ret = e;
             }
             if (typeof ret === 'string') {
-                this.error = new FilterError(file, ret);
+                error = new FilterError(file, ret);
                 return false;
             } else if (ret instanceof Error) {
-                this.error = ret instanceof FilterError ? ret : new FilterError(file, ret.toString());
+                error = ret instanceof FilterError ? ret : new FilterError(file, ret.toString());
                 return false;
             }
             return true;
         });
-    }
-
-    getError() {
-        return this.error;
+        return error;
     }
 }
 
@@ -390,7 +396,7 @@ class Pending {
     }
 
     size() {
-        return this.pending.size + this.heading.size;
+        return this.pending.size() + this.heading.size();
     }
 
     process(file) {
@@ -404,7 +410,7 @@ class Pending {
 
     load () {
         var file;
-        while (this.heading.size < this.threads && (file = this.pending.shift())) {
+        while (this.heading.size() < this.threads && (file = this.pending.shift())) {
             if (file.prepare()) {
                 this.process(file);
             }

@@ -1,7 +1,8 @@
 export default {
     QUEUE_UPLOAD_START: 'queueuploadstart', // 队列上传开始
     QUEUE_UPLOAD_END: 'queueuploadend', // 队列上传结束
-    QUEUE_ADD: 'queueadd', // 队列添加了一个文件
+    QUEUE_FILE_ADDED: 'queuefileadded', // 队列添加了一个文件
+    QUEUE_FILE_FILTERED: 'queuefilefiltered', // 队列过滤了一个文件
     QUEUE_ERROR: 'queueerror', // 队列错误
     QUEUE_STAT_CHANGE: 'statchange', // 统计发生变化
 

@@ -5,11 +5,25 @@
     <title>Uploader used in spm2</title>
     <link rel="icon" href="https://aliwork.alicdn.com/tps/i3/TB1H68pGFXXXXX9XXXXFArBHXXX-48-48.ico" type="image/x-icon" />
 
+    <style>
+        #button {
+            background: pink;
+            border: 1px solid black;
+            height: 50px;
+            width: 100px;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            text-align: center;
+            line-height: 50px;
+        }
+    </style>
+
     <script charset="utf-8" type="text/javascript" src="https://alinw.alipayobjects.com/??seajs/seajs/2.1.1/sea.js,seajs/seajs-style/1.0.2/seajs-style.js,seajs/seajs-log/1.0.0/seajs-log.js,seajs/seajs-debug/1.0.0/seajs-debug.js"></script>
 </head>
 <body>
-
-
+<div id="button">上传</div>
+<textarea id="pastearea"></textarea>
 <script type="text/javascript">
     var config = {
         base: "/",
@@ -18,7 +32,7 @@
             "es5shim": "alinw/es5-shim/1.0.2/es5-shim",
             "es5sham": "alinw/es5-sham/1.0.1/es5-sham",
             "spark-md5": "alinw/spark-md5/1.0.0/spark-md5",
-            "uxuploader": "spm2/uploader"
+            "uxuploader": "spm2/uploader.spm2.js"
         },
         preload: ["jquery", "es5shim", "es5sham"],
         paths: {},
@@ -33,9 +47,7 @@
 
     seajs.config(config);
 
-    seajs.use('example/spm2', function (spm2) {
-        spm2();
-    });
+    seajs.use('example/spm2');
 </script>
 </body>
 </html>

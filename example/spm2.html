@@ -1,10 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title></title>
+    <meta charset="UTF-8" />
+    <title>Uploader used in spm2</title>
+    <link rel="icon" href="https://aliwork.alicdn.com/tps/i3/TB1H68pGFXXXXX9XXXXFArBHXXX-48-48.ico" type="image/x-icon" />
+
+    <script charset="utf-8" type="text/javascript" src="https://alinw.alipayobjects.com/??seajs/seajs/2.1.1/sea.js,seajs/seajs-style/1.0.2/seajs-style.js,seajs/seajs-log/1.0.0/seajs-log.js,seajs/seajs-debug/1.0.0/seajs-debug.js"></script>
 </head>
 <body>
 
+
+<script type="text/javascript">
+    var config = {
+        base: "/",
+        alias: {
+            "jquery" : "jquery/jquery/1.11.1/jquery",
+            "es5shim": "alinw/es5-shim/1.0.2/es5-shim",
+            "es5sham": "alinw/es5-sham/1.0.1/es5-sham",
+            "spark-md5": "alinw/spark-md5/1.0.0/spark-md5",
+            "uxuploader": "spm2/uploader"
+        },
+        preload: ["jquery", "es5shim", "es5sham"],
+        paths: {},
+        comboSyntax: ["??", ","],
+        comboMaxLength: 2000
+    };
+
+    config.paths = {
+        "jquery": "https://alinw.alipayobjects.com/jquery",
+        "alinw": "https://alinw.alicdn.com/alinw"
+    };
+
+    seajs.config(config);
+
+    seajs.use('example/spm2', function (spm2) {
+        spm2();
+    });
+</script>
 </body>
 </html>

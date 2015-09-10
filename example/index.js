@@ -1,11 +1,13 @@
 import $ from 'jquery';
-import Uploader, {Events, Status} from 'uxuploader';
+import {Uploader, Events, Status} from 'uxuploader';
 
 /*
  1. 点击触发上传、拖动上传、粘贴上传多个文件到服务器；
  2. 每个文件上传之前需要获得token，token有失效期；
  3. 上传完成返回的数据需要转换，根据code判断是否成功与否。
  */
+
+Uploader.setSWF('/src/flash/bin-debug/FlashPicker.swf');
 
 const context = new Uploader({
     request: {
@@ -21,8 +23,14 @@ const context = new Uploader({
     autoPending: true,
     queueCapcity: 0,
     multiple: true,
-    accept: null,
-    sizeLimit: 0,
+    accept: [
+        {
+            title: 'Images',
+            extensions: 'jpg,jpeg,png,gif,bmp',
+            mimeTypes: 'image/*'
+        }
+    ],
+    sizeLimit: '1m',
     preventDuplicate: false
 });
 
@@ -35,15 +43,18 @@ context.on(Events.FILE_UPLOAD_COMPLETING, response => {
 });
 
 // 队列错误
-context.on(Events.QUEUE_ERROR, error => console.info('queueerror', error));
+context.on(Events.QUEUE_ERROR, (error) => console.info('queueerror', error));
 
-// 队列添加
-context.on(Events.QUEUE_ADD, (file) => {
-    console.info('add file', file);
+// 队列过滤了一个文件
+context.on(Events.QUEUE_FILE_FILTERED, (file, error) => console.info('queuefilefiltered', file, error));
+
+// 队列添加了一个文件
+context.on(Events.QUEUE_FILE_ADDED, (file) => {
+    console.info('queuefileadded', file);
     file.session().progress((e) => {
         console.info('progress', e);
     }).fail((error) => {
-        throw error
+        console.info(error)
     }).done((response) => {
         console.info(response.getJson())
     });
@@ -97,3 +108,7 @@ dnd.addArea(document.documentElement);
 const picker = context.getPickerCollector();
 
 picker.addArea(document.getElementById('button'));
+
+const paster = context.getPasteCollector();
+
+paster.addArea(document.getElementById('pastearea'));

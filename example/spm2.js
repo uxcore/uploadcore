@@ -1,3 +1,7 @@
-/**
- * Created by kangwei on 15/9/10.
- */
+define(function (require) {
+    var Uploader = require('spm2/uploader');
+
+    return function () {
+        console.info(Uploader);
+    };
+});

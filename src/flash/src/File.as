@@ -13,6 +13,7 @@ import flash.events.IOErrorEvent;
 import flash.events.ProgressEvent;
 import flash.events.SecurityErrorEvent;
 import flash.events.TimerEvent;
+import flash.external.ExternalInterface;
 import flash.net.FileReference;
 import flash.net.URLRequest;
 import flash.net.URLRequestHeader;
@@ -113,15 +114,12 @@ public class File extends EventDispatcher {
         _file.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
     }
 
-    public function send(url:String, variables:String, name:String, headers:Array = null):void {
-        var request:URLRequest = new URLRequest(url);
-		/*
-		headers.forEach(function (head:Object):void {
-			request.requestHeaders.push(new URLRequestHeader(head.name, head.value));
-		});
-		*/
-        request.method = URLRequestMethod.POST;
-        request.data = new URLVariables(variables);
+    public function send(url:String, variables:String, name:String):void {
+		var request:URLRequest = new URLRequest(url);
+		request.method = URLRequestMethod.POST;
+		if (variables) {
+        	request.data = new URLVariables(variables);
+		}
         _file.addEventListener(ProgressEvent.PROGRESS, onProgress);
         _file.addEventListener(Event.COMPLETE, onCompleteTimer);
         _file.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, onComplete);

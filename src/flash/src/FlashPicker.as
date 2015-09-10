@@ -104,8 +104,6 @@ public class FlashPicker extends Sprite {
     private function onClick(e:MouseEvent):void {
 		var options:Object = ExternalInterface.call(_callInterface + '.getOptions') || {};
 		
-		log(options);
-		
 		var accept:Array = options.accept, filters:Array = [];
 		
 		if (accept) {
@@ -170,7 +168,7 @@ public class FlashPicker extends Sprite {
             return;
         }
         var file:File = _files[id];
-        file.addEventListener(UploadEvent.UPLOAD_START, onUploadStart);
+		file.addEventListener(UploadEvent.UPLOAD_START, onUploadStart);
         file.addEventListener(UploadEvent.UPLOAD_PROGRESS, onUploadProgress);
         file.addEventListener(UploadEvent.UPLOAD_COMPLETE, onUploadComplete);
         file.addEventListener(UploadEvent.UPLOAD_ERROR, onUploadError);

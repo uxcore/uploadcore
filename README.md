@@ -1,5 +1,7 @@
 # UX Core Uploader
 
+[![Join the chat at https://gitter.im/uxcore/uxcore-uploader](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/uxcore/uxcore-uploader?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 **特性一览**
 
 * md5（用于秒传）

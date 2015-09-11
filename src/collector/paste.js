@@ -25,12 +25,8 @@ export default class PasteCollector {
                 items = clipboardData.items,
                 files = clipboardData.files;
 
-            if (!files) {
-                try {
-                    if (!items || clipboardData.getData('text/html')) {
-                        return;
-                    }
-                } catch (ex) {}
+            if (!files && !items) {
+                return;
             }
 
             let prevent, i, l, file, item, addRet;

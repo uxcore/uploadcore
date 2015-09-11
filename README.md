@@ -1,5 +1,8 @@
-# UX Core Uploader
+# Uxcore Uploader
 
+[![npm package](https://img.shields.io/npm/v/uxcore-uploader.svg?style=flat-square)](https://www.npmjs.org/package/uxcore-uploader)
+
+------
 **特性一览**
 
 * md5（用于秒传）
@@ -8,7 +11,7 @@
 * 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
 * 基于es6，jquery
 
-------
+
 
 ## Usage 最佳实践
 
@@ -78,8 +81,10 @@ define(function (require) {
 Feature  | Chrome | Firefox | Safari | Edage | IE11 | IE10 | IE9-
 -------- | ------ | ------- | ------ | ----- | ---- | ---- | ----
 基本上传  | html5  |  html5  | html5  | html5 | html5 | html5 | flash
-粘贴上传  | `复制文件`,`复制网页图像`,`截图` | `不支持` | `不支持` | `待测试` | `待测试` | `不支持` | `不支持`
-拖拽上传  | `目录`,`文件` | `文件` | `文件` | `待测试` | `待测试` | `待测试` | `不支持`
+复制系统文件上传 | `支持` | `不支持` | `有问题` | `不支持` | `不支持` | `不支持` | `不支持`
+复制网页图像上传 | `支持` | `不支持` | `不支持` | `支持` | `不支持` | `不支持` | `不支持`
+截图上传 | `支持` | `不支持` | `不支持` | `支持` | `部分支持` | `不支持` | `不支持`
+拖拽上传  | `目录和文件` | `文件` | `文件` | `不支持` | `文件` | `文件` | `不支持`
 秒传     | `支持` | `支持` | `支持` | `支持` | `支持` | `支持` | `不支持`
 分片上传  | `支持` | `支持` | `支持` | `支持` | `支持` | `支持` | `不支持`
 

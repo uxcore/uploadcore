@@ -1,4 +1,5 @@
 var path = require("path");
+var fs = require("fs");
 
 // https://github.com/gulpjs/gulp/tree/master/docs
 // https://github.com/gulpjs/gulp/blob/master/docs/API.md
@@ -20,7 +21,9 @@ var cmdNice = require("gulp-cmd-nice");
 // https://www.npmjs.com/package/gulp-wrap/
 var wrap = require('gulp-wrap');
 
-var WebpackDevServer = require("webpack-dev-server");
+// http://browsersync.io/
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
 
 var webpackConfig = require("./webpack.config");
 
@@ -39,16 +42,52 @@ var transportConfig = {
     }
 };
 
-gulp.task("default", ["webpack-dev-server"]);
-gulp.task("watch", ["webpack-dev-server"]);
-gulp.task("start", ["webpack-dev-server"]);
-gulp.task("server", ["webpack-dev-server"]);
+gulp.task("default", ["server"]);
+gulp.task("watch", ["server"]);
+gulp.task("start", ["server"]);
+gulp.task("server", ["demo"], function (callback) {
+    browserSync({
+        server: {
+            baseDir: './',
+            middleware: function (req, res, next) {
+                if (req.url !== '/') return next();
+
+                res.setHeader("Content-Type", "text/html");
+                res.write('<!DOCTYPE html><html><head><meta charset="utf-8"/>');
+                res.write('<title>DEMOs</title>');
+                res.write('</head><body>');
+                function writeDirectory(baseUrl, basePath) {
+                    var content = fs.readdirSync(basePath);
+                    res.write("<ul>");
+                    content.forEach(function(item) {
+                        var p = basePath + "/" + item;
+                        if(fs.statSync(p).isFile() && /\.html$/.test(item)) {
+                            res.write('<li><a href="');
+                            res.write(baseUrl + '/' + item);
+                            res.write('">');
+                            res.write(item);
+                            res.write('</a></li>');
+                        }
+                    });
+                    res.write("</ul>");
+                }
+                writeDirectory("/demo", './demo');
+                res.end('</body></html>');
+            }
+        },
+        open: 'external'
+    });
+
+    gulp.watch(['src/**/*.js', 'demo/**/*.js'], ['reload_demo']);
+
+    callback();
+});
 
 gulp.task("webpack-dev-server", function (callback) {
     // modify some webpack config options
     var config = Object.create(webpackConfig);
     config.debug = true;
-    config.entry.example = './example/index.js';
+    config.entry.demo = './demo/index.js';
     config.output.publicPath = publicPath;
 
     // Start a webpack-dev-server
@@ -66,6 +105,32 @@ gulp.task("webpack-dev-server", function (callback) {
         }
         gutil.log("webpack-dev-server at 8080");
     });
+});
+
+gulp.task("demo", function (callback) {
+    // modify some webpack config options
+    var config = Object.create(webpackConfig);
+    config.debug = true;
+    config.entry.demo = './demo/index.js';
+
+    config.output.path = path.join(__dirname, "cache");
+
+    webpack(config, function (err, stats) {
+        if (err) {
+            throw new gutil.PluginError("webpack", err);
+        }
+
+        gulp.src(['cache/uploader.js'])
+            .pipe(wrap({src:'./src/spm2.tpl'}))
+            .pipe(rename('uploader.spm2.js'))
+            .pipe(gulp.dest('./cache'));
+
+        callback();
+    });
+});
+
+gulp.task('reload_demo', ['demo'], function () {
+    reload();
 });
 
 gulp.task("build", function (callback) {

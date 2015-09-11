@@ -7,7 +7,7 @@ import {Uploader, Events, Status} from 'uxuploader';
  3. 上传完成返回的数据需要转换，根据code判断是否成功与否。
  */
 
-Uploader.setSWF('/src/flash/bin-debug/FlashPicker.swf');
+Uploader.setSWF('/dist/flashpicker.swf');
 
 const context = new Uploader({
     request: {

@@ -18,14 +18,8 @@ define(function (require) {
         autoPending: true,
         queueCapcity: 0,
         multiple: true,
-        accept: [
-            {
-                title: 'Images',
-                extensions: 'jpg,jpeg,png,gif,bmp',
-                mimeTypes: 'image/*'
-            }
-        ],
-        sizeLimit: '1m',
+        accept: null,
+        sizeLimit: '1g',
         preventDuplicate: false
     });
 

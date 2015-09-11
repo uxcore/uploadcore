@@ -1,12 +1,13 @@
 {
   "family": "alinw",
   "name": "uxcore-uploader",
-  "version": "2.0.0",
+  "version": "2.0.0-beta",
   "description": "uxcore uploader",
   "main": "dist/uploader.js",
   "scripts": {
     "build": "gulp build && gulp spm2 && gulp flash",
-    "start": "npm install && gulp start"
+    "start": "npm install && gulp start",
+    "dev": "npm install && gulp start"
   },
   "repository": {
     "type": "git",
@@ -29,24 +30,20 @@
     "gulp-uglify": "^1.4.0",
     "gulp-util": "^3.0.6",
     "gulp-wrap": "~0.11.0",
+    "gulp-rename": "^1.2.2",
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.8.4",
-    "webpack-dev-middleware": "^1.0.11",
-    "webpack-dev-server": "^1.6.6",
-    "gulp-rename": "^1.2.2",
-    "es5-shim": "^4.1.13"
+    "es5-shim": "^4.1.13",
+    "browser-sync": "^2.9.3",
+    "es6-promise": "^2.1.1",
+    "object-assign": "^2.0.0"
   },
   "dependencies": {
-    "es6-promise": "^2.1.1",
-    "object-assign": "^2.0.0",
     "jquery": "^1.11.3",
     "spark-md5": "^1.0.0"
   },
   "author": "onbing",
   "contributors": [],
   "license": "MIT",
-  "homepage": "https://github.com/uxcore/uxcore-uploader",
-  "directories": {
-    "example": "example"
-  }
+  "homepage": "https://github.com/uxcore/uxcore-uploader"
 }

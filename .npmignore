@@ -1,5 +1,5 @@
 spm2/
-example/
+demo/
 node_modules/
 *.iml
 .idea/
@@ -15,3 +15,4 @@ Thumbs.db
 .*proj
 .svn/
 *.swp
+cache

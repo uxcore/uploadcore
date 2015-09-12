@@ -188,47 +188,62 @@ size = '1t'; // 1太字节 = 1024g
 
 **options.accept**
 
-允许文件格式，赋值方式如下：
+允许文件格式，推荐方式赋值方式如下：
 
 ```js
-// 图像文件
-accept = [
-    {
-        title: 'Images',
-        extensions: 'jpg,jpeg,png,gif,bmp',
-        mimeTypes: 'image/*'
-    }
-];
-
-// 音频文件
-accept = [
-    {
-        title: 'Audios',
-        extensions: 'mp3,mp4,ogg,flac,wav,midi',
-        mimeTypes: 'audio/*'
-    }
-];
-
-// 视频文件
-accept = [
-    {
-        title: 'Videos',
-        extensions: 'mp4,mpeg,mov,flv,wmv,avi,mkv,ogv',
-        mimeTypes: 'audio/*'
-    }
-];
-
-// JPG文件
-accept = [
-    {
-        title: 'JPG',
-        extensions: 'jpg,jpeg',
-        mimeTypes: 'image/jpeg'
-    }
-];
+accept = {
+	title: '图片',
+	extensions: 'jpg,jpeg,png,gif,webp,bmp'
+};
 ```
 
-mimetypes相关文档[MIME](http://webdesign.about.com/od/multimedia/a/mime-types-by-content-type.htm)
+如果你觉的有必要，也可以设置一下[mimeTypes](http://www.iana.org/assignments/media-types/media-types.xhtml)
+
+```js
+accept = {
+	title: '图片',
+	extensions: 'jpg,jpeg,png,gif,webp,bmp',
+	mimeTypes: 'image/*' // or 'image/jpeg,image/png'
+};
+```
+> mimetypes设置后在不同浏览器中会表现不一致，谨慎使用
+
+如果觉得不需要那么麻烦，accept也可以更简单
+
+```
+accept = 'jpg,jpeg,png,gif,webp,bmp';
+```
+
+甚至可以
+
+```
+accept = 'images';
+accept = 'audios';
+accept = 'videos';
+
+accept = ['images', 'videos'];
+```
+
+`images`,`audios`,`videos`为内置类型，定义如下：
+
+```js
+images = {
+    title: 'Images',
+    extensions: 'jpg,jpeg,gif,png,bmp,svg,tiff,tif,ico,jpe,svgz,pct,psp,ai,psd,raw,webp'
+};
+
+audios = {
+    title: 'Audios',
+    extensions: 'aac,aif,flac,iff,m4a,m4b,mid,midi,mp3,mpa,mpc,oga,ogg,ra,ram,snd,wav,wma'
+};
+
+videos = {
+    title: 'Videos',
+    extensions: 'avi,divx,flv,m4v,mkv,mov,mp4,mpeg,mpg,ogm,ogv,ogx,rm,rmvb,smil,webm,wmv,xvid'
+};
+```
+
+
 
 ## APIs 接口
 

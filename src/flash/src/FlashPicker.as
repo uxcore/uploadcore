@@ -41,7 +41,7 @@ public class FlashPicker extends Sprite {
     }
 
     private function init():void {
-        removeEventListener(Event.ADDED_TO_STAGE, init);
+		removeEventListener(Event.ADDED_TO_STAGE, init);
 
         Security.allowDomain('*');
         Security.allowInsecureDomain('*');
@@ -51,7 +51,7 @@ public class FlashPicker extends Sprite {
 
         var menu:ContextMenu = new ContextMenu();
         menu.hideBuiltInItems();
-        menu.customItems.push(new ContextMenuItem('FlashPicker 1.0.2 @kangwei'));
+        menu.customItems.push(new ContextMenuItem('FlashPicker 2.0.0 @kangwei'));
         this.contextMenu = menu;
 
         var params:Object = stage.loaderInfo.parameters;
@@ -72,20 +72,20 @@ public class FlashPicker extends Sprite {
         try {
             ExternalInterface.addCallback('exec', exec);
         } catch (e:Error) {
-            return;
+			return;
         }
         ExternalInterface.call(_callInterface + '.ping');
     }
 
     private function pang():void {
-        _setupTimer.stop();
+		_setupTimer.stop();
         _setupTimer.removeEventListener(TimerEvent.TIMER, ping);
         _setupTimer = null;
         setup();
     }
 
     private function setup():void {
-        var button:Sprite = new Sprite;
+		var button:Sprite = new Sprite;
         button.graphics.beginFill(0, 0);
         button.graphics.drawRect(0, 0, Math.max(stage.stageWidth, 20), Math.max(stage.stageHeight, 20));
         button.graphics.endFill();
@@ -98,23 +98,24 @@ public class FlashPicker extends Sprite {
         addEventListener(MouseEvent.ROLL_OVER, onRoll);
         addEventListener(MouseEvent.ROLL_OUT, onRoll);
 
-        emit(new PickerEvent(PickerEvent.READY));
+		emit(new PickerEvent(PickerEvent.READY));
     }
 
     private function onClick(e:MouseEvent):void {
 		var options:Object = ExternalInterface.call(_callInterface + '.getOptions') || {};
-		
-		var accept:Array = options.accept, filters:Array = [];
-		
+
+		log(options);
+        var accept:Array = options.accept, filters:Array = [];
+
 		if (accept) {
 			for (var i:int = 0; i < accept.length; i++) {
 				filters.push(new FileFilter(
-					options.accept[i].title,
-					'*.' + accept[i].extensions.replace(/,/g, ";*.")
+					accept[i].title || accept[i].extensions.join(','),
+					'*.' + accept[i].extensions.join(';*.')
 				));
 			}
 		}
-		
+
 		_picker = options.multiple ? new FileReferenceList : new FileReference;
         _picker.addEventListener(Event.CANCEL, onCancel);
         _picker.addEventListener(Event.SELECT, onSelect);
@@ -183,12 +184,12 @@ public class FlashPicker extends Sprite {
         file.abort();
 		return file;
     }
-	
+
 	private function cancel(id:String):void {
 		this.abort(id);
 		removeUpload(this.abort(id));
 	}
-	
+
     private function onUploadStart(event:UploadEvent):void {
         var file:File = event.target as File;
         emit(PickerEvent.fromEvent(event));

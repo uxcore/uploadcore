@@ -55,8 +55,8 @@ class FlashTriggerCollection {
     add(trigger) {
         const overlay = this.overlay, emitter = new Emitter;
         trigger = trigger.on ? trigger : $(trigger);
-        trigger.on('mouseover.flashpicker', function () {
-            let rect = this.getBoundingClientRect();
+        trigger.on('mouseover.flashpicker', (e) => {
+            let rect = e.currentTarget.getBoundingClientRect();
             overlay.css({
                 left: rect.left,
                 top: rect.top,
@@ -97,8 +97,8 @@ class Html5TriggerCollection {
 
             let accept = context.getAccept();
             if (accept && accept.length > 0) {
-                accept = accept.map(function (item) {
-                    return item.mimeTypes;
+                accept = accept.map((item) => {
+                    return item.mimeTypes || ('.' + item.extensions.join(',.'));
                 });
 
                 input.attr('accept', accept.join(','));

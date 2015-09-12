@@ -1,3 +1,4 @@
+import {parseSize} from './util';
 
 class ChunkResponse {
     /**
@@ -245,28 +246,6 @@ class Params {
 
 const MIN_CHUNK_SIZE = 256 * 1024; // 256K
 
-function parseSize(size) {
-    if (typeof size !== 'string') {
-        return size;
-    }
-
-    const units = {
-        t: 1099511627776,
-        g: 1073741824,
-        m: 1048576,
-        k: 1024
-    };
-
-    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
-    size = +size[1];
-    let u = size[2];
-
-    if (units.hasOwnProperty(u)) {
-        size *= units[u];
-    }
-    return size;
-}
-
 export default class FileRequest {
     constructor(file, options = {}) {
         this.file = file;
@@ -281,7 +260,7 @@ export default class FileRequest {
         this.chunkEnable = options.chunkEnable || false;
         this.chunkProcessThreads = options.chunkProcessThreads || 0;
     }
-    
+
     getFile() {
         return this.file;
     }

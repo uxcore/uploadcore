@@ -23,14 +23,8 @@ const context = new Uploader({
     autoPending: true,
     queueCapcity: 0,
     multiple: true,
-    accept: [
-        {
-            title: 'Images',
-            extensions: 'jpg,jpeg,png,gif,bmp',
-            mimeTypes: 'image/*'
-        }
-    ],
-    sizeLimit: '1m',
+    accept: 'images',
+    sizeLimit: '1g',
     preventDuplicate: false
 });
 

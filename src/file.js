@@ -8,7 +8,7 @@ function guid() {
     return 'FILE-' + (uid++).toString(16).toUpperCase();
 }
 
-const RE_EXT = /\.([^.]+)$/, RE_IMAGE = /\/(jpg|jpeg|png|gif|bmp)$/i;
+const RE_EXT = /\.([^.]+)$/, RE_IMAGE = /\/(jpg|jpeg|png|gif|bmp|webp)$/i;
 function guessExt(blob) {
     let m = blob.name && RE_EXT.exec(blob.name);
     if (m) {
@@ -22,7 +22,7 @@ function guessExt(blob) {
 }
 
 function guessType(ext) {
-    if (['jpg','jpeg','png','gif','bmp'].indexOf(ext.toLowerCase())) {
+    if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext.toLowerCase())) {
         return 'image/' + (ext === 'jpg' ? 'jpeg' : ext);
     }
     return null;

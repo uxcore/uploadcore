@@ -18,7 +18,7 @@ define(function (require) {
         autoPending: true,
         queueCapcity: 0,
         multiple: true,
-        accept: null,
+        accept: 'images',
         sizeLimit: '1g',
         preventDuplicate: false
     });

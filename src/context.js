@@ -2,44 +2,11 @@ import Emitter from './emitter';
 import Events from './events';
 import Status from './status';
 import {QueueLimitError, FilterError, DuplicateError, FileExtensionError, FileSizeError} from './errors';
+import {formatSize, parseSize, normalizeAccept} from './util';
 import FileRequest from './filerequest';
 import DndCollector from './collector/dnd';
 import PasteCollector from './collector/paste';
 import PickerCollector from './collector/picker';
-
-function formatSize(size) {
-    size = parseFloat(size);
-    const prefixesSI = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
-        base = 1024;
-    let index = size ? Math.floor(Math.log(size) / Math.log(base)) : 0;
-    index = Math.min(index, prefixesSI.length - 1);
-    let powedPrecision = Math.pow(10, index < 2 ? 0 : (index > 2 ? 2 : 1));
-    size = size / Math.pow(base, index);
-    size = Math.round(size * powedPrecision) / powedPrecision;
-    return size + prefixesSI[index] + 'B';
-}
-
-function parseSize(size) {
-    if (typeof size !== 'string') {
-        return size;
-    }
-
-    const units = {
-        t: 1099511627776,
-        g: 1073741824,
-        m: 1048576,
-        k: 1024
-    };
-
-    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
-    const u = size[2];
-    size = +size[1];
-
-    if (units.hasOwnProperty(u)) {
-        size *= units[u];
-    }
-    return size;
-}
 
 export default class Context extends Emitter {
 
@@ -51,7 +18,7 @@ export default class Context extends Emitter {
         this.stat = new Stat;
         this.constraints = new Constraints;
         this.filters = new Filters;
-        this.accept = accept;
+        this.accept = normalizeAccept(accept);
         this.autoPending = autoPending;
         this.multiple = multiple == null ? true : multiple;
         this.pending = new Pending(processThreads);
@@ -60,17 +27,14 @@ export default class Context extends Emitter {
             this.addConstraint(() => this.stat.getTotal() >= queueCapcity);
         }
 
-        if (accept && accept.length > 0) {
+        if (this.accept && this.accept.length > 0) {
             this.addFilter((file) => {
-                if (!accept) {
-                    return;
+                if (!this.accept.some((item) => {
+                    return item.extensions && item.extensions.indexOf(file.ext) > -1
+                }))
+                {
+                    return new FileExtensionError(file, 'extension "' + file.ext + '" is not allowed');
                 }
-                if (accept.some((item) => {
-                    return item.extensions && item.extensions.split(',').indexOf(file.ext) > -1
-                })) {
-                    return;
-                }
-                return new FileExtensionError(file, 'extension "' + file.ext + '" is not allowed');
             });
         }
 

@@ -161,7 +161,7 @@ gulp.task('spm2', function (callback) {
     var myConfig = Object.create(webpackConfig);
 
     myConfig.output.path = spm2Path;
-    myConfig.output.filename = "[name].spm2.js";
+    myConfig.output.filename = "[name].src.js";
     myConfig.devtool = '';
 
     webpack(myConfig, function (err, stats) {
@@ -174,7 +174,7 @@ gulp.task('spm2', function (callback) {
         }));
 
         setTimeout(function () {
-            gulp.src(['spm2/uploader.spm2.js'])
+            gulp.src(['spm2/uploader.src.js'])
                 .pipe(wrap({src:'./src/spm2.tpl'}))
                 .pipe(gulp.dest('./spm2'))
                 .pipe(rename('uploader.js'))

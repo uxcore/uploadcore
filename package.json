@@ -1,7 +1,7 @@
 {
   "family": "alinw",
   "name": "uxcore-uploader",
-  "version": "2.0.0-beta",
+  "version": "2.0.0-beta.1",
   "description": "uxcore uploader",
   "main": "dist/uploader.js",
   "scripts": {

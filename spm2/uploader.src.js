@@ -108,55 +108,23 @@ define(function (require, exports, module) {
 
 	var _errors = __webpack_require__(6);
 
-	var _filerequest = __webpack_require__(7);
+	var _util = __webpack_require__(7);
+
+	var _filerequest = __webpack_require__(8);
 
 	var _filerequest2 = _interopRequireDefault(_filerequest);
 
-	var _collectorDnd = __webpack_require__(8);
+	var _collectorDnd = __webpack_require__(9);
 
 	var _collectorDnd2 = _interopRequireDefault(_collectorDnd);
 
-	var _collectorPaste = __webpack_require__(13);
+	var _collectorPaste = __webpack_require__(14);
 
 	var _collectorPaste2 = _interopRequireDefault(_collectorPaste);
 
-	var _collectorPicker = __webpack_require__(14);
+	var _collectorPicker = __webpack_require__(15);
 
 	var _collectorPicker2 = _interopRequireDefault(_collectorPicker);
-
-	function formatSize(size) {
-	    size = parseFloat(size);
-	    var prefixesSI = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
-	        base = 1024;
-	    var index = size ? Math.floor(Math.log(size) / Math.log(base)) : 0;
-	    index = Math.min(index, prefixesSI.length - 1);
-	    var powedPrecision = Math.pow(10, index < 2 ? 0 : index > 2 ? 2 : 1);
-	    size = size / Math.pow(base, index);
-	    size = Math.round(size * powedPrecision) / powedPrecision;
-	    return size + prefixesSI[index] + 'B';
-	}
-
-	function parseSize(size) {
-	    if (typeof size !== 'string') {
-	        return size;
-	    }
-
-	    var units = {
-	        t: 1099511627776,
-	        g: 1073741824,
-	        m: 1048576,
-	        k: 1024
-	    };
-
-	    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
-	    var u = size[2];
-	    size = +size[1];
-
-	    if (units.hasOwnProperty(u)) {
-	        size *= units[u];
-	    }
-	    return size;
-	}
 
 	var Context = (function (_Emitter) {
 	    _inherits(Context, _Emitter);
@@ -179,7 +147,7 @@ define(function (require, exports, module) {
 	        this.stat = new Stat();
 	        this.constraints = new Constraints();
 	        this.filters = new Filters();
-	        this.accept = accept;
+	        this.accept = (0, _util.normalizeAccept)(accept);
 	        this.autoPending = autoPending;
 	        this.multiple = multiple == null ? true : multiple;
 	        this.pending = new Pending(processThreads);
@@ -190,24 +158,20 @@ define(function (require, exports, module) {
 	            });
 	        }
 
-	        if (accept && accept.length > 0) {
+	        if (this.accept && this.accept.length > 0) {
 	            this.addFilter(function (file) {
-	                if (!accept) {
-	                    return;
-	                }
-	                if (accept.some(function (item) {
-	                    return item.extensions && item.extensions.split(',').indexOf(file.ext) > -1;
+	                if (!_this.accept.some(function (item) {
+	                    return item.extensions && item.extensions.indexOf(file.ext) > -1;
 	                })) {
-	                    return;
+	                    return new _errors.FileExtensionError(file, 'extension "' + file.ext + '" is not allowed');
 	                }
-	                return new _errors.FileExtensionError(file, 'extension "' + file.ext + '" is not allowed');
 	            });
 	        }
 
-	        if (sizeLimit && (sizeLimit = parseSize(sizeLimit)) > 0) {
+	        if (sizeLimit && (sizeLimit = (0, _util.parseSize)(sizeLimit)) > 0) {
 	            this.addFilter(function (file) {
 	                if (file.size > sizeLimit) {
-	                    return new _errors.FileSizeError(file, 'filesize:' + formatSize(file.size) + ' is greater than limit:' + formatSize(sizeLimit));
+	                    return new _errors.FileSizeError(file, 'filesize:' + (0, _util.formatSize)(file.size) + ' is greater than limit:' + (0, _util.formatSize)(sizeLimit));
 	                }
 	            });
 	        }
@@ -1107,10 +1071,113 @@ define(function (require, exports, module) {
 	Object.defineProperty(exports, '__esModule', {
 	    value: true
 	});
+	exports.formatSize = formatSize;
+	exports.parseSize = parseSize;
+	exports.normalizeAccept = normalizeAccept;
+
+	function formatSize(size) {
+	    size = parseFloat(size);
+	    var prefixesSI = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+	        base = 1024;
+	    var index = size ? Math.floor(Math.log(size) / Math.log(base)) : 0;
+	    index = Math.min(index, prefixesSI.length - 1);
+	    var powedPrecision = Math.pow(10, index < 2 ? 0 : index > 2 ? 2 : 1);
+	    size = size / Math.pow(base, index);
+	    size = Math.round(size * powedPrecision) / powedPrecision;
+	    return size + prefixesSI[index] + 'B';
+	}
+
+	function parseSize(size) {
+	    if (typeof size !== 'string') {
+	        return size;
+	    }
+
+	    var units = {
+	        t: 1099511627776,
+	        g: 1073741824,
+	        m: 1048576,
+	        k: 1024
+	    };
+
+	    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
+	    var u = size[2];
+	    size = +size[1];
+
+	    if (units.hasOwnProperty(u)) {
+	        size *= units[u];
+	    }
+	    return size;
+	}
+
+	var ACCEPTs = {
+	    images: {
+	        title: 'Images',
+	        extensions: ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'tiff', 'tif', 'ico', 'jpe', 'svgz', 'pct', 'psp', 'ai', 'psd', 'raw', 'webp']
+	    },
+
+	    audios: {
+	        title: 'Audios',
+	        extensions: ['aac', 'aif', 'flac', 'iff', 'm4a', 'm4b', 'mid', 'midi', 'mp3', 'mpa', 'mpc', 'oga', 'ogg', 'ra', 'ram', 'snd', 'wav', 'wma']
+	    },
+
+	    videos: {
+	        title: 'Videos',
+	        extensions: ['avi', 'divx', 'flv', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogm', 'ogv', 'ogx', 'rm', 'rmvb', 'smil', 'webm', 'wmv', 'xvid']
+	    }
+	};
+
+	function normalizeExtensions(extensions) {
+	    if (typeof extensions !== 'string') {
+	        return '';
+	    }
+
+	    return extensions.toLowerCase().split(/ *[ ,;|+] */).map(function (ext) {
+	        var m = /^\*?\.?(\w+)$/.exec(ext);
+	        return m ? m[1] : null;
+	    }).filter(function (ext) {
+	        return ext !== null;
+	    });
+	}
+
+	function normalizeAccept(accepts) {
+	    if (!accepts) return null;
+
+	    if (!Array.isArray(accepts)) {
+	        accepts = [accepts];
+	    }
+
+	    return accepts.map(function (accept) {
+	        if (typeof accept === 'string' && (accept = accept.toLowerCase()) && ACCEPTs.hasOwnProperty(accept)) {
+	            return ACCEPTs[accept];
+	        } else {
+	            var extensions = normalizeExtensions(accept.extensions || accept);
+
+	            return extensions.length ? {
+	                title: accept.title || '',
+	                extensions: extensions,
+	                mimeTypes: accept.mimeTypes || ''
+	            } : null;
+	        }
+	    }).filter(function (accept) {
+	        return accept !== null;
+	    });
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _util = __webpack_require__(7);
 
 	var ChunkResponse = (function () {
 	    /**
@@ -1424,28 +1491,6 @@ define(function (require, exports, module) {
 
 	var MIN_CHUNK_SIZE = 256 * 1024; // 256K
 
-	function parseSize(size) {
-	    if (typeof size !== 'string') {
-	        return size;
-	    }
-
-	    var units = {
-	        t: 1099511627776,
-	        g: 1073741824,
-	        m: 1048576,
-	        k: 1024
-	    };
-
-	    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
-	    size = +size[1];
-	    var u = size[2];
-
-	    if (units.hasOwnProperty(u)) {
-	        size *= units[u];
-	    }
-	    return size;
-	}
-
 	var FileRequest = (function () {
 	    function FileRequest(file) {
 	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
@@ -1543,7 +1588,7 @@ define(function (require, exports, module) {
 	    }, {
 	        key: 'getChunkSize',
 	        value: function getChunkSize() {
-	            return parseSize(this.chunkSize);
+	            return (0, _util.parseSize)(this.chunkSize);
 	        }
 	    }, {
 	        key: 'setChunkSize',
@@ -1604,7 +1649,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1631,11 +1676,11 @@ define(function (require, exports, module) {
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
-	var _html5Runtime = __webpack_require__(9);
+	var _html5Runtime = __webpack_require__(10);
 
 	var _html5Runtime2 = _interopRequireDefault(_html5Runtime);
 
-	var _file = __webpack_require__(12);
+	var _file = __webpack_require__(13);
 
 	var _file2 = _interopRequireDefault(_file);
 
@@ -1902,7 +1947,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1923,11 +1968,11 @@ define(function (require, exports, module) {
 
 	var _jquery = __webpack_require__(3);
 
-	var _runtime = __webpack_require__(10);
+	var _runtime = __webpack_require__(11);
 
 	var _runtime2 = _interopRequireDefault(_runtime);
 
-	var _transport = __webpack_require__(11);
+	var _transport = __webpack_require__(12);
 
 	var _transport2 = _interopRequireDefault(_transport);
 
@@ -2071,7 +2116,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2317,7 +2362,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2446,7 +2491,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2485,7 +2530,7 @@ define(function (require, exports, module) {
 	}
 
 	var RE_EXT = /\.([^.]+)$/,
-	    RE_IMAGE = /\/(jpg|jpeg|png|gif|bmp)$/i;
+	    RE_IMAGE = /\/(jpg|jpeg|png|gif|bmp|webp)$/i;
 	function guessExt(blob) {
 	    var m = blob.name && RE_EXT.exec(blob.name);
 	    if (m) {
@@ -2499,7 +2544,7 @@ define(function (require, exports, module) {
 	}
 
 	function guessType(ext) {
-	    if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].indexOf(ext.toLowerCase())) {
+	    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].indexOf(ext.toLowerCase())) {
 	        return 'image/' + (ext === 'jpg' ? 'jpeg' : ext);
 	    }
 	    return null;
@@ -2778,7 +2823,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2801,11 +2846,11 @@ define(function (require, exports, module) {
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
-	var _html5Runtime = __webpack_require__(9);
+	var _html5Runtime = __webpack_require__(10);
 
 	var _html5Runtime2 = _interopRequireDefault(_html5Runtime);
 
-	var _file = __webpack_require__(12);
+	var _file = __webpack_require__(13);
 
 	var _file2 = _interopRequireDefault(_file);
 
@@ -2835,12 +2880,8 @@ define(function (require, exports, module) {
 	                    items = clipboardData.items,
 	                    files = clipboardData.files;
 
-	                if (!files) {
-	                    try {
-	                        if (!items || clipboardData.getData('text/html')) {
-	                            return;
-	                        }
-	                    } catch (ex) {}
+	                if (!files && !items) {
+	                    return;
 	                }
 
 	                var prevent = undefined,
@@ -2912,7 +2953,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -2935,15 +2976,15 @@ define(function (require, exports, module) {
 
 	var _emitter2 = _interopRequireDefault(_emitter);
 
-	var _html5Runtime = __webpack_require__(9);
+	var _html5Runtime = __webpack_require__(10);
 
 	var _html5Runtime2 = _interopRequireDefault(_html5Runtime);
 
-	var _flashRuntime = __webpack_require__(15);
+	var _flashRuntime = __webpack_require__(16);
 
 	var _flashRuntime2 = _interopRequireDefault(_flashRuntime);
 
-	var _file = __webpack_require__(12);
+	var _file = __webpack_require__(13);
 
 	var _file2 = _interopRequireDefault(_file);
 
@@ -3009,8 +3050,8 @@ define(function (require, exports, module) {
 	            var overlay = this.overlay,
 	                emitter = new _emitter2['default']();
 	            trigger = trigger.on ? trigger : (0, _jquery2['default'])(trigger);
-	            trigger.on('mouseover.flashpicker', function () {
-	                var rect = this.getBoundingClientRect();
+	            trigger.on('mouseover.flashpicker', function (e) {
+	                var rect = e.currentTarget.getBoundingClientRect();
 	                overlay.css({
 	                    left: rect.left,
 	                    top: rect.top,
@@ -3018,10 +3059,10 @@ define(function (require, exports, module) {
 	                    height: rect.bottom - rect.top
 	                });
 	                emitter.emit('rollOver');
-	                if (this.current && this.current !== emitter) {
-	                    this.current.emit('rollOut');
+	                if (_this2.current && _this2.current !== emitter) {
+	                    _this2.current.emit('rollOut');
 	                }
-	                this.current = emitter;
+	                _this2.current = emitter;
 	            });
 
 	            emitter.destroy = function () {
@@ -3059,7 +3100,7 @@ define(function (require, exports, module) {
 	            var accept = context.getAccept();
 	            if (accept && accept.length > 0) {
 	                accept = accept.map(function (item) {
-	                    return item.mimeTypes;
+	                    return item.mimeTypes || '.' + item.extensions.join(',.');
 	                });
 
 	                input.attr('accept', accept.join(','));
@@ -3149,7 +3190,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3168,11 +3209,11 @@ define(function (require, exports, module) {
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var _runtime = __webpack_require__(10);
+	var _runtime = __webpack_require__(11);
 
 	var _runtime2 = _interopRequireDefault(_runtime);
 
-	var _transport = __webpack_require__(16);
+	var _transport = __webpack_require__(17);
 
 	var _transport2 = _interopRequireDefault(_transport);
 
@@ -3316,7 +3357,7 @@ define(function (require, exports, module) {
 	module.exports = exports['default'];
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

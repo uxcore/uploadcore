@@ -322,9 +322,9 @@ throw new Error('some error');
 ```js
 [
     {
-        title: 'Videos',
-        extensions: 'mp4,mpeg,mov,flv,wmv,avi,mkv,ogv',
-        mimeTypes: 'audio/*'
+        title: 'Images',
+        extensions: ['jpg','jpeg','png','gif','bmp','webp'],
+        mimeTypes: 'image/*'
     },
     ....
 ]

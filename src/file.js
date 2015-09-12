@@ -75,13 +75,13 @@ export default class File extends Emitter {
         this.progress = new Progress(this.size, 0);
     }
 
-    getContext() {
-        return this.context;
+    getCore() {
+        return this.core;
     }
 
-    setContext(context) {
-        this.context = context;
-        this.setPropagationTarget(context);
+    setCore(core) {
+        this.core = core;
+        this.setPropagationTarget(core);
     }
 
     getRuntime() {
@@ -172,7 +172,7 @@ export default class File extends Emitter {
     }
 
     prepare() {
-        if (this.status !== Status.PENDING || !this.context) {
+        if (this.status !== Status.PENDING || !this.core) {
             return false;
         }
 
@@ -181,9 +181,9 @@ export default class File extends Emitter {
 
         this.emit(Events.FILE_UPLOAD_START);
 
-        this.request = this.context.createFileRequest(this);
+        this.request = this.core.createFileRequest(this);
 
-        const prepare = this.context.invoke(Events.FILE_UPLOAD_PREPARING, this.request);
+        const prepare = this.core.invoke(Events.FILE_UPLOAD_PREPARING, this.request);
 
         this._flows.push(prepare);
 
@@ -221,7 +221,7 @@ export default class File extends Emitter {
         this.setStatus(Status.END);
         this.emit(Events.FILE_UPLOAD_END);
 
-        const complete = this.context.invoke(Events.FILE_UPLOAD_COMPLETING, response);
+        const complete = this.core.invoke(Events.FILE_UPLOAD_COMPLETING, response);
 
         this._flows.push(complete);
 

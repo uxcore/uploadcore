@@ -117,7 +117,7 @@ class Uploading {
     slot(request, retries) {
         let i = Deferred(),
             runtime = this.runtime,
-            context = request.getFile().getContext();
+            core = request.getFile().getCore();
 
         let slot = i.promise();
 
@@ -141,14 +141,14 @@ class Uploading {
             slot.total = request.getBlob().size;
             slot.loaded = 0;
 
-            prepare = context.invoke(Events.CHUNK_UPLOAD_PREPARING, request);
+            prepare = core.invoke(Events.CHUNK_UPLOAD_PREPARING, request);
 
             prepare.then((request) => {
                 transport = runtime.getTransport().generate(request);
                 transport.progress(progress);
                 return transport;
             }).then((response) => {
-                completion = context.invoke(Events.CHUNK_UPLOAD_COMPLETING, request.createChunkResponse(response));
+                completion = core.invoke(Events.CHUNK_UPLOAD_COMPLETING, request.createChunkResponse(response));
                 return completion;
             }).done(i.resolve).fail(error);
         };

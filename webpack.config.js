@@ -3,13 +3,13 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        'uploader': './index.js'
+        'uploadcore': './src/index.js'
     },
     output: {
         path: path.join(__dirname, "dist"),
         libraryTarget: "var",
         filename: "[name].js",
-        library: "UXUploader",
+        library: "UploadCore",
         sourceMapFilename: "[file].map"
     },
     devtool: '#source-map',
@@ -21,7 +21,7 @@ module.exports = {
     externals: {
         'jquery': 'var jQuery',
         'spark-md5': 'var SparkMD5',
-        'uxuploader': 'var UXUploader'
+        'uploadcore': 'var UploadCore'
     },
     plugins:[],
     resolve: {

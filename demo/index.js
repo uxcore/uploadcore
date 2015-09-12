@@ -1,15 +1,9 @@
 import $ from 'jquery';
-import {Uploader, Events, Status} from 'uxuploader';
+import {UploadCore, Events, Status} from 'uploadcore';
 
-/*
- 1. 点击触发上传、拖动上传、粘贴上传多个文件到服务器；
- 2. 每个文件上传之前需要获得token，token有失效期；
- 3. 上传完成返回的数据需要转换，根据code判断是否成功与否。
- */
+UploadCore.setSWF('/dist/flashpicker.swf');
 
-Uploader.setSWF('/dist/flashpicker.swf');
-
-const context = new Uploader({
+const core = new UploadCore({
     request: {
         name: 'file',
         url: 'http://test.yanbingbing.com/upload.php',
@@ -29,7 +23,7 @@ const context = new Uploader({
 });
 
 // 上传完成
-context.on(Events.FILE_UPLOAD_COMPLETING, response => {
+core.on(Events.FILE_UPLOAD_COMPLETING, response => {
     let json = response.getJson();
     if (!json || json.code !== 0) {
         return new Error('error');
@@ -37,13 +31,13 @@ context.on(Events.FILE_UPLOAD_COMPLETING, response => {
 });
 
 // 队列错误
-context.on(Events.QUEUE_ERROR, (error) => console.info('queueerror', error));
+core.on(Events.QUEUE_ERROR, (error) => console.info('queueerror', error));
 
 // 队列过滤了一个文件
-context.on(Events.QUEUE_FILE_FILTERED, (file, error) => console.info('queuefilefiltered', file, error));
+core.on(Events.QUEUE_FILE_FILTERED, (file, error) => console.info('queuefilefiltered', file, error));
 
 // 队列添加了一个文件
-context.on(Events.QUEUE_FILE_ADDED, (file) => {
+core.on(Events.QUEUE_FILE_ADDED, (file) => {
     console.info('queuefileadded', file);
     file.session().progress((e) => {
         console.info('progress', e);
@@ -54,19 +48,19 @@ context.on(Events.QUEUE_FILE_ADDED, (file) => {
     });
 });
 
-context.on(Events.QUEUE_UPLOAD_START, () => {
+core.on(Events.QUEUE_UPLOAD_START, () => {
    console.info('queueuploadstart');
 });
 
-context.on(Events.QUEUE_UPLOAD_END, () => {
+core.on(Events.QUEUE_UPLOAD_END, () => {
     console.info('queueuploadend');
 });
 
-context.on(Events.QUEUE_STAT_CHANGE, (stat) => {
+core.on(Events.QUEUE_STAT_CHANGE, (stat) => {
     console.info('statchange', stat.stat());
 });
 
-context.on(Events.FILE_UPLOAD_START, (file) => {
+core.on(Events.FILE_UPLOAD_START, (file) => {
     console.info('fileuploadstart', file);
 }).on(Events.FILE_UPLOAD_PREPARING, (request) => {
     console.info('fileuploadpreparing', request);
@@ -95,14 +89,14 @@ context.on(Events.FILE_UPLOAD_START, (file) => {
 });
 
 
-const dnd = context.getDndCollector();
+const dnd = core.getDndCollector();
 
 dnd.addArea(document.documentElement);
 
-const picker = context.getPickerCollector();
+const picker = core.getPickerCollector();
 
 picker.addArea(document.getElementById('button'));
 
-const paster = context.getPasteCollector();
+const paster = core.getPasteCollector();
 
 paster.addArea(document.getElementById('pastearea'));

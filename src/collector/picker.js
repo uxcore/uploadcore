@@ -7,7 +7,7 @@ import File from '../file';
 let SWF_URL = '';
 
 class FlashTriggerCollection {
-    constructor(context, onFiles) {
+    constructor(core, onFiles) {
         let overlay = $('<label></label>');
         overlay.css({
             position: 'fixed',
@@ -24,8 +24,8 @@ class FlashTriggerCollection {
         });
         const runtime = new FlashRuntime(overlay, SWF_URL, () => {
             return {
-                accept: context.getAccept(),
-                multiple: context.isMultiple()
+                accept: core.getAccept(),
+                multiple: core.isMultiple()
             };
         });
 
@@ -83,7 +83,7 @@ class FlashTriggerCollection {
 }
 
 class Html5TriggerCollection {
-    constructor(context, onFiles) {
+    constructor(core, onFiles) {
         const runtime = Html5Runtime.getInstance();
 
         this._createInput = (label) => {
@@ -95,7 +95,7 @@ class Html5TriggerCollection {
                 clip: 'rect(1px 1px 1px 1px)'
             });
 
-            let accept = context.getAccept();
+            let accept = core.getAccept();
             if (accept && accept.length > 0) {
                 accept = accept.map((item) => {
                     return item.mimeTypes || ('.' + item.extensions.join(',.'));
@@ -103,7 +103,7 @@ class Html5TriggerCollection {
 
                 input.attr('accept', accept.join(','));
             }
-            if (context.isMultiple()) {
+            if (core.isMultiple()) {
                 input.attr('multiple', 'multiple');
             }
 
@@ -146,20 +146,20 @@ export default class PickerCollector {
     static setSWF(url) {
         SWF_URL = url;
     }
-    constructor(context) {
+    constructor(core) {
 
         const onFiles = (files, runtime) => {
             for (let i = 0, l = files.length; i < l; i++) {
-                if (context.add(new File(runtime, files[i])) < 0) {
+                if (core.add(new File(runtime, files[i])) < 0) {
                     break;
                 }
             }
         };
 
         if (('DataTransfer' in window) && ('FileList' in window)) {
-            this.triggerCollection = new Html5TriggerCollection(context, onFiles);
+            this.triggerCollection = new Html5TriggerCollection(core, onFiles);
         } else {
-            this.triggerCollection = new FlashTriggerCollection(context, onFiles);
+            this.triggerCollection = new FlashTriggerCollection(core, onFiles);
         }
     }
 

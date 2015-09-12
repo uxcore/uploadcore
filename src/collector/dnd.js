@@ -165,13 +165,13 @@ function prepare() {
 
 export default class DndCollector {
 
-    constructor(context) {
+    constructor(core) {
         if (Collectors.length < 1) {
             prepare();
         }
         Collectors.push(this);
 
-        this.context = context;
+        this.core = core;
         this.areas = [];
     }
 
@@ -202,8 +202,8 @@ export default class DndCollector {
     }
 
     recieve(file) {
-        const ret = this.context.add(file);
-        if (ret > 0 && !this.context.isMultiple()) {
+        const ret = this.core.add(file);
+        if (ret > 0 && !this.core.isMultiple()) {
             return -1;
         } else {
             return ret;

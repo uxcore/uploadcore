@@ -4,15 +4,15 @@ import Runtime from '../html5/runtime';
 import File from '../file';
 
 export default class PasteCollector {
-    constructor(context) {
-        this.context = context;
+    constructor(core) {
+        this.core = core;
         this.runtime = Runtime.getInstance();
     }
 
     addArea(area) {
         area = area.on ? area : $(area);
 
-        const context = this.context,
+        const core = this.core,
             runtime = this.runtime,
             emitter = new Emitter;
 
@@ -39,15 +39,15 @@ export default class PasteCollector {
 
                     prevent = 1;
 
-                    addRet = context.add(file);
-                    if (addRet < 0 || (addRet > 0 && !context.isMultiple())) {
+                    addRet = core.add(file);
+                    if (addRet < 0 || (addRet > 0 && !core.isMultiple())) {
                         break;
                     }
                 }
             } else if (items && items.length) {
                 // chrome has items
                 let filename = clipboardData.getData('text/plain');
-                for (i = 0, l = items.length; i < l && !context.isLimit(); i++) {
+                for (i = 0, l = items.length; i < l && !core.isLimit(); i++) {
                     item = items[i];
 
                     if (item.kind !== 'file' || !(file = item.getAsFile())) {
@@ -59,8 +59,8 @@ export default class PasteCollector {
 
                     prevent = 1;
 
-                    addRet = context.add(file);
-                    if (addRet < 0 || (addRet > 0 && !context.isMultiple())) {
+                    addRet = core.add(file);
+                    if (addRet < 0 || (addRet > 0 && !core.isMultiple())) {
                         break;
                     }
                 }

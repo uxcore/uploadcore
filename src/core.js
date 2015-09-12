@@ -8,7 +8,7 @@ import DndCollector from './collector/dnd';
 import PasteCollector from './collector/paste';
 import PickerCollector from './collector/picker';
 
-export default class Context extends Emitter {
+export default class Core extends Emitter {
 
     constructor(options) {
         super();
@@ -110,7 +110,7 @@ export default class Context extends Emitter {
             }
         });
 
-        file.setContext(this);
+        file.setCore(this);
 
         this.emit(Events.QUEUE_FILE_ADDED, file);
 

@@ -1,6 +1,6 @@
-# Uxcore Uploader
+# Uxcore UploadCore
 
-[![npm package](https://img.shields.io/npm/v/uxcore-uploader.svg?style=flat-square)](https://www.npmjs.org/package/uxcore-uploader)
+[![npm package](https://img.shields.io/npm/v/uxcore-uploadcore.svg?style=flat-square)](https://www.npmjs.org/package/uxcore-uploadcore)
 
 ------
 **特性一览**
@@ -16,8 +16,8 @@
 ## Usage 最佳实践
 
 ```js
-import Uploader, {Events, Status} from 'uxuploader';
-const up = new Uploader({
+import {UploadCore, Events, Status} from 'uploadcore';
+const up = new UploadCore({
     request: {
         name: 'file',
         url: 'http://test.yanbingbing.com/upload.php'
@@ -35,41 +35,6 @@ up.on(Events.FILE_UPLOAD_COMPLETED, (file) => {
 
 const picker = up.getPickerCollector();
 picker.addArea(document.getElementById('clickarea'));
-```
-
-如果你要在seajs中使用*（for alinw）*，我们需要先配置一下seajs环境
-
-```html
-<script src="https://alinw.alipayobjects.com/seajs/seajs/2.1.1/sea.js"></script>
-<script>
-seajs.config({
-    alias: {
-        "jquery" : "jquery/jquery/1.11.1/jquery",
-        "es5shim": "alinw/es5-shim/1.0.2/es5-shim",
-        "es5sham": "alinw/es5-sham/1.0.1/es5-sham",
-        "spark-md5": "alinw/spark-md5/1.0.0/spark-md5",
-        "uxuploader": "alinw/uxuploader/2.0.0/uploader"
-    },
-    preload: ["jquery", "es5shim", "es5sham"],
-    paths: {
-        "jquery": "https://alinw.alipayobjects.com/jquery",
-        "alinw": "https://alinw.alicdn.com/alinw"
-    },
-    comboSyntax: ["??", ","],
-    comboMaxLength: 2000
-});
-seajs.use('main')
-</script>    
-```
-
-之后就可以在`main.js`中直接`require('uxuploader')`
-
-```js
-define(function (require) {
-    var Uploader = require('uxuploader');
-    
-    // coding
-});
 ```
 
 ## Compatible 兼容处理
@@ -94,8 +59,6 @@ Feature  | Chrome | Firefox | Safari | Edage | IE11 | IE10 | IE9-
 <script src="/path/to/es-shim.min.js"></script>
 <script src="/path/to/es-sham.min.js"></script>
 ```
-
-
 
 ## Options 配置
 
@@ -247,7 +210,7 @@ videos = {
 
 ## APIs 接口
 
-### Uploader.addConstraint
+### UploadCore.addConstraint
 
 添加约束。
 
@@ -263,15 +226,15 @@ constraint = function () {
 }
 ```
 
-constraint函数返回true时表示受到限制，否则不，函数闭包中this指向当前`Uploader`。
+constraint函数返回true时表示受到限制，否则不，函数闭包中this指向当前`UploadCore`。
 
-### Uploader.isLimit
+### UploadCore.isLimit
 
-运行通过`Uploader.addConstraint`添加的约束，判断是否限制了添加更多的文件。
+运行通过`UploadCore.addConstraint`添加的约束，判断是否限制了添加更多的文件。
 
 **返回** `bool`，`true`表示受到约束。
 
-### Uploader.addFilter
+### UploadCore.addFilter
 
 添加文件过滤函数。
 
@@ -307,13 +270,13 @@ return new Error('some error');
 throw new Error('some error');
 ```
 
-### Uploader.isMultiple
+### UploadCore.isMultiple
 
 是否多选。
 
 **返回** `bool`，`true`表示多选。
 
-### Uploader.getAccept
+### UploadCore.getAccept
 
 获得允许文件类型。
 
@@ -330,13 +293,13 @@ throw new Error('some error');
 ]
 ```
 
-### Uploader.getStat
+### UploadCore.getStat
 
 获得文件统计。
 
 **返回** `Stat`
 
-### Uploader.setSWF (静态方法)
+### UploadCore.setSWF (静态方法)
 
 设置flashpicker的url地址，用于不支持h5上传的浏览器。
 
@@ -344,19 +307,19 @@ throw new Error('some error');
 --- |----- | ------
 url | `string` | flashpicker的url地址
 
-### Uploader.getPickerCollector
+### UploadCore.getPickerCollector
 
 获得`PickerCollector`单列。
 
-### Uploader.getDndCollector
+### UploadCore.getDndCollector
 
 获得`DndCollector`单列。
 
-### Uploader.getPasteCollector
+### UploadCore.getPasteCollector
 
 获得`PasteCollector`单列。
 
-### Uploader.on
+### UploadCore.on
 
 添加事件监听。
 
@@ -371,21 +334,21 @@ fn | `function` | 事件处理函数
 
 名称 | 触发对象 | 参数 | 描述
 --- | --- | --- | ---
-`QUEUE_UPLOAD_START` | `Uploader` | 无 | 队列上传开始
-`QUEUE_UPLOAD_END` | `Uploader` | 无 | 队列上传结束
-`QUEUE_FILE_ADDED` | `Uploader` | `File` | 队列添加了一个文件
-`QUEUE_FILE_FILTERED` | `Uploader` | `File`, `Error` | 队列过滤了一个文件
-`QUEUE_ERROR` | `Uploader` | `Error` | 队列错误
-`QUEUE_STAT_CHANGE` | `Uploader` | `Stat` | 文件统计发生变化
+`QUEUE_UPLOAD_START` | `UploadCore` | 无 | 队列上传开始
+`QUEUE_UPLOAD_END` | `UploadCore` | 无 | 队列上传结束
+`QUEUE_FILE_ADDED` | `UploadCore` | `File` | 队列添加了一个文件
+`QUEUE_FILE_FILTERED` | `UploadCore` | `File`, `Error` | 队列过滤了一个文件
+`QUEUE_ERROR` | `UploadCore` | `Error` | 队列错误
+`QUEUE_STAT_CHANGE` | `UploadCore` | `Stat` | 文件统计发生变化
 
 **正在进行时事件**
 
 名称 | 触发对象 | 参数 | 描述
 --- | --- | --- | ---
-`FILE_UPLOAD_PREPARING`| `Uploader` | `FileRequest` | 文件上传准备时
-`CHUNK_UPLOAD_PREPARING`| `Uploader` | `ChunkRequest` |  分块上传准备时
-`CHUNK_UPLOAD_COMPLETING`|`Uploader` | `ChunkResponse` |  分块上传结束时
-`FILE_UPLOAD_COMPLETING`|`Uploader` | `FileResponse` |  文件上传结束时
+`FILE_UPLOAD_PREPARING`| `UploadCore` | `FileRequest` | 文件上传准备时
+`CHUNK_UPLOAD_PREPARING`| `UploadCore` | `ChunkRequest` |  分块上传准备时
+`CHUNK_UPLOAD_COMPLETING`|`UploadCore` | `ChunkResponse` |  分块上传结束时
+`FILE_UPLOAD_COMPLETING`|`UploadCore` | `FileResponse` |  文件上传结束时
 
 正在进行时事件可以理解为普通事件的增强版，支持Promise返回值，注册的事件监听严格按照顺序执行。
 
@@ -404,19 +367,19 @@ up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
 
 **文件事件**
 
-文件事件同时在`Uploader`与`File`上触发，当在`Uploader`上触发时，函数第一参数均为`File`。
+文件事件同时在`UploadCore`与`File`上触发，当在`UploadCore`上触发时，函数第一参数均为`File`。
 
 名称 | 触发对象 | 参数 | 描述
 --- | --- | --- | ---
-`FILE_UPLOAD_START` | `Uploader`, `File` | [`File`] | 文件上传开始
-`FILE_UPLOAD_PREPARED` | `Uploader`, `File` | [`File`], `FileRequest` |文件上传准备好了
-`FILE_UPLOAD_PROGRESS` | `Uploader`, `File` | [`File`], `Progress` | 文件上传进度中
-`FILE_UPLOAD_END` | `Uploader`, `File` | [`File`] | 文件上传结束
-`FILE_UPLOAD_SUCCESS` | `Uploader`, `File` | [`File`], `FileResponse` | 文件上传成功
-`FILE_UPLOAD_ERROR` | `Uploader`, `File` | [`File`], `Error` | 文件上传失败
-`FILE_UPLOAD_COMPLETED` | `Uploader`, `File` | [`File`], `Status`| 文件上传完成了
-`FILE_CANCEL` | `Uploader`, `File` | [`File`] | 文件退出
-`FILE_STATUS_CHANGE` | `Uploader`, `File` | [`File`], `Status` | 文件状态发生变化
+`FILE_UPLOAD_START` | `UploadCore`, `File` | [`File`] | 文件上传开始
+`FILE_UPLOAD_PREPARED` | `UploadCore`, `File` | [`File`], `FileRequest` |文件上传准备好了
+`FILE_UPLOAD_PROGRESS` | `UploadCore`, `File` | [`File`], `Progress` | 文件上传进度中
+`FILE_UPLOAD_END` | `UploadCore`, `File` | [`File`] | 文件上传结束
+`FILE_UPLOAD_SUCCESS` | `UploadCore`, `File` | [`File`], `FileResponse` | 文件上传成功
+`FILE_UPLOAD_ERROR` | `UploadCore`, `File` | [`File`], `Error` | 文件上传失败
+`FILE_UPLOAD_COMPLETED` | `UploadCore`, `File` | [`File`], `Status`| 文件上传完成了
+`FILE_CANCEL` | `UploadCore`, `File` | [`File`] | 文件退出
+`FILE_STATUS_CHANGE` | `UploadCore`, `File` | [`File`], `Status` | 文件状态发生变化
 
 
 ## Errors 错误
@@ -489,7 +452,7 @@ const picker = up.getPickerCollector();
 在不支持Html5上传时，需要预先提供`flashpicker.swf`的url地址。
 
 ```js
-Uploader.setSWF(url);
+UploadCore.setSWF(url);
 ```
 
 **添加触发区域**
@@ -670,9 +633,9 @@ stat(Status.SUCCESS | Status.ERROR)
 
 文件上传进度。
 
-### File.getContext
+### File.getCore
 
-获取上下文`Uploader`。
+获取`UploadCore`。
 
 ### File.isImage
 

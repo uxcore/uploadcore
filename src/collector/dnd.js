@@ -3,12 +3,41 @@ import Emitter from '../emitter';
 import Runtime from '../html5/runtime';
 import File from '../file';
 
+const MAX_NUM_ONCE = 100;
+
 function createReader(collector) {
-    let _break = false;
-    function reader(dataTransfer, responders) {
-        var items = dataTransfer.items,
-            files = dataTransfer.files,
-            item;
+    return (dataTransfer, responders) => {
+        const items = dataTransfer.items,
+            files = dataTransfer.files;
+        let item, times = MAX_NUM_ONCE;
+        let _break = false;
+
+        function collect(file) {
+            if (--times < 0 || !collector(file, responders)) {
+                _break = true;
+                return false;
+            }
+            return true;
+        }
+
+        function readEntry(entry) {
+            if (_break) return;
+            if (entry.isFile) {
+                entry.file((file) => {
+                    if (!_break) {
+                        collect(file);
+                    }
+                });
+            } else if (entry.isDirectory) {
+                entry.createReader().readEntries((entries) => {
+                    if (_break) return;
+                    for (let i = 0, l = entries.length; i < l; i++) {
+                        if (_break) break;
+                        readEntry(entries[i]);
+                    }
+                });
+            }
+        }
 
         for (let i = 0, l = files.length; i < l; i++) {
             if (_break) break;
@@ -17,35 +46,14 @@ function createReader(collector) {
             let entry = item && item.webkitGetAsEntry && item.webkitGetAsEntry();
 
             if (entry && entry.isDirectory) {
-                readEntry(entry, responders);
+                readEntry(entry);
             } else {
-                if (!collector(files[i], responders)) {
-                    _break = true;
+                if (!collect(files[i])) {
                     break;
                 }
             }
         }
     }
-    function readEntry(entry, responders) {
-        if (_break) return;
-        if (entry.isFile) {
-            entry.file((file) => {
-                if (_break) return;
-                if (!collector(file, responders)) {
-                    _break = true;
-                }
-            });
-        } else if (entry.isDirectory) {
-            entry.createReader().readEntries((entries) => {
-                if (_break) return;
-                for (let i = 0, l = entries.length; i < l; i++) {
-                    if (_break) break;
-                    readEntry(entries[i], responders);
-                }
-            });
-        }
-    }
-    return reader;
 }
 
 class Area extends Emitter {

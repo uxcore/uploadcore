@@ -23,6 +23,9 @@ export default class Core extends Emitter {
         this.multiple = multiple == null ? true : multiple;
         this.pending = new Pending(processThreads);
 
+        if (!this.multiple) {
+            queueCapcity = 1;
+        }
         if (queueCapcity && queueCapcity > 0) {
             this.addConstraint(() => this.stat.getTotal() >= queueCapcity);
         }

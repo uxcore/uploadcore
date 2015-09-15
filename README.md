@@ -71,18 +71,18 @@ options = {
         url: 'http://demo.com/rest/1.0/file',
         // 上传文件额外参数
         params: {},
-        // 上传文件额外头
+        // 上传文件额外头, `flash下不支持`
         headers: [],
-        // 上传文件是否自动附带cookie等信息
+        // 上传文件是否自动附带cookie等信息, `flash下不支持`
         withCredentials: false,
         // 上传超时
         timeout: 0,
+        // 是否允许分片上传, `flash下不支持`
+        chunkEnable: false,
         // 文件分片大小, 默认单位b，0不分片
         chunkSize: 0,
         // 文件分片上传重试次数
         chunkRetries: 0,
-        // 是否允许分片上传
-        chunkEnable: false,
         // 分片上传并发数
         chunkProcessThreads: 2
     },

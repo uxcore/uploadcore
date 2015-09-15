@@ -8,14 +8,9 @@ export default class Html5Transport {
      */
     generate(request) {
         const i = Deferred();
+        const xhr = new XMLHttpRequest;
 
-        let timeoutTimer, withCredentials = false;
-        let xhr = new XMLHttpRequest;
-
-        if (request.isWithCredentials && !('withCredentials' in xhr) && ('XDomainRequest' in window)) {
-            xhr = new XDomainRequest;
-            withCredentials = true;
-        }
+        let timeoutTimer;
 
         const clean = () => {
             xhr.onload = xhr.onerror = null;
@@ -61,11 +56,9 @@ export default class Html5Transport {
         }
 
         try {
-            if (withCredentials) {
-                xhr.open('POST', request.getUrl(), true);
+            xhr.open('POST', request.getUrl(), true);
+            if (request.isWithCredentials()) {
                 xhr.withCredentials = true;
-            } else {
-                xhr.open('POST', request.getUrl());
             }
 
             request.getHeaders().forEach((header) => xhr.setRequestHeader(header.name, header.value));

@@ -250,8 +250,8 @@ export default class FileRequest {
     constructor(file, options = {}) {
         this.file = file;
         this.name = options.name || 'file';
-        this.url = options.url;
-        this.params = new Params(options.params);
+        this.url = options.url || options.action;
+        this.params = new Params(options.params || options.data);
         this.headers = options.headers || [];
         this.withCredentials = options.withCredentials;
         this.timeout = options.timeout || 0;

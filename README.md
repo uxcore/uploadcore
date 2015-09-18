@@ -18,10 +18,8 @@
 ```js
 import {UploadCore, Events, Status} from 'uploadcore';
 const up = new UploadCore({
-    request: {
-        name: 'file',
-        url: 'http://test.yanbingbing.com/upload.php'
-    }
+    name: 'file',
+    url: 'http://test.yanbingbing.com/upload.php'
 });
 
 up.on(Events.FILE_UPLOAD_COMPLETED, (file) => {
@@ -64,28 +62,27 @@ Feature  | Chrome | Firefox | Safari | Edage | IE11 | IE10 | IE9-
 
 ```js
 options = {
-    request: {
-        // 上传文件字段名称
-        name: 'file',
-        // 上传目标
-        url: 'http://demo.com/rest/1.0/file',
-        // 上传文件额外参数
-        params: {},
-        // 上传文件额外头, `flash下不支持`
-        headers: [],
-        // 上传文件是否自动附带cookie等信息, `flash下不支持`
-        withCredentials: false,
-        // 上传超时
-        timeout: 0,
-        // 是否允许分片上传, `flash下不支持`
-        chunkEnable: false,
-        // 文件分片大小, 默认单位b，0不分片
-        chunkSize: 0,
-        // 文件分片上传重试次数
-        chunkRetries: 0,
-        // 分片上传并发数
-        chunkProcessThreads: 2
-    },
+    // 上传文件字段名称
+    name: 'file',
+    // 上传目标
+    url: 'http://demo.com/rest/1.0/file',
+    // 上传文件额外参数
+    params: {},
+    // 上传文件额外头, `flash下不支持`
+    headers: [],
+    // 上传文件是否自动附带cookie等信息, `flash下不支持`
+    withCredentials: false,
+    // 上传超时
+    timeout: 0,
+    // 是否允许分片上传, `flash下不支持`
+    chunkEnable: false,
+    // 文件分片大小, 默认单位b，0不分片
+    chunkSize: 0,
+    // 文件分片上传重试次数
+    chunkRetries: 0,
+    // 分片上传并发数
+    chunkProcessThreads: 2
+    
     // 文件上传并发数
     processThreads: 2,
     // 是否选择后自动等待上传
@@ -97,13 +94,15 @@ options = {
     // 允许文件类型
     accept: null,
     // 文件大小限制
-    sizeLimit: 0,
+    fileSizeLimit: 0,
     // 是否防止文件重复
-    preventDuplicate: false
+    preventDuplicate: false,
+    // 过滤器
+    filters:[]
 }
 ```
 
-**options.request.params**
+**options.params**
 
 上传文件额外参数，支持俩种赋值方式
 
@@ -120,7 +119,7 @@ params = [
 
 ```
 
-**options.request.headers**
+**options.headers**
 
 上传文件请求头，格式如下：
 
@@ -130,7 +129,7 @@ headers = [
 ]
 ```
 
-**options.request.chunkSize**
+**options.chunkSize**
 
 文件分片大小，默认单位byte，默认0，小于256K时，不可分片。
 
@@ -145,9 +144,9 @@ size = '1g'; // 1吉字节 = 1024m
 size = '1t'; // 1太字节 = 1024g
 ```
 
-**options.sizeLimit**
+**options.fileSizeLimit**
 
-文件大小限制，默认单位byte，默认0，表示不限制，格式同`options.request.chunkSize`。
+文件大小限制，默认单位byte，默认0，表示不限制，格式同`options.chunkSize`。
 
 **options.accept**
 
@@ -853,7 +852,7 @@ timeout | `int` | 超时时间，单位ms
 
 参数 | 类型 | 描述
 --- |----- | ------
-size | `string` or `int` | 分片大小，单位byte，格式见`options.request.chunkSize`
+size | `string` or `int` | 分片大小，单位byte，格式见`options.chunkSize`
 
 ### FileRequest.getChunkSize
 
@@ -1056,7 +1055,7 @@ response | `JSON` or `*` | 响应数据
 
 ## Params 请求参数
 
-用于发送的Form Data数据维护，内部由`FileRequest`基于`options.request.params`创建。
+用于发送的Form Data数据维护，内部由`FileRequest`基于`options.params`创建。
 
 ### Params.addParam(name, value)
 

@@ -8,26 +8,30 @@ import DndCollector from './collector/dnd';
 import PasteCollector from './collector/paste';
 import PickerCollector from './collector/picker';
 
+const REQUEST_OPTIONS = ['name', 'url', 'params', 'action', 'data', 'headers', 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 'chunkRetries', 'chunkProcessThreads'];
+
 export default class Core extends Emitter {
 
-    constructor(options) {
+    constructor(options = {}) {
         super();
 
-        let {processThreads, autoPending, queueCapcity, accept, sizeLimit, preventDuplicate, multiple} = options;
+        this.autoPending = options.autoPending || options.auto;
+        this.capcity = options.capcity || options.queueCapcity;
+        this.multiple = options.multiple == null ? true : options.multiple;
 
+        this.accept = normalizeAccept(options.accept);
+        this.sizeLimit = parseSize(options.sizeLimit || options.fileSizeLimit || 0);
+
+        this.pending = new Pending(options.processThreads);
         this.stat = new Stat;
         this.constraints = new Constraints;
         this.filters = new Filters;
-        this.accept = normalizeAccept(accept);
-        this.autoPending = autoPending;
-        this.multiple = multiple == null ? true : multiple;
-        this.pending = new Pending(processThreads);
 
         if (!this.multiple) {
-            queueCapcity = 1;
+            this.capcity = 1;
         }
-        if (queueCapcity && queueCapcity > 0) {
-            this.addConstraint(() => this.stat.getTotal() >= queueCapcity);
+        if (this.capcity && this.capcity > 0) {
+            this.addConstraint(() => this.stat.getTotal() >= this.capcity);
         }
 
         if (this.accept && this.accept.length > 0) {
@@ -41,15 +45,15 @@ export default class Core extends Emitter {
             });
         }
 
-        if (sizeLimit && (sizeLimit = parseSize(sizeLimit)) > 0) {
+        if (this.sizeLimit > 0) {
             this.addFilter((file) => {
-                if (file.size > sizeLimit) {
-                    return new FileSizeError(file, 'filesize:' + formatSize(file.size) + ' is greater than limit:' + formatSize(sizeLimit));
+                if (file.size > this.sizeLimit) {
+                    return new FileSizeError(file, 'filesize:' + formatSize(file.size) + ' is greater than limit:' + formatSize(this.sizeLimit));
                 }
             });
         }
 
-        if (preventDuplicate) {
+        if (options.preventDuplicate) {
             this.addFilter((file) => {
                 if (this.stat.getFiles().some((item) => item.name === file.name && item.size === file.size)) {
                     return new DuplicateError(file, 'file "' + file.name + '" already in queue');
@@ -57,7 +61,18 @@ export default class Core extends Emitter {
             });
         }
 
-        this.requestOptions = options.request || {};
+        if (Array.isArray(options.filters)) {
+            options.fitlers.forEach(filter => this.addFilter(filter));
+        }
+
+        const request = options.request || {};
+        REQUEST_OPTIONS.forEach((key) => {
+            if (options.hasOwnProperty(key)) {
+                request[key] = options[key];
+            }
+        });
+
+        this.requestOptions = request;
     }
 
     createFileRequest(file) {
@@ -136,6 +151,18 @@ export default class Core extends Emitter {
 
     getStat() {
         return this.stat;
+    }
+
+    getTotal() {
+        return this.getStat().getTotal();
+    }
+
+    getFiles(flag) {
+        return this.getStat().getFiles(flag);
+    }
+
+    stat(flag) {
+        return this.getStat().stat(flag);
     }
 
     static setSWF(url) {

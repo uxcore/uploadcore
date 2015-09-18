@@ -84,8 +84,7 @@ gulp.task("build", function (callback) {
 gulp.task('flash', function (callback) {
     gulp.src('src/flash/bin/FlashPicker.swf')
         .pipe(rename('flashpicker.swf'))
-        .pipe(gulp.dest('dist'))
-        .pipe(gulp.dest('spm2'));
+        .pipe(gulp.dest('dist'));
 
     callback();
 });

@@ -1,11 +1,11 @@
 {
   "family": "alinw",
   "name": "uxcore-uploadcore",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0-beta.3",
   "description": "uxcore uploadcore",
   "main": "dist/uploadcore.js",
   "scripts": {
-    "build": "gulp build && gulp spm2 && gulp flash",
+    "build": "gulp build && gulp flash",
     "start": "npm install && gulp start",
     "dev": "npm install && gulp start"
   },

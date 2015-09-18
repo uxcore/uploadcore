@@ -12,7 +12,6 @@
 * 基于es6，jquery
 
 
-
 ## Usage 最佳实践
 
 ```js
@@ -298,6 +297,18 @@ throw new Error('some error');
 
 **返回** `Stat`
 
+### UploadCore.getTotal
+
+同`Stat.getTotal`。
+
+### UploadCore.getFiles
+
+同`Stat.getFiles`。
+
+### UploadCore.stat
+
+同`Stat.stat`。
+
 ### UploadCore.setSWF (静态方法)
 
 设置flashpicker的url地址，用于不支持h5上传的浏览器。
@@ -555,7 +566,7 @@ area.destroy()
 
 获得参与统计的文件个数。
 
-### Stat.getFile
+### Stat.getFiles
 
 参数 | 类型 | 描述
 --- |----- | ------

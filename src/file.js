@@ -22,7 +22,7 @@ function guessExt(blob) {
 }
 
 function guessType(ext) {
-    if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext.toLowerCase())) {
+    if (['jpg','jpeg','png','gif','bmp','webp'].indexOf(ext.toLowerCase()) > -1) {
         return 'image/' + (ext === 'jpg' ? 'jpeg' : ext);
     }
     return null;

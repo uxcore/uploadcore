@@ -53,7 +53,7 @@ class Uploading {
         let source = file.getSource(), size = file.size,
             chunkSize = request.getChunkSize(),
             useChunk = request.isChunkEnable(),
-            threads = request.getChunkProcessThreads(),
+            threads = Math.max(request.getChunkProcessThreads(), 1),
             start = 0, end = 0, slots = [];
 
         const getActives = () => {

@@ -258,7 +258,7 @@ export default class FileRequest {
         this.chunkSize = options.chunkSize || 0;
         this.chunkRetries = options.chunkRetries || 0;
         this.chunkEnable = options.chunkEnable || false;
-        this.chunkProcessThreads = options.chunkProcessThreads || 0;
+        this.chunkProcessThreads = options.chunkProcessThreads || 2;
     }
 
     getFile() {

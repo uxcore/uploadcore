@@ -291,6 +291,14 @@ throw new Error('some error');
 ]
 ```
 
+### UploadCore.isFull
+
+判断队列是否已满。
+
+### UploadCore.isEmpty
+
+判断队列是否为空。
+
 ### UploadCore.getStat
 
 获得文件统计。

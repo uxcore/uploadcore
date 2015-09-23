@@ -16,7 +16,7 @@ export default class Core extends Emitter {
         super();
 
         this.autoPending = options.autoPending || options.auto;
-        this.capcity = options.capcity || options.queueCapcity;
+        this.capcity = options.capcity || options.queueCapcity || 0;
         this.multiple = options.multiple == null ? true : options.multiple;
 
         this.accept = normalizeAccept(options.accept);
@@ -30,7 +30,7 @@ export default class Core extends Emitter {
         if (!this.multiple) {
             this.capcity = 1;
         }
-        if (this.capcity && this.capcity > 0) {
+        if (this.capcity > 0) {
             this.addConstraint(() => this.stat.getTotal() >= this.capcity);
         }
 
@@ -143,6 +143,14 @@ export default class Core extends Emitter {
 
     isMultiple() {
         return this.multiple;
+    }
+
+    isFull() {
+        return this.capcity > 0 && this.getTotal() >= this.capcity;
+    }
+
+    isEmpty() {
+        return this.getTotal() < 1;
     }
 
     getAccept() {

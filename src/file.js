@@ -8,7 +8,7 @@ function guid() {
     return 'FILE-' + (uid++).toString(16).toUpperCase();
 }
 
-const RE_EXT = /\.([^.]+)$/, RE_IMAGE = /\/(jpg|jpeg|png|gif|bmp|webp)$/i;
+const RE_EXT = /\.([^.]+)$/, RE_IMAGE = /^image\/(jpg|jpeg|png|gif|bmp|webp)$/i;
 function guessExt(blob) {
     let m = blob.name && RE_EXT.exec(blob.name);
     if (m) {

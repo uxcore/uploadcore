@@ -1,6 +1,44 @@
 * {
   box-sizing: border-box; }
 
+@font-face {
+  font-family: 'uxicon';
+  src: url('//at.alicdn.com/t/font_1442816980_3990257.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/font_1442816980_3990257.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/font_1442816980_3990257.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/font_1442816980_3990257.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/font_1442816980_3990257.svg#iconfont') format('svg'); /* iOS 4.1- */
+}
+
+@-webkit-keyframes glow {
+  0% {
+    background:rgba(225, 229, 232, 0.2);
+  }
+  50% {
+    background:rgba(252, 110, 81, 0.2);
+  }
+  100% {
+    background:rgba(225, 229, 232, 0.2);
+  }
+}
+
+.uxicon {
+  font-family:"uxicon" !important;
+  font-size:16px;
+  font-style:normal;
+  vertical-align: middle;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+}
+.icon-retry:before { content: "\e606"; }
+.icon-success:before { content: "\e605"; }
+.icon-start:before { content: "\e602"; }
+.icon-remove:before { content: "\e604"; }
+.icon-error:before { content: "\e603"; }
+.icon-add:before { content: "\e60a"; }
+.icon-upload:before { content: "\e600"; }
+.icon-upload2:before { content: "\e601"; }
+
 body {
   padding: 0;
   margin: 0;
@@ -20,9 +58,7 @@ a {
   margin-bottom: 1rem;
   color: rgba(255, 255, 255, 0.7);
   background-color: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  border-style: solid;
-  border-width: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.3rem;
   transition: color 0.2s, background-color 0.2s, border-color 0.2s; }
   .btn + .btn {
@@ -33,6 +69,100 @@ a {
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3); }
+
+.sample {
+  margin: 10px 0;
+  font-size: 14px;
+}
+.sample .console {
+  border:1px solid #eee;
+  border-radius:5px;
+  width:100%;
+  margin-top: 10px;
+  min-height:50px;
+  padding:5px;
+  background:black;
+  color:white;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  max-height: 200px;
+  overflow: auto;
+  display: none;
+}
+.sample .console p {
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.sample textarea {
+  width: 100%;
+  border: 1px solid #eee;
+  padding: 5px 10px;
+  border-radius: 5px;
+  outline: none;
+  -webkit-transition: border-color 0.1s, color 0.1s;
+  transition: border-color 0.1s, color 0.1s;
+}
+.sample textarea:focus {
+  border-color: #57c5f7;
+}
+
+.upload {
+  display: inline-block;
+  position: relative;
+}
+
+.upload button {
+  display: inline-block;
+  font-size: 14px;
+  line-height: normal;
+  background: white;
+  outline: none;
+  border: 1px solid #eee;
+  padding: 5px 10px;
+  border-radius: 15px;
+  -webkit-transition: border-color 0.1s, color 0.1s;
+  transition: border-color 0.1s, color 0.1s;
+}
+.upload button > * {
+  vertical-align: middle;
+}
+.upload:hover button {
+  border-color: #57c5f7;
+  color: #57c5f7;
+}
+
+.sample .droparea {
+  border: 1px dashed #D9D9D9;
+  height: 100px;
+  border-radius: 5px;
+  position: relative;
+}
+.sample .droparea p {
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+.sample .droparea .icon-upload2 {
+  font-size: 40px;
+  color: #57c5f7;
+}
+
+.droparea.blink {
+   border:1px dashed #fc6e51;
+   background: #e1e5e8;
+   -webkit-animation: glow .7s infinite;
+   animation: glow .7s infinite;
+}
+.droparea.enter {
+   border:1px solid #fc6e51;
+   background: none;
+   -webkit-animation: none;
+   animation: none;
+ }
+
 
 @media screen and (min-width: 64em) {
   .btn {
@@ -61,7 +191,7 @@ a {
 
 @media screen and (min-width: 64em) {
   .page-header {
-    padding: 5rem 6rem; } }
+    padding: 3rem 6rem; } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .page-header {
@@ -223,7 +353,7 @@ a {
 .site-footer {
   padding-top: 2rem;
   margin-top: 2rem;
-  border-top: solid 1px #eff0f1; }
+  border-top: solid 1px #eff0f1;text-align: center }
 
 .site-footer-owner {
   display: block;

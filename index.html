@@ -1,149 +1,347 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>uxcore-uploader by uxcore</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">uxcore-uploader</h1>
-      <h2 class="project-tagline">UX Core Uploader</h2>
-      <a href="https://github.com/uxcore/uxcore-uploader" class="btn">View on GitHub</a>
-      <a href="https://github.com/uxcore/uxcore-uploader/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/uxcore/uxcore-uploader/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+    <head>
+        <meta charset="UTF-8" />
+        <title>uxcore-uploadcore by uxcore</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="stylesheets/normalize.css" />
+        <link rel="stylesheet" href="stylesheets/stylesheet.css" />
+        <link rel="stylesheet" href="lib/highlight/styles/github.css"/>
+        <script src="lib/highlight/highlight.pack.js"></script>
+        <script src="lib/jquery/jquery.min.js"></script>
+        <script src="lib/spark-md5/spark-md5.min.js"></script>
+        <script src="lib/es5-shim/es5-shim.min.js"></script>
+        <script src="lib/es5-shim/es5-sham.min.js"></script>
+        <script src="lib/uxcore-uploadcore/uploadcore.js"></script>
+    </head>
+    <body>
+        <section class="page-header">
+            <h1 class="project-name">uxcore-uploadcore</h1>
 
-    <section class="main-content">
-      <h3>
-<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Start</h3>
+            <h2 class="project-tagline">Uxcore UploadCore</h2>
+            <a href="https://github.com/uxcore/uxcore-uploadcore" class="btn">View on GitHub</a>
+            <a href="https://github.com/uxcore/uxcore-uploadcore/zipball/master" class="btn">Download .zip</a>
+            <a href="https://github.com/uxcore/uxcore-uploadcore/tarball/master" class="btn">Download .tar.gz</a>
+        </section>
 
-<p><strong>引入资源</strong></p>
+        <section class="main-content">
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>path/to/jquery.js<span class="pl-pds">"</span></span> /&gt;
-&lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s"><span class="pl-pds">"</span>path/to/uxuploader.js<span class="pl-pds">"</span></span> /&gt;</pre></div>
+            <p><strong>引入资源</strong></p>
 
-<p><strong>创建对象</strong></p>
+<pre><code class="html">&lt;script type="text/javascript" src="path/to/jquery.js" /&gt;
+&lt;!--optional--&gt;
+&lt;script type="text/javascript" src="path/to/spark-md5.js" /&gt;
+&lt;script type="text/javascript" src="path/to/uxuploader.js" /&gt;</code></pre>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-k">import</span> Uploader, {Events, Status} <span class="pl-k">from</span> <span class="pl-s"><span class="pl-pds">'</span>uxuploader<span class="pl-pds">'</span></span>;
-<span class="pl-k">var</span> up <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Uploader</span>({
-    request<span class="pl-k">:</span> {
-        name<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>file<span class="pl-pds">'</span></span>,
-        url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>http://test.yanbingbing.com/upload.php<span class="pl-pds">'</span></span>,
-        params<span class="pl-k">:</span> {},
-        headers<span class="pl-k">:</span> <span class="pl-c1">null</span>,
-        withCredentials<span class="pl-k">:</span> <span class="pl-c1">false</span>,
-        timeout<span class="pl-k">:</span> <span class="pl-c1">0</span>,
-        chunkEnable<span class="pl-k">:</span> <span class="pl-c1">false</span>
-    },
-    processThreads<span class="pl-k">:</span> <span class="pl-c1">3</span>,
-    autoPending<span class="pl-k">:</span> <span class="pl-c1">true</span>,
-    queueCapcity<span class="pl-k">:</span> <span class="pl-c1">0</span>,
-    multiple<span class="pl-k">:</span> <span class="pl-c1">true</span>,
-    accept<span class="pl-k">:</span> <span class="pl-c1">null</span>,
-    sizeLimit<span class="pl-k">:</span> <span class="pl-c1">0</span>,
-    preventDuplicate<span class="pl-k">:</span> <span class="pl-c1">false</span>
-});</pre></div>
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample1 - 一个上传按钮</h3>
 
-<p><strong>事件监听</strong></p>
+            <div class="sample">
+                <div class="upload" id="clickarea">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-c">// 队列错误</span>
-up.on(Events.QUEUE_ERROR, (<span class="pl-smi">error</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueerror<span class="pl-pds">'</span></span>, error)
-})
-<span class="pl-c">// 队列添加</span>
-.on(Events.QUEUE_ADD, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueadd<span class="pl-pds">'</span></span>, file)
-})
-<span class="pl-c">// 队列上传开始</span>
-.on(Events.QUEUE_UPLOAD_START, ()<span class="pl-k"> =&gt;</span> {
-   <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueuploadstart<span class="pl-pds">'</span></span>);
-})
-<span class="pl-c">// 队列上传结束</span>
-.on(Events.QUEUE_UPLOAD_END, ()<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>queueuploadend<span class="pl-pds">'</span></span>);
-})
-<span class="pl-c">// 队列统计变化</span>
-.on(Events.QUEUE_STAT_CHANGE, (<span class="pl-smi">stat</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>statchange<span class="pl-pds">'</span></span>, stat.stat());
-})
-<span class="pl-c">// 文件上传开始</span>
-.on(Events.FILE_UPLOAD_START, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadstart<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件上传准备中</span>
-.on(Events.FILE_UPLOAD_PREPARING, (<span class="pl-smi">request</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadpreparing<span class="pl-pds">'</span></span>, request);
-})
-<span class="pl-c">// 文件上传准备完毕</span>
-.on(Events.FILE_UPLOAD_PREPARED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadprepared<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件块上传准备中</span>
-.on(Events.CHUNK_UPLOAD_PREPARING, (<span class="pl-smi">request</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>chunkuploadpreparing<span class="pl-pds">'</span></span>, request);
-})
-<span class="pl-c">// 文件块上传完成中</span>
-.on(Events.CHUNK_UPLOAD_COMPLETING, (<span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>chunkuploadcompleting<span class="pl-pds">'</span></span>, response);
-})
-<span class="pl-c">// 文件上传进度</span>
-.on(Events.FILE_UPLOAD_PROGRESS, (<span class="pl-smi">file</span>, <span class="pl-smi">progress</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadprogress<span class="pl-pds">'</span></span>, file, progress);
-})
-<span class="pl-c">// 文件上传结束</span>
-.on(Events.FILE_UPLOAD_END, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadend<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件上传完成中</span>
-.on(Events.FILE_UPLOAD_COMPLETING, (<span class="pl-smi">response</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleting<span class="pl-pds">'</span></span>, response);
-})
-<span class="pl-c">// 文件上传成功</span>
-.on(Events.FILE_UPLOAD_SUCCESS, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadsuccess<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件上传错误</span>
-.on(Events.FILE_UPLOAD_ERROR, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploaderror<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件上传完成</span>
-.on(Events.FILE_UPLOAD_COMPLETED, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>fileuploadcompleted<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件取消</span>
-.on(Events.FILE_CANCEL, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filecancel<span class="pl-pds">'</span></span>, file);
-})
-<span class="pl-c">// 文件状态变化</span>
-.on(Events.FILE_STATUS_CHANGE, (<span class="pl-smi">file</span>)<span class="pl-k"> =&gt;</span> {
-    <span class="pl-en">console</span><span class="pl-c1">.info</span>(<span class="pl-s"><span class="pl-pds">'</span>filestatuschange<span class="pl-pds">'</span></span>, file, file.getStatusName());
-});</pre></div>
+                <div class="console" id="console1"></div>
+            </div>
 
-<p><strong>添加触发区域</strong></p>
+<pre><code class="javascript">import jQuery from 'jquery';
+import {UploadCore, Events, Status} from 'uploadcore';
+const up = new UploadCore({
+    name: 'file',
+    url: 'http://test.yanbingbing.com/upload.php',
+    autoPending: true
+});
 
-<div class="highlight highlight-javascript"><pre><span class="pl-c">// 初始化拖拽上传控制</span>
-<span class="pl-k">const</span> <span class="pl-c1">dnd</span> <span class="pl-k">=</span> up.getDndCollector();
-<span class="pl-c">// 添加拖拽上传区域</span>
-dnd.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">documentElement</span>);
+// 事件监听
+up.on(Events.FILE_UPLOAD_COMPLETED, (file) => {
+    if (file.getStatus() === Status.SUCCESS) {
+        alert('上传成功');
+        console.info(file.response.getJson());
+    } else {
+        alert('上传失败');
+    }
+});
 
-<span class="pl-c">// 初始化拾取器</span>
-<span class="pl-k">const</span> <span class="pl-c1">picker</span> <span class="pl-k">=</span> up.getPickerCollector();
-<span class="pl-c">// 添加鼠标触发区域</span>
-picker.addArea(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>button<span class="pl-pds">'</span></span>));</pre></div>
+// 添加触发区域
+const picker = up.getPickerCollector();
+picker.addArea(document.getElementById('clickarea'));</code>
+</pre>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/uxcore/uxcore-uploader">uxcore-uploader</a> is maintained by <a href="https://github.com/uxcore">uxcore</a>.</span>
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample2 - 粘贴上传</h3>
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
+            <div class="sample">
+                <textarea id="pastearea" placeholder="粘贴文件上传"></textarea>
 
-    </section>
+                <div class="console" id="console2"></div>
+            </div>
+<pre><code class="javascript">const paster = up.getPasteCollector();
 
-  
-  </body>
+paster.addArea(document.getElementById('pastearea'));</code></pre>
+
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample3 - 多触发区域</h3>
+
+            <div class="sample">
+                <div class="upload" id="clickarea1">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
+                <div class="upload" id="clickarea2">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
+
+                <div class="console" id="console3"></div>
+            </div>
+
+<pre><code class="javascript">const picker = up.getPickerCollector();
+
+// 添加点击触发区域1
+picker.addArea(document.getElementById('clickarea1'));
+// 添加点击触发区域2
+picker.addArea(document.getElementById('clickarea2'));</code></pre>
+
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample4 - 拖拽上传</h3>
+
+            <div class="sample">
+                <div class="droparea" id="droparea">
+                    <p><i class="uxicon icon-upload2"></i></p>
+                    <p>拖拽文件到此区域</p>
+                </div>
+
+                <div class="console" id="console4"></div>
+            </div>
+
+<pre><code class="javascript">const $area = jQuery('#droparea');
+const dndArea = up.getDndCollector().addArea($area[0]);
+
+dndArea.on('start', () => {
+    // 拖拽开始
+    $area.addClass('blink');
+}).on('response', (e) => {
+    // 拖拽响应
+    if ($area[0].contains(e.target)) {
+        $area.addClass('enter');
+    } else {
+        $area.removeClass('enter');
+    }
+}).on('end', () => {
+    // 拖拽结束
+    $area.removeClass('enter blink');
+});</code></pre>
+
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample5 - 上传准备时：获取token</h3>
+
+            <div class="sample">
+                <div class="upload" id="clickarea3">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
+                <div class="console" id="console5"></div>
+            </div>
+
+<pre><code class="javascript">up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
+    const i = jQuery.Defferd();
+    // 请求token
+    jQuery.getJSON("http://test.yanbingbing.com/token.php", (json) => {
+        // 设置文件请求参数token
+        request.setParam('token', json.token);
+        i.resolve();
+    });
+    return i;
+});</code></pre>
+
+
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample6 - 秒传</h3>
+
+            <div class="sample">
+                <div class="upload" id="clickarea4">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
+                <div class="console" id="console6"></div>
+            </div>
+
+            <pre><code class="javascript">up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
+    const file = request.getFile();
+    // md5 start
+    file.md5().done((md5) => {
+        // 用md5值去服务端查询是否存在文件
+        jQuery.getJSON('http://test.yanbingbing.com/head.php', {md5:md5}).done((ret) => {
+            if (ret.code === 0 && ret.data) {
+                // 存在文件, 以响应的数据ret直接完成上传
+                file.complete(ret);
+            }
+        });
+    });
+});</code></pre>
+
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample7 - 分片上传</h3>
+
+            <div class="sample">
+                <div class="upload" id="clickarea5">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
+                <div class="console" id="console7"></div>
+            </div>
+
+            <pre><code class="javascript">const up = new UploadCore({
+    name: 'file',
+    url: 'http://test.yanbingbing.com/upload.php',
+    chunkSize: '400k', // 400k
+    chunkEnable: true,
+    chunkProcessThreads: 2,
+    autoPending: true
+});
+
+// 文件上传请求准备时
+up.on(Events.FILE_UPLOAD_PREPARING, (request) => {
+    if (request.isChunkEnable()) {
+        const i = jQuery.Deferred(),
+            file = request.getFile(),
+            chunkSize = request.getChunkSize();
+        // 改变请求地址
+        request.setUrl('http://test.yanbingbing.com/chunk.php');
+        // 创建上传事务
+        jQuery.getJSON('http://test.yanbingbing.com/transaction.php', {
+            size: file.size,
+            ext: file.ext,
+            chunkTotal: Math.ceil(file.size / chunkSize)
+        }).done((ret) => {
+            // 设置事务ID
+            request.setParam('transId', ret.data.transId);
+            i.resolve();
+        });
+
+        return i;
+    }
+})
+// 分块上传请求准备时
+.on(Events.CHUNK_UPLOAD_PREPARING, (request) => {
+    if (request.isMultiChunk()) {
+        const params = request.getParams();
+        const transId = request.getParam('transId', true);
+        // 设置分块上传请求序号
+        request.setParam('sequence', request.getIndex() + 1);
+    }
+})
+// 文件上传完成时
+.on(Events.FILE_UPLOAD_COMPLETING, (response) => {
+    if (response.isFromMultiChunkResponse()) {
+        const i = jQuery.Deferred();
+        const params = response.getFileRequest().getParams();
+        const transId = params.getParam('transId', true);
+        // 请求完成事务
+        jQuery.post('http://test.yanbingbing.com/transaction.php?transId='+ transId).done((ret) => {
+            // 设置上传完成响应数据
+            response.setResponse(ret);
+            i.resolve();
+        });
+        return i;
+    }
+});
+</code></pre>
+
+
+
+            <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample8 - 事件监听</h3>
+
+            <div class="sample">
+                <div class="upload" id="clickarea6">
+                    <button><i class="uxicon icon-upload"></i>点击上传</button>
+                </div>
+                <div class="console" id="console8"></div>
+            </div>
+
+        <pre><code class="javascript">// 队列上传开始
+up.on(Events.QUEUE_UPLOAD_START, () => {
+    console.info(Events.QUEUE_UPLOAD_START);
+})
+// 队列上传结束
+.on(Events.QUEUE_UPLOAD_END, () => {
+    console.info(Events.QUEUE_UPLOAD_END);
+})
+// 队列错误
+.on(Events.QUEUE_ERROR, (error) => {
+    console.info(Events.QUEUE_ERROR, error);
+})
+// 队列添加
+.on(Events.QUEUE_FILE_ADDED, (file) => {
+    console.info(Events.QUEUE_ERROR, file);
+})
+// 文件被过滤
+.on(Events.QUEUE_FILE_FILTERED, (file, error) => {
+    console.info(Events.QUEUE_FILE_FILTERED, file, error);
+})
+// 队列统计变化
+.on(Events.QUEUE_STAT_CHANGE, (stat) => {
+    console.info(Events.QUEUE_STAT_CHANGE, stat.stat());
+})
+// 文件上传开始
+.on(Events.FILE_UPLOAD_START, (file) => {
+    console.info(Events.FILE_UPLOAD_START, file);
+})
+// 文件上传准备中
+.on(Events.FILE_UPLOAD_PREPARING, (request) => {
+    console.info(Events.FILE_UPLOAD_PREPARING, request);
+})
+// 文件上传准备完毕
+.on(Events.FILE_UPLOAD_PREPARED, (file) => {
+    console.info(Events.FILE_UPLOAD_PREPARED, file);
+})
+// 文件块上传准备中
+.on(Events.CHUNK_UPLOAD_PREPARING, (request) => {
+    console.info(Events.CHUNK_UPLOAD_PREPARING, request);
+})
+// 文件块上传完成中
+.on(Events.CHUNK_UPLOAD_COMPLETING, (response) => {
+    console.info(Events.CHUNK_UPLOAD_COMPLETING, response);
+})
+// 文件上传进度
+.on(Events.FILE_UPLOAD_PROGRESS, (file, progress) => {
+    console.info(Events.FILE_UPLOAD_PROGRESS, file, progress);
+})
+// 文件上传结束
+.on(Events.FILE_UPLOAD_END, (file) => {
+    console.info(Events.FILE_UPLOAD_END, file);
+})
+// 文件上传完成中
+.on(Events.FILE_UPLOAD_COMPLETING, (response) => {
+    console.info(Events.FILE_UPLOAD_COMPLETING, response);
+})
+// 文件上传成功
+.on(Events.FILE_UPLOAD_SUCCESS, (file, response) => {
+    console.info(Events.FILE_UPLOAD_SUCCESS, file, response);
+})
+// 文件上传错误
+.on(Events.FILE_UPLOAD_ERROR, (file, error) => {
+    console.info(Events.FILE_UPLOAD_ERROR, file, error);
+})
+// 文件上传完成
+.on(Events.FILE_UPLOAD_COMPLETED, (file, status) => {
+    console.info(Events.FILE_UPLOAD_COMPLETED, file, status);
+})
+// 文件取消
+.on(Events.FILE_CANCEL, (file) => {
+    console.info(Events.FILE_CANCEL, file);
+})
+// 文件状态变化
+.on(Events.FILE_STATUS_CHANGE, (file, status) => {
+    console.info(Events.FILE_STATUS_CHANGE, file, status);
+});</code></pre>
+
+
+            <footer class="site-footer">
+                <span class="site-footer-owner"><a href="https://github.com/uxcore/uxcore-uploadcore">uxcore-uploadcore</a> is maintained by <a
+                        href="https://github.com/uxcore">uxcore</a>.</span>
+
+                <span class="site-footer-credits">This page using the <a
+                        href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a
+                        href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+            </footer>
+
+        </section>
+
+
+
+<script>
+    hljs.initHighlightingOnLoad();
+</script>
+
+<script src="index.js"></script>
+</body>
 </html>

@@ -1,0 +1,25 @@
+{
+  "name": "uxcore-uploadcore-pages",
+  "version": "1.0.0",
+  "description": "github pages for uxcore-uploadcore",
+  "main": "index.html",
+  "dependencies": {
+    "browser-sync": "~2.9.3",
+    "gulp": "~3.9.0",
+    "node-libs-browser": "~0.5.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "gulp watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uxcore/uxcore-uploadcore.git"
+  },
+  "author": "yanbingbing",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/uxcore/uxcore-uploadcore/issues"
+  },
+  "homepage": "https://github.com/uxcore/uxcore-uploadcore"
+}

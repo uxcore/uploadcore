@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Emitter from '../emitter';
 import Runtime from '../html5/runtime';
 import File from '../file';
@@ -89,7 +88,7 @@ function prepare() {
         return;
     }
 
-    const $doc = $(document),
+    const $doc = jQuery(document),
         runtime = Runtime.getInstance();
 
     let started = 0, enter = 0, endTimer;

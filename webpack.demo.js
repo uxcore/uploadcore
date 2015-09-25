@@ -2,14 +2,11 @@ var path = require("path");
 var webpack = require('webpack');
 
 module.exports = {
-    entry: {
-        'uploadcore': './src/index.js'
-    },
+    debug: true,
+    entry: {'demo': './demo/index.js'},
     output: {
-        path: path.join(__dirname, "dist"),
-        libraryTarget: "umd",
+        path: path.join(__dirname, "cache"),
         filename: "[name].js",
-        library: "UploadCore",
         sourceMapFilename: "[file].map"
     },
     devtool: '#source-map',
@@ -18,11 +15,10 @@ module.exports = {
             {test: /\.js$/, loader: 'babel-loader'}
         ]
     },
-    plugins: [
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin()
-    ],
     resolve: {
-        extensions: ['', '.js']
+        extensions: ['', '.js'],
+        alias: {
+            'uxcore-uploadcore': path.join(__dirname, "src/index")
+        }
     }
 };

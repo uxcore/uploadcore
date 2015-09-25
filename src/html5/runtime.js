@@ -1,4 +1,3 @@
-import {Deferred} from 'jquery';
 import Runtime from '../runtime';
 import Transport from './transport';
 
@@ -13,7 +12,7 @@ export default class Html5Runtime extends Runtime {
     }
 
     getAsDataUrl(blob, timeout) {
-        let i = Deferred(),
+        let i = jQuery.Deferred(),
             fr = new FileReader, timer;
 
         fr.onloadend = () => {
@@ -59,7 +58,7 @@ export default class Html5Runtime extends Runtime {
     }
 
     md5(blob) {
-        const i = Deferred();
+        const i = jQuery.Deferred();
 
         if (!window.SparkMD5) {
             i.reject();

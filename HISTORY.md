@@ -2,6 +2,10 @@
 
 ------------
 
+## 2.0.1
+
+`FIXED` default value for chunkProcessThreads.
+
 ## 2.0.0
 
 `IMPROVED` restruct project.

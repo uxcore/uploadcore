@@ -1,7 +1,6 @@
 import Emitter from './emitter';
 import Events from './events';
 import Status, {StatusName} from './status';
-import {Deferred} from 'jquery';
 
 let uid = 0;
 function guid() {
@@ -136,7 +135,7 @@ export default class File extends Emitter {
             return this._sessionPromise;
         }
 
-        let session = Deferred();
+        let session = jQuery.Deferred();
 
         session.progress((progress) => {
             this.setStatus(Status.PROGRESS);

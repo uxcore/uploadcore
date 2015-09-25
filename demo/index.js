@@ -1,5 +1,4 @@
-import $ from 'jquery';
-import {UploadCore, Events, Status} from 'uploadcore';
+import {UploadCore, Events, Status} from 'uxcore-uploadcore';
 
 UploadCore.setSWF('/dist/flashpicker.swf');
 

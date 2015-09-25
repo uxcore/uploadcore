@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Emitter from '../emitter';
 import Runtime from '../html5/runtime';
 import File from '../file';
@@ -10,7 +9,7 @@ export default class PasteCollector {
     }
 
     addArea(area) {
-        area = area.on ? area : $(area);
+        area = area.on ? area : jQuery(area);
 
         const core = this.core,
             runtime = this.runtime,

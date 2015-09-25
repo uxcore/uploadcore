@@ -19,6 +19,7 @@ var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 
 var webpackConfig = require("./webpack.config");
+var webpackDemoConfig = require("./webpack.demo");
 
 gulp.task("default", ["server"]);
 gulp.task("watch", ["server"]);
@@ -38,14 +39,7 @@ gulp.task("server", ["demo"], function (callback) {
 });
 
 gulp.task("demo", function (callback) {
-    // modify some webpack config options
-    var config = Object.create(webpackConfig);
-    config.debug = true;
-    config.entry.demo = './demo/index.js';
-
-    config.output.path = path.join(__dirname, "cache");
-
-    webpack(config, function (err) {
+    webpack(webpackDemoConfig, function (err) {
         if (err) {
             throw new gutil.PluginError("webpack", err);
         }
@@ -59,16 +53,7 @@ gulp.task('reload_demo', ['demo'], function () {
 });
 
 gulp.task("build", function (callback) {
-    // modify some webpack config options
-    var myConfig = Object.create(webpackConfig);
-
-    myConfig.plugins = myConfig.plugins.concat(
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin()
-    );
-
-    // run webpack
-    webpack(myConfig, function (err, stats) {
+    webpack(webpackConfig, function (err, stats) {
         if (err) {
             throw new gutil.PluginError("webpack", err);
         }

@@ -1,5 +1,4 @@
 import {TimeoutError, AbortError, NetworkError} from '../errors';
-import {Deferred} from 'jquery';
 
 export default class Html5Transport {
     /**
@@ -7,7 +6,7 @@ export default class Html5Transport {
      * @returns {*}
      */
     generate(request) {
-        const i = Deferred();
+        const i = jQuery.Deferred();
         const xhr = new XMLHttpRequest;
 
         let timeoutTimer;

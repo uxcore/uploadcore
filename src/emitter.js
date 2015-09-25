@@ -1,4 +1,3 @@
-import {Deferred} from 'jquery';
 
 export default class Emitter {
 
@@ -116,7 +115,7 @@ function HookInvoker(hooks, initialData, context) {
     let _error = null;
     let _aborted;
 
-    const i = Deferred();
+    const i = jQuery.Deferred();
     const ret = i.promise();
 
     ret.abort = () => {

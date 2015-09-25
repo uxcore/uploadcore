@@ -1,16 +1,15 @@
 import Emitter from './emitter';
 import Events from './events';
 import {NetworkError} from './errors';
-import {Deferred} from 'jquery';
 
 export default class Runtime extends Emitter {
     md5(blob) {
-        var i = Deferred();
+        var i = jQuery.Deferred();
         i.reject();
         return i.promise();
     }
     getAsDataUrl(file, timeout) {
-        var i = Deferred();
+        var i = jQuery.Deferred();
         i.reject();
         return i.promise();
     }
@@ -46,7 +45,7 @@ class Uploading {
      * @returns {*}
      */
     generate(request) {
-        const i = Deferred(),
+        const i = jQuery.Deferred(),
             file = request.getFile(),
             runtime = this.runtime;
 
@@ -115,7 +114,7 @@ class Uploading {
     }
 
     slot(request, retries) {
-        let i = Deferred(),
+        let i = jQuery.Deferred(),
             runtime = this.runtime,
             core = request.getFile().getCore();
 

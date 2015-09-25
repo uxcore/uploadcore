@@ -1,5 +1,4 @@
 import {TimeoutError, AbortError, NetworkError} from '../errors';
-import {Deferred} from 'jquery';
 
 export default class FlashTransport {
     constructor(flashRuntime) {
@@ -11,7 +10,7 @@ export default class FlashTransport {
      * @returns {*}
      */
     generate(request) {
-        const i = Deferred(), flashRuntime = this.flashRuntime, blob = request.getBlob();
+        const i = jQuery.Deferred(), flashRuntime = this.flashRuntime, blob = request.getBlob();
 
         let timeoutTimer;
 

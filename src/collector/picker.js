@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Emitter from '../emitter';
 import Html5Runtime from '../html5/runtime';
 import FlashRuntime from '../flash/runtime';
@@ -8,7 +7,7 @@ let SWF_URL = '';
 
 class FlashTriggerCollection {
     constructor(core, onFiles) {
-        let overlay = $('<label></label>');
+        let overlay = jQuery('<label></label>');
         overlay.css({
             position: 'fixed',
             opacity: 0,
@@ -54,7 +53,7 @@ class FlashTriggerCollection {
 
     add(trigger) {
         const overlay = this.overlay, emitter = new Emitter;
-        trigger = trigger.on ? trigger : $(trigger);
+        trigger = trigger.on ? trigger : jQuery(trigger);
         trigger.on('mouseover.flashpicker', (e) => {
             let rect = e.currentTarget.getBoundingClientRect();
             overlay.css({
@@ -87,7 +86,7 @@ class Html5TriggerCollection {
         const runtime = Html5Runtime.getInstance();
 
         this._createInput = (label) => {
-            let input = $(document.createElement('input'));
+            let input = jQuery(document.createElement('input'));
 
             input.attr('type', 'file');
             input.css({
@@ -117,7 +116,7 @@ class Html5TriggerCollection {
     }
 
     add(trigger) {
-        const label = $('<label></label>'), emitter = new Emitter;
+        const label = jQuery('<label></label>'), emitter = new Emitter;
         label.css({
             position: 'absolute',
             opacity: 0,
@@ -130,8 +129,7 @@ class Html5TriggerCollection {
             overflow: 'hidden'
         });
         this._createInput(label);
-        trigger = trigger.append ? trigger : $(trigger);
-        trigger.append(label);
+        label.appendTo(trigger);
 
         emitter.destroy = () => {
             emitter.removeAllListeners();

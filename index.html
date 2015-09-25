@@ -26,12 +26,22 @@
 
         <section class="main-content">
 
-            <p><strong>引入资源</strong></p>
+            <p><strong>安装</strong></p>
 
-<pre><code class="html">&lt;script type="text/javascript" src="path/to/jquery.js" /&gt;
+<pre><code class="shell">npm install uxcore-uploadcore</code></pre>
+
+            <p><strong>引入类库</strong></p>
+
+<pre><code class="html">&lt;!--required--&gt;
+&lt;script src="path/to/jquery.js" /&gt;
 &lt;!--optional--&gt;
-&lt;script type="text/javascript" src="path/to/spark-md5.js" /&gt;
-&lt;script type="text/javascript" src="path/to/uxuploader.js" /&gt;</code></pre>
+&lt;script src="path/to/spark-md5.js" /&gt;
+&lt;script src="path/to/es5-shim/es5-shim.min.js" /&gt;
+&lt;script src="path/to/es5-shim/es5-sham.min.js" /&gt;</code></pre>
+
+            <p><strong>导入资源</strong></p>
+
+            <pre><code class="javascript">import {UploadCore, Events, Status} from 'uxcore-uploadcore';</code></pre>
 
             <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample1 - 一个上传按钮</h3>
 
@@ -43,9 +53,7 @@
                 <div class="console" id="console1"></div>
             </div>
 
-<pre><code class="javascript">import jQuery from 'jquery';
-import {UploadCore, Events, Status} from 'uploadcore';
-const up = new UploadCore({
+<pre><code class="javascript">const up = new UploadCore({
     name: 'file',
     url: 'http://test.yanbingbing.com/upload.php',
     autoPending: true

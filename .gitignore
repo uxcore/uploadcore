@@ -12,3 +12,4 @@ Thumbs.db
 .*proj
 *.swp
 node_modules
+cache

@@ -2,8 +2,6 @@ var Core = UploadCore.UploadCore,
     Events = UploadCore.Events,
     Status = UploadCore.Status;
 
-
-
 function output(target, content, clear) {
     var $target = jQuery(target).show();
     if (clear) {

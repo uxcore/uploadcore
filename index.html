@@ -34,9 +34,7 @@
 
             <p><strong>引入依赖库</strong></p>
 
-<pre><code class="html">&lt;!--required--&gt;
-&lt;script src="path/to/jquery.js"&gt;&lt;/script&gt;
-&lt;!--optional--&gt;
+<pre><code class="html">&lt;!--optional--&gt;
 &lt;script src="path/to/spark-md5.js"&gt;&lt;/script&gt;
 &lt;script src="path/to/es5-shim/es5-shim.min.js"&gt;&lt;/script&gt;
 &lt;script src="path/to/es5-shim/es5-sham.min.js"&gt;&lt;/script&gt;</code></pre>
@@ -118,22 +116,23 @@ picker.addArea(document.getElementById('clickarea2'));</code></pre>
                 <div class="console" id="console4"></div>
             </div>
 
-<pre><code class="javascript">const $area = jQuery('#droparea');
-const dndArea = up.getDndCollector().addArea($area[0]);
+<pre><code class="javascript">const droparea = document.getElementById('droparea');
+const dndArea = up.getDndCollector().addArea(droparea);
 
 dndArea.on('start', () => {
     // 拖拽开始
-    $area.addClass('blink');
+    droparea.classList.add('blink');
 }).on('response', (e) => {
     // 拖拽响应
-    if ($area[0].contains(e.target)) {
-        $area.addClass('enter');
+    if (droparea.contains(e.target)) {
+        droparea.classList.add('enter');
     } else {
-        $area.removeClass('enter');
+        droparea.classList.remove('enter');
     }
 }).on('end', () => {
     // 拖拽结束
-    $area.removeClass('enter blink');
+    droparea.classList.remove('enter');
+    droparea.classList.remove('blink');
 });</code></pre>
 
             <h3><a class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample5 - 上传准备时：获取token</h3>

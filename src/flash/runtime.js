@@ -73,13 +73,13 @@ export default class FlashRuntime extends Runtime {
 
         const _this = this;
         function display() {
-            let w = trigger[0].offsetWidth, h = trigger[0].offsetHeight, flash;
+            let w = trigger.offsetWidth, h = trigger.offsetHeight, flash;
             if (!w || !h || !(flash = createFlash(swf, callInterface))) {
                 setTimeout(display, 1000);
                 return;
             }
 
-            trigger.append(_this.flash = flash);
+            trigger.appendChild(_this.flash = flash);
         }
 
         display();

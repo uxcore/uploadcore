@@ -6,7 +6,7 @@
 [download-url]: https://npmjs.org/package/uxcore-uploadcore
 
 <p align="center">
-  <a href="https://uxcore.github.io/uxcore-uploadcore">
+  <a href="http://uxcore.github.io/uxcore-uploadcore">
     <img src="https://img.alicdn.com/tps/TB1WqsaJFXXXXahXVXXXXXXXXXX-135-135.png">
   </a>
 </p>
@@ -17,7 +17,7 @@
 * 分片上传
 * html5-runtime，flash-runtime
 * 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
-* 基于es6，jquery
+* 拥抱es6
 
 
 ## Usage 最佳实践

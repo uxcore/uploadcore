@@ -84,12 +84,11 @@ class Area extends Emitter {
 const Collectors = [];
 
 function prepare() {
-    if (!('DataTransfer' in window) || !('FileList' in window)) {
+    if (!('DataTransfer' in window) || !('FileList' in window) || !document.addEventListener) {
         return;
     }
 
-    const $doc = jQuery(document),
-        runtime = Runtime.getInstance();
+    const runtime = Runtime.getInstance();
 
     let started = 0, enter = 0, endTimer;
     const dataTransferReader = createReader((file, responders) => {
@@ -118,7 +117,7 @@ function prepare() {
     const move = (e) => {
         const has = Collectors.filter(responder => responder.response(e)).length > 0;
 
-        const dataTransfer = (e.originalEvent || e).dataTransfer;
+        const dataTransfer = e.dataTransfer;
 
         if (dataTransfer) {
             dataTransfer.dropEffect = has ? 'copy' : 'none';
@@ -155,7 +154,7 @@ function prepare() {
             return;
         }
 
-        let dataTransfer = (e.originalEvent || e).dataTransfer;
+        let dataTransfer = e.dataTransfer;
 
         try {
             if (dataTransfer.getData('text/html')) {
@@ -166,8 +165,10 @@ function prepare() {
         dataTransferReader(dataTransfer, responders);
     };
 
-    $doc.on('dragenter dragover dragleave', drag);
-    $doc.on('drop', drop);
+    document.addEventListener('dragenter', drag, false);
+    document.addEventListener('dragover', drag, false);
+    document.addEventListener('dragleave', drag, false);
+    document.addEventListener('drop', drop, false);
 }
 
 export default class DndCollector {

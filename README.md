@@ -15,7 +15,7 @@
 ## Usage 最佳实践
 
 ```js
-import {UploadCore, Events, Status} from 'uploadcore';
+import {UploadCore, Events, Status} from 'uxcore-uploadcore';
 const up = new UploadCore({
     name: 'file',
     url: 'http://test.yanbingbing.com/upload.php'

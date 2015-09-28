@@ -2,6 +2,10 @@
 
 ------------
 
+## 2.0.2
+
+`IMPROVED` remove jQuery dependencies.
+
 ## 2.0.1
 
 `FIXED` default value for chunkProcessThreads.

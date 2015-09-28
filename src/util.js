@@ -284,7 +284,7 @@ export function Deferred(func) {
 
                     deferred[tuple[1]](function () {
                         const returned = fn && fn.apply(this, arguments);
-                        if (returned && typeof isFunction(returned.promise)) {
+                        if (returned && isFunction(returned.promise)) {
                             returned.promise()
                                 .progress(newDefer.notify)
                                 .done(newDefer.resolve)

@@ -1,6 +1,6 @@
 {
   "name": "uxcore-uploadcore",
-  "version": "2.0.1",
+  "version": "2.0.2-beta",
   "description": "uxcore uploadcore",
   "main": "dist/uploadcore.js",
   "scripts": {
@@ -36,7 +36,6 @@
     "es6-promise": "^2.1.1",
     "object-assign": "^2.0.0",
     "es5-shim": "^4.1.13",
-    "jquery": "^1.11.3",
     "spark-md5": "^1.0.0"
   },
   "dependencies": {},

@@ -1,6 +1,15 @@
-# Uxcore UploadCore
+# Uxcore UploadCore [![NPM version][npm-image]][npm-url] [![NPM download][download-image]][download-url]
 
-[![npm package](https://img.shields.io/npm/v/uxcore-uploadcore.svg?style=flat-square)](https://www.npmjs.org/package/uxcore-uploadcore)
+[npm-image]: http://img.shields.io/npm/v/uxcore-uploadcore.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/uxcore-uploadcore
+[download-image]: https://img.shields.io/npm/dm/uxcore-uploadcore.svg?style=flat-square
+[download-url]: https://npmjs.org/package/uxcore-uploadcore
+
+<p align="center">
+  <a href="https://uxcore.github.io/uxcore-uploadcore">
+    <img src="https://img.alicdn.com/tps/TB1WqsaJFXXXXahXVXXXXXXXXXX-135-135.png">
+  </a>
+</p>
 
 ------
 **特性一览**

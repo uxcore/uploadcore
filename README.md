@@ -7,7 +7,7 @@
 
 <p align="center">
   <a href="http://uxcore.github.io/uxcore-uploadcore">
-    <img src="https://img.alicdn.com/tps/TB1WqsaJFXXXXahXVXXXXXXXXXX-135-135.png">
+    <img width="360" src="https://img.alicdn.com/tps/TB1aOUSJFXXXXacXXXXXXXXXXXX.svg">
   </a>
 </p>
 

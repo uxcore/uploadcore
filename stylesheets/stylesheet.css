@@ -202,7 +202,7 @@ a {
     padding: 2rem 1rem; } }
 
 .project-name {
-  background: url(../images/favicon.png) no-repeat left center;
+  background: url(../images/icon.svg) no-repeat left center;
   min-height: 65px;
   background-size: 65px;
   margin-top: 0;

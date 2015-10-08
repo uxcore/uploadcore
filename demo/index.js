@@ -16,7 +16,7 @@ const core = new UploadCore({
     autoPending: true,
     queueCapcity: 0,
     multiple: true,
-    accept: 'images',
+    accept: null,
     sizeLimit: '1g',
     preventDuplicate: false
 });

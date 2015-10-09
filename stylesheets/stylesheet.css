@@ -204,17 +204,20 @@ a {
 .project-name {
   background: url(../images/icon.svg) no-repeat left center;
   min-height: 65px;
-  background-size: 65px;
+  background-size: 55px;
   margin-top: 0;
   margin-bottom: 0.1rem; }
 
 @media screen and (min-width: 64em) {
   .project-name {
-    font-size: 3.25rem; } }
+    font-size: 3.25rem;
+    background-size: 70px;
+  } }
 
 @media screen and (min-width: 42em) and (max-width: 64em) {
   .project-name {
-    font-size: 2.25rem; } }
+    font-size: 2.25rem;
+    background-size: 60px; } }
 
 @media screen and (max-width: 42em) {
   .project-name {

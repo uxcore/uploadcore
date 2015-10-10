@@ -1,7 +1,7 @@
-import {TimeoutError, AbortError, NetworkError} from '../errors';
-import {Deferred} from 'jquery';
+const {Deferred} = require('../util');
+const {TimeoutError, AbortError, NetworkError} = require('../errors');
 
-export default class FlashTransport {
+class FlashTransport {
     constructor(flashRuntime) {
         this.flashRuntime = flashRuntime;
     }
@@ -74,3 +74,5 @@ export default class FlashTransport {
         return ret;
     }
 }
+
+module.exports = FlashTransport;

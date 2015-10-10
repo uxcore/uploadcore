@@ -1,6 +1,6 @@
-import {Deferred} from 'jquery';
+const {Deferred} = require('./util');
 
-export default class Emitter {
+class Emitter {
 
     on(event, listener) {
         event = event.toLowerCase();
@@ -110,6 +110,8 @@ export default class Emitter {
         return HookInvoker(listeners.slice(0), data, this);
     }
 }
+
+module.exports = Emitter;
 
 function HookInvoker(hooks, initialData, context) {
     let _data = initialData;

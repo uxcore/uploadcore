@@ -1,4 +1,4 @@
-import {parseSize} from './util';
+const {parseSize} = require('./util');
 
 class ChunkResponse {
     /**
@@ -246,7 +246,7 @@ class Params {
 
 const MIN_CHUNK_SIZE = 256 * 1024; // 256K
 
-export default class FileRequest {
+class FileRequest {
     constructor(file, options = {}) {
         this.file = file;
         this.name = options.name || 'file';
@@ -368,3 +368,5 @@ export default class FileRequest {
         return new FileResponse(response, this);
     }
 }
+
+module.exports = FileRequest;

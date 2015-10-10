@@ -2,6 +2,18 @@
 
 ------------
 
+## 2.1.0
+
+`IMPROVED` use require&module.exports instead import&export.
+
+## 2.0.2
+
+`IMPROVED` remove jQuery dependencies.
+
+## 2.0.1
+
+`FIXED` default value for chunkProcessThreads.
+
 ## 2.0.0
 
 `IMPROVED` restruct project.

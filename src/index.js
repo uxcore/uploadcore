@@ -1,6 +1,10 @@
-import UploadCore from './core';
-import Events from './events';
-import Status from './status';
+const Core = require('./core');
+const Events = require('./events');
+const {Status} = require('./status');
 
-export default UploadCore;
-export {UploadCore, Events, Status};
+Core.Events = Events;
+Core.Status = Status;
+Core.UploadCore = Core;
+Core.Core = Core;
+
+module.exports = Core;

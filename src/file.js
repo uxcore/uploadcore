@@ -1,7 +1,7 @@
-import Emitter from './emitter';
-import Events from './events';
-import Status, {StatusName} from './status';
-import {Deferred} from 'jquery';
+const Emitter = require('./emitter');
+const Events = require('./events');
+const {Deferred} = require('./util');
+const {Status, StatusName} = require('./status');
 
 let uid = 0;
 function guid() {
@@ -28,7 +28,7 @@ function guessType(ext) {
     return null;
 }
 
-export default class Progress {
+class Progress {
     constructor(total, loaded) {
         this.change(total, loaded);
     }
@@ -44,7 +44,7 @@ export default class Progress {
     }
 }
 
-export default class File extends Emitter {
+class File extends Emitter {
     constructor(runtime, source, filename) {
         super();
 
@@ -255,3 +255,5 @@ export default class File extends Emitter {
         this.cancel();
     }
 }
+
+module.exports = File;

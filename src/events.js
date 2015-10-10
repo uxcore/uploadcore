@@ -1,4 +1,4 @@
-export default {
+module.exports = {
     QUEUE_UPLOAD_START: 'queueuploadstart', // 队列上传开始
     QUEUE_UPLOAD_END: 'queueuploadend', // 队列上传结束
     QUEUE_FILE_ADDED: 'queuefileadded', // 队列添加了一个文件

@@ -1,9 +1,9 @@
-import Emitter from './emitter';
-import Events from './events';
-import {NetworkError} from './errors';
-import {Deferred} from 'jquery';
+const Emitter = require('./emitter');
+const Events = require('./events');
+const {Deferred} = require('./util');
+const {NetworkError} = require('./errors');
 
-export default class Runtime extends Emitter {
+class Runtime extends Emitter {
     md5(blob) {
         var i = Deferred();
         i.reject();
@@ -35,6 +35,7 @@ export default class Runtime extends Emitter {
     }
 }
 
+module.exports = Runtime;
 
 class Uploading {
     constructor(runtime) {

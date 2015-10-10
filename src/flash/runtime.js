@@ -1,5 +1,5 @@
-import Runtime from '../runtime';
-import Transport from './transport';
+const Runtime = require('../runtime');
+const Transport = require('./transport');
 
 function getFlashVersion() {
     let version;
@@ -60,7 +60,7 @@ function guid(prefix) {
     return ret;
 }
 
-export default class FlashRuntime extends Runtime {
+class FlashRuntime extends Runtime {
     constructor(trigger, swf, options) {
         super();
 
@@ -73,13 +73,13 @@ export default class FlashRuntime extends Runtime {
 
         const _this = this;
         function display() {
-            let w = trigger[0].offsetWidth, h = trigger[0].offsetHeight, flash;
+            let w = trigger.offsetWidth, h = trigger.offsetHeight, flash;
             if (!w || !h || !(flash = createFlash(swf, callInterface))) {
                 setTimeout(display, 1000);
                 return;
             }
 
-            trigger.append(_this.flash = flash);
+            trigger.appendChild(_this.flash = flash);
         }
 
         display();
@@ -112,3 +112,5 @@ export default class FlashRuntime extends Runtime {
         delete window[this.callInterface];
     }
 }
+
+module.exports = FlashRuntime;

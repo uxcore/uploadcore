@@ -1,21 +1,29 @@
-# Uxcore UploadCore
+# Uxcore UploadCore [![NPM version][npm-image]][npm-url] [![NPM download][download-image]][download-url]
 
-[![npm package](https://img.shields.io/npm/v/uxcore-uploadcore.svg?style=flat-square)](https://www.npmjs.org/package/uxcore-uploadcore)
+[npm-image]: http://img.shields.io/npm/v/uxcore-uploadcore.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/uxcore-uploadcore
+[download-image]: https://img.shields.io/npm/dm/uxcore-uploadcore.svg?style=flat-square
+[download-url]: https://npmjs.org/package/uxcore-uploadcore
 
-------
+<p align="center">
+  <a href="http://uxcore.github.io/uxcore-uploadcore">
+    <img width="360" src="https://img.alicdn.com/tps/TB1aOUSJFXXXXacXXXXXXXXXXXX.svg">
+  </a>
+</p>
+
 **特性一览**
 
 * md5（用于秒传）
 * 分片上传
 * html5-runtime，flash-runtime
 * 多种收集器Collector（DndCollector、PasteCollector、PickerCollector）
-* 基于es6，jquery
+* 拥抱es6
 
 
 ## Usage 最佳实践
 
 ```js
-import {UploadCore, Events, Status} from 'uploadcore';
+import {UploadCore, Events, Status} from 'uxcore-uploadcore';
 const up = new UploadCore({
     name: 'file',
     url: 'http://test.yanbingbing.com/upload.php'

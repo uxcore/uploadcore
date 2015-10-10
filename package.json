@@ -1,5 +1,4 @@
 {
-  "family": "alinw",
   "name": "uxcore-uploadcore",
   "version": "2.1.0-beta",
   "description": "uxcore uploadcore",
@@ -17,9 +16,12 @@
     "url": "http://github.com/uxcore/uxcore-uploadcore/issues"
   },
   "keywords": [
-    "uploader",
-    "uploadcore",
-    "es6"
+    "react",
+    "es6",
+    "react-component",
+    "uxcore",
+    "upload",
+    "uploader"
   ],
   "devDependencies": {
     "babel-core": "^5.1.13",
@@ -30,15 +32,13 @@
     "gulp-rename": "^1.2.2",
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.8.4",
-    "es5-shim": "^4.1.13",
     "browser-sync": "^2.9.3",
     "es6-promise": "^2.1.1",
-    "object-assign": "^2.0.0"
-  },
-  "dependencies": {
-    "jquery": "^1.11.3",
+    "object-assign": "^2.0.0",
+    "es5-shim": "^4.1.13",
     "spark-md5": "^1.0.0"
   },
+  "dependencies": {},
   "author": "onbing",
   "contributors": [],
   "license": "MIT",

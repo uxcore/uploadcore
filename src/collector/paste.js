@@ -1,27 +1,21 @@
-import $ from 'jquery';
-import Emitter from '../emitter';
-import Runtime from '../html5/runtime';
-import File from '../file';
+const Emitter = require('../emitter');
+const Runtime = require('../html5/runtime');
+const File = require('../file');
 
-export default class PasteCollector {
+class PasteCollector {
     constructor(core) {
         this.core = core;
         this.runtime = Runtime.getInstance();
     }
 
     addArea(area) {
-        area = area.on ? area : $(area);
-
         const core = this.core,
             runtime = this.runtime,
             emitter = new Emitter;
 
         const paste = (e) => {
-            if (e.isDefaultPrevented()) {
-                return;
-            }
 
-            const clipboardData = (e.originalEvent || e).clipboardData || window.clipboardData,
+            const clipboardData = e.clipboardData || window.clipboardData,
                 items = clipboardData.items,
                 files = clipboardData.files;
 
@@ -73,15 +67,19 @@ export default class PasteCollector {
             }
         };
 
-        if (('DataTransfer' in window) && ('FileList' in window)) {
-            area.on('paste', paste);
+        if (('DataTransfer' in window) && ('FileList' in window) && area.addEventListener) {
+            area.addEventListener('paste', paste, false);
         }
 
         emitter.destroy = () => {
             emitter.removeAllListeners();
-            area.off('paste', paste);
+            if (area.removeEventListener) {
+                area.removeEventListener('paste', paste, false);
+            }
         };
 
         return emitter;
     }
 }
+
+module.exports = PasteCollector;

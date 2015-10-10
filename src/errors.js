@@ -5,21 +5,21 @@ class _Error extends Error {
     }
 }
 
-export class AbortError extends _Error {
+class AbortError extends _Error {
     constructor(message) {
         super(message);
         this.name = 'AbortError';
     }
 }
 
-export class TimeoutError extends _Error {
+class TimeoutError extends _Error {
     constructor(message) {
         super(message);
         this.name = 'TimeoutError';
     }
 }
 
-export class NetworkError extends _Error {
+class NetworkError extends _Error {
     constructor(status, message) {
         super(message);
         this.name = 'NetworkError';
@@ -27,14 +27,14 @@ export class NetworkError extends _Error {
     }
 }
 
-export class QueueLimitError extends _Error {
+class QueueLimitError extends _Error {
     constructor() {
         super('queue limit');
         this.name = 'QueueLimitError';
     }
 }
 
-export class FilterError extends _Error {
+class FilterError extends _Error {
     constructor(file, message) {
         super(message);
         this.name = 'FilterError';
@@ -42,23 +42,27 @@ export class FilterError extends _Error {
     }
 }
 
-export class DuplicateError extends FilterError {
+class DuplicateError extends FilterError {
     constructor(file, message) {
         super(file, message);
         this.name = 'DuplicateError';
     }
 }
 
-export class FileExtensionError extends FilterError {
+class FileExtensionError extends FilterError {
     constructor(file, message) {
         super(file, message);
         this.name = 'FileExtensionError';
     }
 }
 
-export class FileSizeError extends FilterError {
+class FileSizeError extends FilterError {
     constructor(file, message) {
         super(file, message);
         this.name = 'FileSizeError';
     }
 }
+
+
+module.exports = {AbortError, TimeoutError, NetworkError,
+    QueueLimitError, FilterError, DuplicateError, FileExtensionError, FileSizeError};

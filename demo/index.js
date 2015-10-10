@@ -1,9 +1,8 @@
-import $ from 'jquery';
-import {UploadCore, Events, Status} from 'uploadcore';
+const {Core, Events, Status} = require('uxcore-uploadcore');
 
-UploadCore.setSWF('/dist/flashpicker.swf');
+Core.setSWF('/dist/flashpicker.swf');
 
-const core = new UploadCore({
+const core = new Core({
     request: {
         name: 'file',
         url: 'http://test.yanbingbing.com/upload.php',
@@ -17,7 +16,7 @@ const core = new UploadCore({
     autoPending: true,
     queueCapcity: 0,
     multiple: true,
-    accept: 'images',
+    accept: null,
     sizeLimit: '1g',
     preventDuplicate: false
 });

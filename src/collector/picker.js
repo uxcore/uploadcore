@@ -1,8 +1,9 @@
-import Emitter from '../emitter';
-import Html5Runtime from '../html5/runtime';
-import FlashRuntime from '../flash/runtime';
-import File from '../file';
-import {extend} from '../util';
+const Emitter = require('../emitter');
+const Html5Runtime = require('../html5/runtime');
+const FlashRuntime = require('../flash/runtime');
+const File = require('../file');
+const {extend} = require('../util');
+
 
 let SWF_URL = '';
 
@@ -157,7 +158,7 @@ class Html5TriggerCollection {
     }
 }
 
-export default class PickerCollector {
+class PickerCollector {
     static setSWF(url) {
         SWF_URL = url;
     }
@@ -182,3 +183,5 @@ export default class PickerCollector {
         return this.triggerCollection.add(area);
     }
 }
+
+module.exports = PickerCollector;

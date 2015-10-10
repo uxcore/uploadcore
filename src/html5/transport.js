@@ -1,7 +1,7 @@
-import {Deferred} from '../util';
-import {TimeoutError, AbortError, NetworkError} from '../errors';
+const {Deferred} = require('../util');
+const {TimeoutError, AbortError, NetworkError} = require('../errors');
 
-export default class Html5Transport {
+class Html5Transport {
     /**
      * @param {ChunkRequest} request
      * @returns {*}
@@ -81,3 +81,5 @@ export default class Html5Transport {
         return ret;
     }
 }
+
+module.exports = Html5Transport;

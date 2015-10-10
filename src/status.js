@@ -1,4 +1,4 @@
-export default {
+exports.Status = {
     ALL: 255, // 所有状态
 
     PROCESS: 31, // INITED -> END
@@ -13,7 +13,7 @@ export default {
     CANCELLED: 128  // 上传取消 和 queued 相反, 退出队列
 };
 
-export var StatusName = {
+exports.StatusName = {
     1: 'inited',
     2: 'queued',
     4: 'pending',

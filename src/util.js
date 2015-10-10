@@ -1,4 +1,4 @@
-export function formatSize(size) {
+exports.formatSize = function (size) {
     size = parseFloat(size);
     const prefixesSI = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
         base = 1024;
@@ -8,9 +8,9 @@ export function formatSize(size) {
     size = size / Math.pow(base, index);
     size = Math.round(size * powedPrecision) / powedPrecision;
     return size + prefixesSI[index] + 'B';
-}
+};
 
-export function parseSize(size) {
+exports.parseSize = function (size) {
     if (typeof size !== 'string') {
         return size;
     }
@@ -30,7 +30,7 @@ export function parseSize(size) {
         size *= units[u];
     }
     return size;
-}
+};
 
 const ACCEPTs = {
     images: {
@@ -60,7 +60,7 @@ function normalizeExtensions(extensions) {
     }).filter(ext => ext !== null);
 }
 
-export function normalizeAccept(accepts) {
+function normalizeAccept(accepts) {
     if (!accepts) return null;
 
     if (!Array.isArray(accepts)) {
@@ -82,7 +82,9 @@ export function normalizeAccept(accepts) {
     }).filter(accept => accept !== null);
 }
 
-function createOptions(option) {
+exports.normalizeAccept = normalizeAccept;
+
+    function createOptions(option) {
     const options = {};
     (option.match(/\S+/g) || []).forEach((flag) => {
         options[flag] = true;
@@ -90,12 +92,14 @@ function createOptions(option) {
     return options;
 }
 
-export function extend(target, source) {
+function extend(target, source) {
     for (let key in source) {
         target[key] = source[key];
     }
     return target;
 }
+
+exports.extend = extend;
 
 function isFunction(obj) {
     return typeof obj === 'function';
@@ -248,7 +252,7 @@ function Callbacks(options) {
     return _this;
 };
 
-export function Deferred(func) {
+function Deferred(func) {
     let tuples = [
         ["resolve", "done", Callbacks("once memory"), "resolved"],
         ["reject", "fail", Callbacks("once memory"), "rejected"],
@@ -327,3 +331,5 @@ export function Deferred(func) {
 
     return deferred;
 }
+
+exports.Deferred = Deferred;

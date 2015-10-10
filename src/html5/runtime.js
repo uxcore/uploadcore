@@ -1,10 +1,10 @@
-import Runtime from '../runtime';
-import {Deferred} from '../util';
-import Transport from './transport';
+const Runtime = require('../runtime');
+const {Deferred} = require('../util');
+const Transport = require('./transport');
 
 let instance;
 
-export default class Html5Runtime extends Runtime {
+class Html5Runtime extends Runtime {
     static getInstance() {
         if (!instance) {
             instance = new Html5Runtime;
@@ -117,3 +117,5 @@ export default class Html5Runtime extends Runtime {
         return ret;
     }
 }
+
+module.exports = Html5Runtime;

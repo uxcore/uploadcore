@@ -1,8 +1,8 @@
-import Emitter from '../emitter';
-import Runtime from '../html5/runtime';
-import File from '../file';
+const Emitter = require('../emitter');
+const Runtime = require('../html5/runtime');
+const File = require('../file');
 
-export default class PasteCollector {
+class PasteCollector {
     constructor(core) {
         this.core = core;
         this.runtime = Runtime.getInstance();
@@ -81,3 +81,5 @@ export default class PasteCollector {
         return emitter;
     }
 }
+
+module.exports = PasteCollector;

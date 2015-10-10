@@ -1,16 +1,16 @@
-import Emitter from './emitter';
-import Events from './events';
-import Status from './status';
-import {QueueLimitError, FilterError, DuplicateError, FileExtensionError, FileSizeError} from './errors';
-import {formatSize, parseSize, normalizeAccept} from './util';
-import FileRequest from './filerequest';
-import DndCollector from './collector/dnd';
-import PasteCollector from './collector/paste';
-import PickerCollector from './collector/picker';
+const Emitter = require('./emitter');
+const Events = require('./events');
+const {Status} = require('./status');
+const {QueueLimitError, FilterError, DuplicateError, FileExtensionError, FileSizeError} = require('./errors');
+const {formatSize, parseSize, normalizeAccept} = require('./util');
+const FileRequest = require('./filerequest');
+const DndCollector = require('./collector/dnd');
+const PasteCollector = require('./collector/paste');
+const PickerCollector = require('./collector/picker');
 
 const REQUEST_OPTIONS = ['name', 'url', 'params', 'action', 'data', 'headers', 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 'chunkRetries', 'chunkProcessThreads'];
 
-export default class Core extends Emitter {
+class Core extends Emitter {
 
     constructor(options = {}) {
         super();
@@ -199,6 +199,7 @@ export default class Core extends Emitter {
     }
 }
 
+module.exports = Core;
 
 class Set {
     constructor() {

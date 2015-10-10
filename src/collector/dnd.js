@@ -1,6 +1,6 @@
-import Emitter from '../emitter';
-import Runtime from '../html5/runtime';
-import File from '../file';
+const Emitter = require('../emitter');
+const Runtime = require('../html5/runtime');
+const File = require('../file');
 
 const MAX_NUM_ONCE = 100;
 
@@ -171,7 +171,7 @@ function prepare() {
     document.addEventListener('drop', drop, false);
 }
 
-export default class DndCollector {
+class DndCollector {
 
     constructor(core) {
         if (Collectors.length < 1) {
@@ -222,3 +222,5 @@ export default class DndCollector {
         this.areas.forEach((area) => area.end(e));
     }
 }
+
+module.exports = DndCollector;

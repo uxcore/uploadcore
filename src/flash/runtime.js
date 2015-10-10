@@ -1,5 +1,5 @@
-import Runtime from '../runtime';
-import Transport from './transport';
+const Runtime = require('../runtime');
+const Transport = require('./transport');
 
 function getFlashVersion() {
     let version;
@@ -60,7 +60,7 @@ function guid(prefix) {
     return ret;
 }
 
-export default class FlashRuntime extends Runtime {
+class FlashRuntime extends Runtime {
     constructor(trigger, swf, options) {
         super();
 
@@ -112,3 +112,5 @@ export default class FlashRuntime extends Runtime {
         delete window[this.callInterface];
     }
 }
+
+module.exports = FlashRuntime;

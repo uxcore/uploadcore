@@ -15,5 +15,4 @@ Thumbs.db
 .svn/
 *.swp
 cache
-webpack.*.js
-gulpfile.js
+webpack.demo.js

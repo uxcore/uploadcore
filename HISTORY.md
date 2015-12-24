@@ -5,6 +5,7 @@
 ## 2.1.0
 
 `IMPROVED` use require&module.exports instead import&export.
+`IMPROVED` add `<exports>.VERSION` field.
 
 ## 2.0.2
 

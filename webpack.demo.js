@@ -15,6 +15,11 @@ module.exports = {
             {test: /\.js$/, loader: 'babel-loader'}
         ]
     },
+    plugins: [
+        new webpack.DefinePlugin({
+            VERSION: JSON.stringify("dev")
+        })
+    ],
     resolve: {
         extensions: ['', '.js'],
         alias: {

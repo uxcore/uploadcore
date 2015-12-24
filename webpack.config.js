@@ -1,5 +1,6 @@
 var path = require("path");
 var webpack = require('webpack');
+var packageInfo = require("./package.json");
 
 module.exports = {
     entry: {
@@ -20,7 +21,10 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.DefinePlugin({
+            VERSION: JSON.stringify(packageInfo.version)
+        })
     ],
     resolve: {
         extensions: ['', '.js']

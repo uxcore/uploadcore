@@ -23,7 +23,10 @@
 ## Usage 最佳实践
 
 ```js
-import {UploadCore, Events, Status} from 'uxcore-uploadcore';
+import {UploadCore, Events, Status, VERSION} from 'uxcore-uploadcore';
+
+console.log('UploadCore version %s', VERSION);
+
 const up = new UploadCore({
     name: 'file',
     url: 'http://test.yanbingbing.com/upload.php'
@@ -215,6 +218,11 @@ videos = {
 
 
 ## APIs 接口
+
+### UploadCore.VERSION
+
+静态变量，获得版本号。
+
 
 ### UploadCore.addConstraint
 

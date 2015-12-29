@@ -12,7 +12,9 @@ module.exports = {
     devtool: '#source-map',
     module: {
         loaders: [
-            {test: /\.js$/, loader: 'babel-loader'}
+            {test: /\.js$/, loader: 'babel-loader', query: {
+                presets: ['es2015', 'react']
+            }}
         ]
     },
     plugins: [

@@ -66,6 +66,15 @@ gulp.task("build", function (callback) {
     });
 });
 
+gulp.task("min", function (callback) {
+    gulp.src('dist/uploadcore.js')
+        .pipe(rename({suffix: '.min'}))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist'));
+
+    callback();
+});
+
 gulp.task('flash', function (callback) {
     gulp.src('src/flash/bin/FlashPicker.swf')
         .pipe(rename('flashpicker.swf'))

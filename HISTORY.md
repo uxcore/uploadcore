@@ -2,10 +2,10 @@
 
 ------------
 
-## 2.1.1
+## 2.1.2
 
 `IMPROVED` update babel6.
-`FIXED` use src/index for main.
+`FIXED` add none min version.
 
 ## 2.1.0
 

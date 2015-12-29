@@ -1,3 +1,3632 @@
-!function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.UploadCore=t():e.UploadCore=t()}(this,function(){return function(e){function t(r){if(n[r])return n[r].exports;var i=n[r]={exports:{},id:r,loaded:!1};return e[r].call(i.exports,i,i.exports,t),i.loaded=!0,i.exports}var n={};return t.m=e,t.c=n,t.p="",t(0)}([function(e,t,n){"use strict";var r=n(1),i=n(4),o=n(5),s=o.Status;r.Events=i,r.Status=s,r.UploadCore=r,r.VERSION="2.1.1",r.Core=r,e.exports=r},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function o(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=n(2),a=n(4),c=n(5),l=c.Status,f=n(6),h=f.QueueLimitError,p=f.FilterError,v=f.DuplicateError,d=f.FileExtensionError,y=f.FileSizeError,m=n(3),g=m.formatSize,k=m.parseSize,b=m.normalizeAccept,E=n(7),w=n(8),_=n(13),P=n(14),O=["name","url","params","action","data","headers","withCredentials","timeout","chunkEnable","chunkSize","chunkRetries","chunkProcessThreads"],R=function(e){function t(){var e=arguments.length<=0||void 0===arguments[0]?{}:arguments[0];r(this,t);var n=i(this,Object.getPrototypeOf(t).call(this));n.autoPending=e.autoPending||e.auto,n.capcity=e.capcity||e.queueCapcity||0,n.multiple=null==e.multiple?!0:e.multiple,n.accept=b(e.accept),n.sizeLimit=k(e.sizeLimit||e.fileSizeLimit||0),n.pending=new A(e.processThreads),n.stat=new L,n.constraints=new S,n.filters=new T,n.multiple||(n.capcity=1),n.capcity>0&&n.addConstraint(function(){return n.stat.getTotal()>=n.capcity}),n.accept&&n.accept.length>0&&n.addFilter(function(e){return n.accept.some(function(t){return t.extensions&&t.extensions.indexOf(e.ext)>-1})?void 0:new d(e,'extension "'+e.ext+'" is not allowed')}),n.sizeLimit>0&&n.addFilter(function(e){return e.size>n.sizeLimit?new y(e,"filesize:"+g(e.size)+" is greater than limit:"+g(n.sizeLimit)):void 0}),e.preventDuplicate&&n.addFilter(function(e){return n.stat.getFiles().some(function(t){return t.name===e.name&&t.size===e.size})?new v(e,'file "'+e.name+'" already in queue'):void 0}),Array.isArray(e.filters)&&e.fitlers.forEach(function(e){return n.addFilter(e)});var o=e.request||{};return O.forEach(function(t){e.hasOwnProperty(t)&&(o[t]=e[t])}),n.requestOptions=o,n}return o(t,e),s(t,[{key:"createFileRequest",value:function(e){return new E(e,this.requestOptions)}},{key:"isLimit",value:function(){return this.constraints.some()}},{key:"addConstraint",value:function(e){return this.constraints.add(e)}},{key:"addFilter",value:function(e){return this.filters.add(e)}},{key:"add",value:function(e){var t=this;if(this.isLimit())return this.emit(a.QUEUE_ERROR,new h),-1;var n=this.filters.filter(e);return n||this.stat.add(e)||(n=new v(e,'file "'+e.name+'" already in queue')),n?(this.emit(a.QUEUE_FILE_FILTERED,e,n),this.emit(a.QUEUE_ERROR,n),0):(e.setStatus(l.QUEUED),e.on(a.FILE_STATUS_CHANGE,function(n){n===l.CANCELLED?t.stat.remove(e):n===l.PENDING&&setTimeout(function(){t.pending.add(e)&&1===t.pending.size()&&t.emit(a.QUEUE_UPLOAD_START)},1),t.emit(a.QUEUE_STAT_CHANGE,t.stat),t.stat.getFiles(l.PROCESS).length<1&&t.emit(a.QUEUE_UPLOAD_END)}),e.setCore(this),this.emit(a.QUEUE_FILE_ADDED,e),this.emit(a.QUEUE_STAT_CHANGE,this.stat),this.autoPending&&e.pending(),1)}},{key:"isMultiple",value:function(){return this.multiple}},{key:"isFull",value:function(){return this.capcity>0&&this.getTotal()>=this.capcity}},{key:"isEmpty",value:function(){return this.getTotal()<1}},{key:"getAccept",value:function(){return this.accept}},{key:"getStat",value:function(){return this.stat}},{key:"getTotal",value:function(){return this.getStat().getTotal()}},{key:"getFiles",value:function(e){return this.getStat().getFiles(e)}},{key:"stat",value:function(e){return this.getStat().stat(e)}},{key:"getPickerCollector",value:function(){return this.picker||(this.picker=new P(this)),this.picker}},{key:"getDndCollector",value:function(){return this.dnd||(this.dnd=new w(this)),this.dnd}},{key:"getPasteCollector",value:function(){return this.paster||(this.paster=new _(this)),this.paster}}],[{key:"setSWF",value:function(e){P.setSWF(e)}}]),t}(u);e.exports=R;var C=function(){function e(){r(this,e),this._set=[]}return s(e,[{key:"size",value:function(){return this._set.length}},{key:"shift",value:function(){return this._set.shift()}},{key:"pop",value:function(){return this._set.pop()}},{key:"toArray",value:function(){return this._set.slice(0)}},{key:"add",value:function(e){return this.has(e)?!1:(this._set.push(e),!0)}},{key:"has",value:function(e){return this._set.indexOf(e)>-1}},{key:"remove",value:function(e){var t=this._set.indexOf(e);return t>-1?(this._set.splice(t,1),!0):!1}},{key:"clear",value:function(){this._set=[]}}]),e}(),L=function(){function e(){r(this,e),this.files=new C}return s(e,[{key:"add",value:function(e){return this.files.add(e)}},{key:"remove",value:function(e){this.files.remove(e)}},{key:"getTotal",value:function(){return this.files.size()}},{key:"getFiles",value:function(e){var t=this.files.toArray();return e?t.filter(function(t){return!!(t.getStatus()&e)}):t}},{key:"stat",value:function(e){var t={},n=this.getFiles(e);return n.forEach(function(e){var n=e.getStatus();t[n]=n in t?t[n]+1:1}),t.sum=n.length,t}}]),e}(),S=function(){function e(){r(this,e),this.constraints=new C}return s(e,[{key:"add",value:function(e){return this.constraints.add(e),this}},{key:"remove",value:function(e){return this.constraints.remove(e),this}},{key:"some",value:function(){var e=this;return this.constraints.toArray().some(function(t){return t.call(e)})}}]),e}(),T=function(){function e(){r(this,e),this.filters=new C}return s(e,[{key:"add",value:function(e){return this.filters.add(e),this}},{key:"remove",value:function(e){return this.filters.remove(e),this}},{key:"filter",value:function(e){var t=null;return this.filters.toArray().every(function(n){var r=void 0;try{r=n(e)}catch(i){r=i}return"string"==typeof r?(t=new p(e,r),!1):r instanceof Error?(t=r instanceof p?r:new p(e,r.toString()),!1):!0}),t}}]),e}(),A=function(){function e(t){r(this,e),this.threads=t||2,this.heading=new C,this.pending=new C}return s(e,[{key:"add",value:function(e){var t=this;return this.pending.add(e)?(e.session().always(function(){return t.pending.remove(e)}),this.load(),!0):!1}},{key:"size",value:function(){return this.pending.size()+this.heading.size()}},{key:"process",value:function(e){var t=this;this.heading.add(e)&&e.session().always(function(){t.heading.remove(e),t.load()})}},{key:"load",value:function(){for(var e;this.heading.size()<this.threads&&(e=this.pending.shift());)e.prepare()&&this.process(e)}}]),e}()},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t,n){var r=t,i=null,o=void 0,s=u(),a=s.promise();a.abort=function(){o=!0};var c=function(e){o||(e&&(i=e instanceof Error?e:new Error(e)),s.reject(i||new Error("Unknown")))},l=function(){o||(null!=i?c():s.resolve(r))},f=function(e){null==e||null!=r&&e.constructor!==r.constructor||(r=e)},h=function p(t){if(!o){if(t instanceof Error&&(i=t),null!=i)return c();f(t);var s=e.shift();if(!s)return l();var u=void 0;try{u=s.call(n,r)}catch(a){return c(a)}u&&u.then?u.then(p,c):p(u)}};return setTimeout(h,1),a}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),s=n(3),u=s.Deferred,a=function(){function e(){r(this,e)}return o(e,[{key:"on",value:function(e,t){return e=e.toLowerCase(),this._events||(this._events={}),this._events[e]||(this._events[e]=[]),this._events[e].push(t),this}},{key:"once",value:function(e,t){function n(){r.off(e,n),t.apply(this,arguments)}e=e.toLowerCase();var r=this;return n.listener=t,this.on(e,n),this}},{key:"off",value:function(e,t){e=e.toLowerCase();var n=void 0;if(!this._events||!(n=this._events[e]))return this;for(var r=n.length;r-->0;)if(n[r]===t||n[r].listener===t){n.splice(r,1);break}return 0===n.length&&delete this._events[e],this}},{key:"removeAllListeners",value:function(e){return e?delete this._events[e.toLowerCase()]:this._events=[],this}},{key:"setPropagationTarget",value:function(t){t instanceof e&&(this.propagationTarget=t)}},{key:"emit",value:function(e){for(var t=arguments.length,n=Array(t>1?t-1:0),r=1;t>r;r++)n[r-1]=arguments[r];return this.applyEmit(e,n),this}},{key:"applyEmit",value:function(e,t){var n=this;e=e.toLowerCase();var r=void 0;if(this._events&&(r=this._events[e])&&r.slice(0).forEach(function(e){return e.apply(n,t)}),this.propagationTarget){var i=t.slice(0);i.unshift(this),this.propagationTarget.applyEmit(e,i)}return this}},{key:"invoke",value:function(e,t){e=e.toLowerCase();var n=void 0;return this._events&&(n=this._events[e])||(n=[]),i(n.slice(0),t,this)}}]),e}();e.exports=a},function(e,t){"use strict";function n(e){return"string"!=typeof e?"":e.toLowerCase().split(/ *[ ,;|+] */).map(function(e){var t=/^\*?\.?(\w+)$/.exec(e);return t?t[1]:null}).filter(function(e){return null!==e})}function r(e){return e?(Array.isArray(e)||(e=[e]),e.map(function(e){if("string"==typeof e&&(e=e.toLowerCase())&&c.hasOwnProperty(e))return c[e];var t=n(e.extensions||e);return t.length?{title:e.title||"",extensions:t,mimeTypes:e.mimeTypes||""}:null}).filter(function(e){return null!==e})):null}function i(e){var t={};return(e.match(/\S+/g)||[]).forEach(function(e){t[e]=!0}),t}function o(e,t){for(var n in t)e[n]=t[n];return e}function s(e){return"function"==typeof e}function u(e){function t(i){for(r=e.memory&&i,u=!0,c=f||0,f=0,a=h.length,n=!0;h&&a>c;c++)if(h[c].apply(i[0],i[1])===!1&&e.stopOnFalse){r=!1;break}n=!1,h&&(v?v.length&&t(v.shift()):r?h=[]:p.disable())}e="string"==typeof e?i(e):o({},e);var n=void 0,r=void 0,u=void 0,a=void 0,c=void 0,f=void 0,h=[],p=void 0,v=!e.once&&[];return p={add:function(){if(h){var i=h.length;!function o(t){t.forEach(function(t){s(t)?e.unique&&p.has(t)||h.push(t):Array.isArray(t)&&o(t)})}(l(arguments)),n?a=h.length:r&&(f=i,t(r))}return this},remove:function(){return h&&l(arguments).forEach(function(e){for(var t=h.length;--t>=0;)h[t]===e&&(h.splice(t,1),n&&(a>=t&&a--,c>=t&&c--))}),this},has:function(e){return e?h.indexOf(e)>-1:!(!h||!h.length)},empty:function(){return h=[],a=0,this},disable:function(){return h=v=r=null,this},disabled:function(){return!h},lock:function(){return v=null,r||p.disable(),this},locked:function(){return!v},fireWith:function(e,r){return!h||u&&!v||(r=r||[],r=[e,r.slice?r.slice():r],n?v.push(r):t(r)),this},fire:function(){return p.fireWith(this,arguments),this},fired:function(){return!!u}}}function a(e){var t=[["resolve","done",u("once memory"),"resolved"],["reject","fail",u("once memory"),"rejected"],["notify","progress",u("memory")]],n="pending",r={},i={state:function(){return n},always:function(){var e=l(arguments);return r.done(e).fail(e),this},then:function(){var e=arguments;return a(function(n){t.forEach(function(t,o){var u=s(e[o])&&e[o];r[t[1]](function(){var e=u&&u.apply(this,arguments);e&&s(e.promise)?e.promise().done(n.resolve).fail(n.reject).progress(n.notify):n[t[0]+"With"](this===i?n.promise():this,u?[e]:arguments)})}),e=null}).promise()},promise:function(e){return null!=e?o(e,i):i}};return i.pipe=i.then,t.forEach(function(e,o){var s=e[2],u=e[3];i[e[1]]=s.add,u&&s.add(function(){n=u},t[1^o][2].disable,t[2][2].lock),r[e[0]]=function(){return r[e[0]+"With"](this===r?i:this,arguments),this},r[e[0]+"With"]=s.fireWith}),i.promise(r),e&&e.call(r,r),r}t.formatSize=function(e){e=parseFloat(e);var t=["","K","M","G","T","P","E","Z","Y"],n=1024,r=e?Math.floor(Math.log(e)/Math.log(n)):0;r=Math.min(r,t.length-1);var i=Math.pow(10,2>r?0:r>2?2:1);return e/=Math.pow(n,r),e=Math.round(e*i)/i,e+t[r]+"B"},t.parseSize=function(e){if("string"!=typeof e)return e;var t={t:1099511627776,g:1073741824,m:1048576,k:1024};e=/^([0-9\.]+)([tgmk]?)b?$/i.exec(e);var n=e[2];return e=+e[1],t.hasOwnProperty(n)&&(e*=t[n]),e};var c={images:{title:"Images",extensions:["jpg","jpeg","gif","png","bmp","svg","tiff","tif","ico","jpe","svgz","pct","psp","ai","psd","raw","webp"]},audios:{title:"Audios",extensions:["aac","aif","flac","iff","m4a","m4b","mid","midi","mp3","mpa","mpc","oga","ogg","ra","ram","snd","wav","wma"]},videos:{title:"Videos",extensions:["avi","divx","flv","m4v","mkv","mov","mp4","mpeg","mpg","ogm","ogv","ogx","rm","rmvb","smil","webm","wmv","xvid"]}};t.normalizeAccept=r,t.extend=o;var l=Array.from||function(e){return[].slice.call(e)};t.Deferred=a},function(e,t){"use strict";e.exports={QUEUE_UPLOAD_START:"queueuploadstart",QUEUE_UPLOAD_END:"queueuploadend",QUEUE_FILE_ADDED:"queuefileadded",QUEUE_FILE_FILTERED:"queuefilefiltered",QUEUE_ERROR:"queueerror",QUEUE_STAT_CHANGE:"statchange",FILE_UPLOAD_START:"fileuploadstart",FILE_UPLOAD_PREPARING:"fileuploadpreparing",FILE_UPLOAD_PREPARED:"fileuploadprepared",CHUNK_UPLOAD_PREPARING:"chunkuploadpreparing",CHUNK_UPLOAD_COMPLETING:"chunkuploadcompleting",FILE_UPLOAD_PROGRESS:"fileuploadprogress",FILE_UPLOAD_END:"fileuploadend",FILE_UPLOAD_COMPLETING:"fileuploadcompleting",FILE_UPLOAD_SUCCESS:"fileuploadsuccess",FILE_UPLOAD_ERROR:"fileuploaderror",FILE_UPLOAD_COMPLETED:"fileuploadcompleted",FILE_CANCEL:"filecancel",FILE_STATUS_CHANGE:"filestatuschange"}},function(e,t){"use strict";t.Status={ALL:255,PROCESS:31,INITED:1,QUEUED:2,PENDING:4,PROGRESS:8,END:16,SUCCESS:32,ERROR:64,CANCELLED:128},t.StatusName={1:"inited",2:"queued",4:"pending",8:"progress",16:"end",32:"success",64:"error",128:"cancelled"}},function(e,t){"use strict";function n(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function r(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function i(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var o=function(e){function t(e){n(this,t);var i=r(this,Object.getPrototypeOf(t).call(this,e));return i.message=e,i}return i(t,e),t}(Error),s=function(e){function t(e){n(this,t);var i=r(this,Object.getPrototypeOf(t).call(this,e));return i.name="AbortError",i}return i(t,e),t}(o),u=function(e){function t(e){n(this,t);var i=r(this,Object.getPrototypeOf(t).call(this,e));return i.name="TimeoutError",i}return i(t,e),t}(o),a=function(e){function t(e,i){n(this,t);var o=r(this,Object.getPrototypeOf(t).call(this,i));return o.name="NetworkError",o.status=e,o}return i(t,e),t}(o),c=function(e){function t(){n(this,t);var e=r(this,Object.getPrototypeOf(t).call(this,"queue limit"));return e.name="QueueLimitError",e}return i(t,e),t}(o),l=function(e){function t(e,i){n(this,t);var o=r(this,Object.getPrototypeOf(t).call(this,i));return o.name="FilterError",o.file=e,o}return i(t,e),t}(o),f=function(e){function t(e,i){n(this,t);var o=r(this,Object.getPrototypeOf(t).call(this,e,i));return o.name="DuplicateError",o}return i(t,e),t}(l),h=function(e){function t(e,i){n(this,t);var o=r(this,Object.getPrototypeOf(t).call(this,e,i));return o.name="FileExtensionError",o}return i(t,e),t}(l),p=function(e){function t(e,i){n(this,t);var o=r(this,Object.getPrototypeOf(t).call(this,e,i));return o.name="FileSizeError",o}return i(t,e),t}(l);e.exports={AbortError:s,TimeoutError:u,NetworkError:a,QueueLimitError:c,FilterError:l,DuplicateError:f,FileExtensionError:h,FileSizeError:p}},function(e,t,n){"use strict";function r(e){return e&&"undefined"!=typeof Symbol&&e.constructor===Symbol?"symbol":typeof e}function i(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var o=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),s=n(3),u=s.parseSize,a=function(){function e(t,n){i(this,e),this.rawResponse=t,this.chunkRequest=n}return o(e,[{key:"getChunkRequest",value:function(){return this.chunkRequest}},{key:"getRawResponse",value:function(){return this.rawResponse}},{key:"getResponse",value:function(){return this.response||this.rawResponse}},{key:"getJson",value:function(){var e=this.getResponse();return null==e?null:"function"==typeof e.getJson?e.getJson():"string"==typeof e?""===e?null:JSON.parse(e):e}},{key:"setResponse",value:function(e){return this.response=e,this}}]),e}(),c=function(){function e(t,n,r){i(this,e),this.index=t,this.blob=n,this.fileRequest=r}return o(e,[{key:"getName",value:function(){return this.fileRequest.getName()}},{key:"getFile",value:function(){return this.fileRequest.getFile()}},{key:"getBlob",value:function(){return this.blob}},{key:"getIndex",value:function(){return this.index}},{key:"isMultiChunk",value:function(){return this.getFile().source!==this.blob}},{key:"getParams",value:function(){return this.params||(this.params=this.fileRequest.getParams().clone()),this.params}},{key:"getParam",value:function(e){return this.getParams().getParam(e)}},{key:"setParam",value:function(e,t){return this.getParams().setParam(e,t),this}},{key:"getFileRequest",value:function(){return this.fileRequest}},{key:"getUrl",value:function(){return this.url||this.fileRequest.getUrl()}},{key:"setUrl",value:function(e){return this.url=e,this}},{key:"getHeaders",value:function(){return this.headers||(this.headers=this.fileRequest.getHeaders().slice(0)),this.headers}},{key:"setHeader",value:function(e,t){var n=this.getHeaders();return n.push({name:e,value:t}),this}},{key:"isWithCredentials",value:function(){return this.fileRequest.isWithCredentials()}},{key:"getTimeout",value:function(){return this.fileRequest.getTimeout()}},{key:"createChunkResponse",value:function(e){return new a(e,this)}}]),e}(),l=function(){function e(t,n){i(this,e),this.rawResponse=t,this.fileRequest=n}return o(e,[{key:"isFromMultiChunkResponse",value:function(){return this.rawResponse instanceof a?this.rawResponse.getChunkRequest().isMultiChunk():!1}},{key:"getFileRequest",value:function(){return this.fileRequest}},{key:"getRawResponse",value:function(){return this.rawResponse}},{key:"getResponse",value:function(){return null!=this.response?this.response:this.rawResponse instanceof a?this.rawResponse.getResponse():this.rawResponse}},{key:"getJson",value:function(){var e=this.getResponse();return null==e?null:"function"==typeof e.getJson?e.getJson():"string"==typeof e?""===e?null:JSON.parse(e):e}},{key:"setResponse",value:function(e){return this.response=e,this}}]),e}(),f=function(){function e(t){if(i(this,e),Array.isArray(t))this.params=t.slice(0);else if("object"===("undefined"==typeof t?"undefined":r(t))){this.params=[];for(var n in t)t.hasOwnProperty(n)&&this.params.push({name:n,value:t[n]})}else this.params=[]}return o(e,[{key:"setParam",value:function(e,t){this.removeParam(e),this.addParam(e,t)}},{key:"addParam",value:function(e,t){this.params.push({name:e,value:t})}},{key:"removeParam",value:function(e){this.params=this.params.filter(function(t){return t.name!==e})}},{key:"getParam",value:function(e,t){var n=this.params.filter(function(t){return t.name===e}).map(function(e){return e.value});return t?n.shift():n}},{key:"clone",value:function(){return new e(this.params)}},{key:"toArray",value:function(){return this.params}},{key:"toString",value:function(){var e=this.params.map(function(e){return encodeURIComponent(e.name)+"="+(null==e.value?"":encodeURIComponent(e.value))});return e.join("&")}}]),e}(),h=262144,p=function(){function e(t){var n=arguments.length<=1||void 0===arguments[1]?{}:arguments[1];i(this,e),this.file=t,this.name=n.name||"file",this.url=n.url||n.action,this.params=new f(n.params||n.data),this.headers=n.headers||[],this.withCredentials=n.withCredentials,this.timeout=n.timeout||0,this.chunkSize=n.chunkSize||0,this.chunkRetries=n.chunkRetries||0,this.chunkEnable=n.chunkEnable||!1,this.chunkProcessThreads=n.chunkProcessThreads||2}return o(e,[{key:"getFile",value:function(){return this.file}},{key:"getUrl",value:function(){return this.url||""}},{key:"getName",value:function(){return this.name}},{key:"setName",value:function(e){return this.name=e,this}},{key:"setUrl",value:function(e){return this.url=e,this}},{key:"getParams",value:function(){return this.params}},{key:"getParam",value:function(e){return this.getParams().getParam(e)}},{key:"setParam",value:function(e,t){return this.params.setParam(e,t),this}},{key:"getHeaders",value:function(){return this.headers}},{key:"setHeader",value:function(e,t){this.headers.push({name:e,value:t})}},{key:"isWithCredentials",value:function(){return this.withCredentials}},{key:"setWithCredentials",value:function(e){return this.withCredentials=e,this}},{key:"getTimeout",value:function(){return this.timeout}},{key:"setTimeout",value:function(e){return this.timeout=e,this}},{key:"getChunkSize",value:function(){return u(this.chunkSize)}},{key:"setChunkSize",value:function(e){return this.chunkSize=e,this}},{key:"getChunkRetries",value:function(){return this.chunkRetries}},{key:"setChunkRetries",value:function(e){return this.chunkRetries=e,0}},{key:"isChunkEnable",value:function(){var e=this.getChunkSize();return this.chunkEnable&&e>h&&this.file.getRuntime().canSlice()&&this.file.size>e}},{key:"setChunkEnable",value:function(e){return this.chunkEnable=e,this}},{key:"getChunkProcessThreads",value:function(){return this.chunkProcessThreads}},{key:"setChunkProcessThreads",value:function(e){return this.chunkProcessThreads=e,this}},{key:"createChunkRequest",value:function(e,t){return new c(e,t,this)}},{key:"createFileResponse",value:function(e){return new l(e,this)}}]),e}();e.exports=p},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function o(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function s(e){return function(t,n){function r(t){return--a<0||!e(t,n)?(c=!0,!1):!0}function i(e){c||(e.isFile?e.file(function(e){c||r(e)}):e.isDirectory&&e.createReader().readEntries(function(e){if(!c)for(var t=0,n=e.length;n>t&&!c;t++)i(e[t])}))}for(var o=t.items,s=t.files,u=void 0,a=h,c=!1,l=0,f=s.length;f>l&&!c;l++){u=o&&o[l];var p=u&&u.webkitGetAsEntry&&u.webkitGetAsEntry();if(p&&p.isDirectory)i(p);else if(!r(s[l]))break}}}function u(){if("DataTransfer"in window&&"FileList"in window&&document.addEventListener){var e=l.getInstance(),t=0,n=0,r=void 0,i=s(function(t,n){if(!n||n.length<1)return!1;t=new f(e,t);var r=n.length;return n.some(function(e){var n=e.recieve(t);return n>0?!0:(0>n&&(r-=1),!1)})||r>0}),o=function(e){t=1,v.forEach(function(t){return t.start(e)})},u=function(e){var t=v.filter(function(t){return t.response(e)}).length>0,n=e.dataTransfer;n&&(n.dropEffect=t?"copy":"none"),e.preventDefault()},a=function(e){t=0,n=0,v.forEach(function(t){return t.end(e)})},c=function(e){clearTimeout(r);var n="dragleave"===e.type;n||t||o(e),u(e),n&&(r=setTimeout(function(){return a(e)},100))},h=function(e){e.preventDefault(),clearTimeout(r),a(e);var t=v.filter(function(t){return t.contains(e.target)});if(!(t.length<1)){var n=e.dataTransfer;try{if(n.getData("text/html"))return}catch(o){}i(n,t)}};document.addEventListener("dragenter",c,!1),document.addEventListener("dragover",c,!1),document.addEventListener("dragleave",c,!1),document.addEventListener("drop",h,!1)}}var a=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),c=n(2),l=n(9),f=n(12),h=100,p=function(e){function t(e){r(this,t);var n=i(this,Object.getPrototypeOf(t).call(this));return n.areaElement=e,n}return o(t,e),a(t,[{key:"contains",value:function(e){return this.areaElement.contains(e)}},{key:"start",value:function(e,t){this.emit("start",e,t)}},{key:"response",value:function(e,t){return t=t&&this.contains(e.target),this.emit("response",e,t),t}},{key:"end",value:function(e){this.emit("end",e)}}]),t}(c),v=[],d=function(){function e(t){r(this,e),v.length<1&&u(),v.push(this),this.core=t,this.areas=[]}return a(e,[{key:"addArea",value:function(e){var t=this;return e=new p(e),this.areas.push(e),e.destroy=function(){e.removeAllListeners();var n=t.areas.indexOf(e);n>-1&&t.areas.splice(n,1)},e}},{key:"contains",value:function(e){return this.areas.some(function(t){return t.contains(e)})}},{key:"start",value:function(e){this.areas.forEach(function(t){return t.start(e)})}},{key:"response",value:function(e){return this.areas.map(function(t){return t.response(e)}).some(function(e){return e!==!1})}},{key:"recieve",value:function(e){var t=this.core.add(e);return t>0&&!this.core.isMultiple()?-1:t}},{key:"end",value:function(e){this.areas.forEach(function(t){return t.end(e)})}}]),e}();e.exports=d},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function o(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=n(10),a=n(3),c=a.Deferred,l=n(11),f=void 0,h=function(e){function t(){return r(this,t),i(this,Object.getPrototypeOf(t).apply(this,arguments))}return o(t,e),s(t,[{key:"getAsDataUrl",value:function(e,t){var n=c(),r=new FileReader,i=void 0;r.onloadend=function(){r.readyState==FileReader.DONE?n.resolve(r.result):n.reject(),clearTimeout(i),r.onloadend=null},r.readAsDataURL(e);var o=function(){r&&r.abort(),r=null};t&&(i=setTimeout(o,t));var s=n.promise();return s.abort=o,s}},{key:"getTransport",value:function(){return this.transport||(this.transport=new l(this)),this.transport}},{key:"canSlice",value:function(){return!!(Blob.prototype.slice||Blob.prototype.mozSlice||Blob.prototype.webkitSlice)}},{key:"slice",value:function(e,t,n){var r=e.slice||e.mozSlice||e.webkitSlice;return r.call(e,t,n)}},{key:"md5",value:function(e){var t=c();if(!window.SparkMD5)return t.reject(),t.promise();var n=2097152,r=Math.ceil(e.size/n),i=0,o=new SparkMD5.ArrayBuffer,s=e.mozSlice||e.webkitSlice||e.slice,u=new FileReader,a=function(){if(u){var c=void 0,l=void 0;c=i*n,l=Math.min(c+n,e.size),u.onload=function(){o&&o.append(u.result)},u.onloadend=function(){u&&(u.readyState==FileReader.DONE?++i<r?setTimeout(a,1):setTimeout(function(){o&&t.resolve(o.end()),a=e=o=null},50):t.reject(),u.onloadend=u.onload=null)},u.readAsArrayBuffer(s.call(e,c,l))}};a();var l=t.promise();return l.abort=function(){u&&u.abort(),o=null,u=null},l}}],[{key:"getInstance",value:function(){return f||(f=new t),f}}]),t}(u);e.exports=h},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function o(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=n(2),a=n(4),c=n(3),l=c.Deferred,f=n(6),h=f.NetworkError,p=function(e){function t(){return r(this,t),i(this,Object.getPrototypeOf(t).apply(this,arguments))}return o(t,e),s(t,[{key:"md5",value:function(e){var t=l();return t.reject(),t.promise()}},{key:"getAsDataUrl",value:function(e,t){var n=l();return n.reject(),n.promise()}},{key:"getTransport",value:function(){return null}},{key:"getUploading",value:function(){return this.uploading||(this.uploading=new v(this)),this.uploading}},{key:"canSlice",value:function(){return!1}},{key:"slice",value:function(e){throw new Error("this runtime current not support slice")}},{key:"cancel",value:function(e){}}]),t}(u);e.exports=p;var v=function(){function e(t){r(this,e),this.runtime=t}return s(e,[{key:"generate",value:function(e){var t=this,n=l(),r=e.getFile(),i=this.runtime,o=r.getSource(),s=r.size,u=e.getChunkSize(),a=e.isChunkEnable(),c=Math.max(e.getChunkProcessThreads(),1),f=0,h=0,p=[],v=function(){return p.reduce(function(e,t){return e+("pending"===t.state()?1:0)},0)},d=function(){for(var n=void 0,r=void 0,a=void 0;s>h&&v()<c;)f=h,h=Math.min(h+u,s),a=i.slice(o,f,h),r=e.createChunkRequest(p.length,a),n=t.slot(r,e.getChunkRetries()),n.progress(y).done(m).fail(k),p.push(n)},y=function(){var e=s-h,t=0;p.forEach(function(n){e+=n.total,t+=n.loaded}),n.notify({total:e,loaded:t})},m=function(e){a&&d(),h>=s&&p.every(function(e){return"resolved"===e.state()})&&n.resolve(e)},g=function(){p.forEach(function(e){return e.abort()})},k=function(e){n.reject(e),g()};if(a)d();else{h=s;var b=this.slot(e.createChunkRequest(0,o),0);b.progress(y).done(m).fail(k),p.push(b)}var E=n.promise();return E.abort=g,E}},{key:"slot",value:function(e,t){var n=l(),r=this.runtime,i=e.getFile().getCore(),o=n.promise(),s=function(e){e.total&&(o.total=e.total),e.loaded&&(o.loaded=e.loaded),n.notify(e)},u=function(){var t,u,l;o.abort=function(){t&&t.abort(),u&&u.abort(),l&&l.abort()},o.total=e.getBlob().size,o.loaded=0,t=i.invoke(a.CHUNK_UPLOAD_PREPARING,e),t.then(function(e){return u=r.getTransport().generate(e),u.progress(s),u}).then(function(t){return l=i.invoke(a.CHUNK_UPLOAD_COMPLETING,e.createChunkResponse(t))}).done(n.resolve).fail(c)},c=function(e){e instanceof h&&t-->0?setTimeout(u,500):n.reject(e),o.abort()};return u(),o}}]),e}()},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r);
-}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),o=n(3),s=o.Deferred,u=n(6),a=u.TimeoutError,c=u.AbortError,l=u.NetworkError,f=function(){function e(){r(this,e)}return i(e,[{key:"generate",value:function(e){var t=s(),n=new XMLHttpRequest,r=void 0,i=function(){n.onload=n.onerror=null,n.upload&&(n.upload.onprogress=null),r&&clearTimeout(r)},o=function(){i();try{n.abort()}catch(e){}},u=function(e){return i(),n.status||"error"!==e.type?0===n.status||304===n.status||n.status>=200&&n.status<300?t.resolve(n.responseText):t.reject(new l(n.status,n.statusText)):t.reject(new c(e.message))};n.upload&&(n.upload.onprogress=function(e){return t.notify(e)}),n.onerror=u,n.onload=u;var f=e.getTimeout();f>0&&(r=setTimeout(function(){o(),t.reject(new a("timeout:"+f))},f));try{!function(){n.open("POST",e.getUrl(),!0),e.isWithCredentials()&&(n.withCredentials=!0),e.getHeaders().forEach(function(e){return n.setRequestHeader(e.name,e.value)});var t=new FormData,r=e.getBlob();e.getParams().toArray().forEach(function(e){return t.append(e.name,e.value)}),t.append(e.getName(),r,r.name||"blob"),n.send(t)}()}catch(h){o(),t.reject(new c(h.message))}var p=t.promise();return p.abort=o,p}}]),e}();e.exports=f},function(e,t,n){"use strict";function r(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function i(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function s(){return"FILE-"+(m++).toString(16).toUpperCase()}function u(e){var t=e.name&&g.exec(e.name);return t?t[1]:(t=e.type&&k.exec(e.type),t?t[1]:"")}function a(e){return["jpg","jpeg","png","gif","bmp","webp"].indexOf(e.toLowerCase())>-1?"image/"+("jpg"===e?"jpeg":e):null}var c=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),l=n(2),f=n(4),h=n(3),p=h.Deferred,v=n(5),d=v.Status,y=v.StatusName,m=0,g=/\.([^.]+)$/,k=/^image\/(jpg|jpeg|png|gif|bmp|webp)$/i,b=function(){function e(t,n){o(this,e),this.change(t,n)}return c(e,[{key:"change",value:function(e,t){this.total=e,this.loaded=t||0,this.percentage=this.loaded===this.total?100:Math.ceil(this.loaded/this.total*100)}},{key:"done",value:function(){this.change(this.total,this.total)}}]),e}(),E=function(e){function t(e,n,i){o(this,t);var c=r(this,Object.getPrototypeOf(t).call(this));c.id=s(),c.name=n.name||i||c.id;var l=u(n).toLowerCase();return l&&!g.test(c.name)&&(c.name+="."+l),c.ext=l,c.type=n.type||a(c.ext)||"application/octet-stream",c.lastModified=n.lastModified||+new Date,c.size=n.size||0,c.runtime=e,c.source=n,c.status=d.INITED,c.progress=new b(c.size,0),c}return i(t,e),c(t,[{key:"getCore",value:function(){return this.core}},{key:"setCore",value:function(e){this.core=e,this.setPropagationTarget(e)}},{key:"getRuntime",value:function(){return this.runtime}},{key:"isImage",value:function(){return k.test(this.type)}},{key:"setStatus",value:function(e){var t=this.status;t!==d.CANCELLED&&e!==t&&(this.status=e,this.emit(f.FILE_STATUS_CHANGE,e,t))}},{key:"getStatus",value:function(){return this.status}},{key:"getStatusName",value:function(){return this.status in y?y[this.status]:"unknow"}},{key:"getSource",value:function(){return this.source}},{key:"getAsDataUrl",value:function(e){return this._dataUrlPromise||(this._dataUrlPromise=this.runtime.getAsDataUrl(this.source,e)),this._dataUrlPromise}},{key:"md5",value:function(){return this._md5Promise||(this._md5Promise=this.runtime.md5(this.source)),this._md5Promise}},{key:"session",value:function(){var e=this;if(this._sessionPromise)return this._sessionPromise;var t=p();return t.progress(function(t){e.setStatus(d.PROGRESS),e.emit(f.FILE_UPLOAD_PROGRESS,t)}).done(function(t){e.response=t,e._session=null,e._sessionPromise=null,e._flows=[],e.setStatus(d.SUCCESS),e.emit(f.FILE_UPLOAD_SUCCESS,t)}).fail(function(t){e._session=null,e._sessionPromise=null;for(var n=void 0;n=e._flows.shift();)n.abort();t instanceof Error&&(e.setStatus(d.ERROR),e.emit(f.FILE_UPLOAD_ERROR,t))}).always(function(){e.emit(f.FILE_UPLOAD_COMPLETED,e.getStatus())}),this._flows=[],this._session=t,this._sessionPromise=t.promise(),this._sessionPromise}},{key:"prepare",value:function(){var e=this;if(this.status!==d.PENDING||!this.core)return!1;this.session(),this.setStatus(d.PROGRESS),this.emit(f.FILE_UPLOAD_START),this.request=this.core.createFileRequest(this);var t=this.core.invoke(f.FILE_UPLOAD_PREPARING,this.request);return this._flows.push(t),t.then(function(t){e.emit(f.FILE_UPLOAD_PREPARED,t);var n=e.runtime.getUploading().generate(t);return e._flows.push(n),n.progress(function(t){e.progress.change(t.total,t.loaded),e._session.notify(e.progress)}),n}).then(function(t){return e.complete(t)},this._session.reject),!0}},{key:"complete",value:function(e){if(this.status===d.PROGRESS){for(var t=void 0;t=this._flows.shift();)t.abort();this.progress.done(),this._session.notify(this.progress),e=this.request.createFileResponse(e),this.setStatus(d.END),this.emit(f.FILE_UPLOAD_END);var n=this.core.invoke(f.FILE_UPLOAD_COMPLETING,e);this._flows.push(n),n.then(this._session.resolve,this._session.reject)}}},{key:"pending",value:function(){(this.status===d.ERROR||this.status===d.QUEUED)&&(this.progress.change(this.size,0),this.setStatus(d.PENDING))}},{key:"abort",value:function(){this._session&&this._session.reject(),this._session=null,this._sessionPromise=null}},{key:"cancel",value:function(){this.setStatus(d.CANCELLED),this.emit(f.FILE_CANCEL),this.abort(),this.runtime.cancel(this.source),this._dataUrlPromise&&this._dataUrlPromise.abort(),this._md5Promise&&this._md5Promise.abort&&this._md5Promise.abort(),this.removeAllListeners()}},{key:"destroy",value:function(){this.cancel()}}]),t}(l);e.exports=E},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),o=n(2),s=n(9),u=n(12),a=function(){function e(t){r(this,e),this.core=t,this.runtime=s.getInstance()}return i(e,[{key:"addArea",value:function(e){var t=this.core,n=this.runtime,r=new o,i=function(e){var i=e.clipboardData||window.clipboardData,o=i.items,s=i.files;if(s||o){var a=void 0,c=void 0,l=void 0,f=void 0,h=void 0,p=void 0;if(s&&s.length)for(a=s.length>0,c=0,l=s.length;l>c&&(f=new u(n,s[c]),a=1,p=t.add(f),!(0>p||p>0&&!t.isMultiple()));c++);else if(o&&o.length){var v=i.getData("text/plain");for(c=0,l=o.length;l>c&&!t.isLimit()&&(h=o[c],!("file"===h.kind&&(f=h.getAsFile())&&(f=new u(n,f,v),v=null,a=1,p=t.add(f),0>p||p>0&&!t.isMultiple())));c++);}a&&(e.preventDefault(),e.stopPropagation(),r.emit("paste",i))}};return"DataTransfer"in window&&"FileList"in window&&e.addEventListener&&e.addEventListener("paste",i,!1),r.destroy=function(){r.removeAllListeners(),e.removeEventListener&&e.removeEventListener("paste",i,!1)},r}}]),e}();e.exports=a},function(e,t,n){"use strict";function r(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function i(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function o(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var s=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),u=n(2),a=n(9),c=n(15),l=n(12),f=n(3),h=f.extend,p="",v=function(){var e=document.createElement("div");return function(t){return e.innerHTML=t,t=e.firstChild,e.removeChild(t),t}}(),d=function(){function e(t,n){var r=this;o(this,e);var i=v('<label style="position:fixed;left:-100px;top:-100px;width:50px;height:50px;display:block;cursor:pointer;overflow:hidden;z-index:99999;opacity:0;filter:alpha(opacity=0)"></label>'),s=new c(i,p,function(){return{accept:t.getAccept(),multiple:t.isMultiple()}});s.on("select",function(e){n(e.files,s),r.current&&r.current.emit("files",e.files,s)}),s.on("rollOut",function(){return r.hideOverlay()}),document.body.appendChild(i),this.overlay=i}return s(e,[{key:"hideOverlay",value:function(){h(this.overlay.style,{left:"-100px",top:"-100px",width:"50px",height:"50px"}),this.current&&(this.current.emit("rollOut"),this.current=null)}},{key:"add",value:function(e){var t=this,n=this.overlay,r=new u,i=function(){var i=e.getBoundingClientRect();h(n.style,{left:i.left+"px",top:i.top+"px",width:i.right-i.left+"px",height:i.bottom-i.top+"px"}),r.emit("rollOver"),t.current&&t.current!==r&&t.current.emit("rollOut"),t.current=r};return e.addEventListener?e.addEventListener("mouseover",i,!1):e.attachEvent&&e.attachEvent("onmouseover",i),r.destroy=function(){t.current===r&&t.hideOverlay(),r.removeAllListeners(),e.removeEventListener?e.removeEventListener("mouseover",i,!1):e.detachEvent&&e.detachEvent("onmouseover",i)},r}}]),e}(),y=function(e){function t(e,n,i){o(this,t);var s=r(this,Object.getPrototypeOf(t).call(this));return s.trigger=e,s.core=n,s.label=v('<label style="position:absolute;top:0;left:0;width:100%;height:100%;display:inline-block;cursor:pointer;background:#fff;overflow:hidden;opacity:0"></label>'),s.onChange=function(e){i(e.target.files),s.destroyInput(),s.createInput()},e.appendChild(s.label),s.createInput(),s}return i(t,e),s(t,[{key:"createInput",value:function(){var e=v('<input type="file" style="position:absolute;clip:rect(1px 1px 1px 1px);" />'),t=this.core.getAccept();t&&t.length>0&&(t=t.map(function(e){return e.mimeTypes||"."+e.extensions.join(",.")}),e.setAttribute("accept",t.join(","))),this.core.isMultiple()&&e.setAttribute("multiple","multiple"),e.addEventListener("change",this.onChange,!1),this.label.appendChild(e),this.input=e}},{key:"destroyInput",value:function(){this.input&&(this.input.removeEventListener("change",this.onChange,!1),this.label.removeChild(this.input),this.input=null)}},{key:"destroy",value:function(){this.destroyInput(),this.removeAllListeners(),this.trigger.removeChild(this.label)}}]),t}(u),m=function(){function e(t,n){o(this,e);var r=a.getInstance();this.core=t,this.onFiles=function(e){n(e,r)}}return s(e,[{key:"add",value:function(e){return new y(e,this.core,this.onFiles)}}]),e}(),g=function(){function e(t){o(this,e);var n=function(e,n){for(var r=0,i=e.length;i>r&&!(t.add(new l(n,e[r]))<0);r++);};"DataTransfer"in window&&"FileList"in window?this.triggerCollection=new m(t,n):this.triggerCollection=new d(t,n)}return s(e,null,[{key:"setSWF",value:function(e){p=e}}]),s(e,[{key:"addArea",value:function(e){return this.triggerCollection.add(e)}}]),e}();e.exports=g},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function i(e,t){if(!e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!t||"object"!=typeof t&&"function"!=typeof t?e:t}function o(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function, not "+typeof t);e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,enumerable:!1,writable:!0,configurable:!0}}),t&&(Object.setPrototypeOf?Object.setPrototypeOf(e,t):e.__proto__=t)}function s(){var e=void 0;try{e=navigator.plugins["Shockwave Flash"],e=e.description}catch(t){try{e=new ActiveXObject("ShockwaveFlash.ShockwaveFlash").GetVariable("$version")}catch(n){e="0.0"}}return e=e.match(/\d+/g),parseFloat(e[0]+"."+e[1])}function u(e,t,n){try{e.CallFunction('<invoke name="'+t+'" returntype="javascript">'+__flash__argumentsToXML(n||[],0)+"</invoke>")}catch(r){throw"Call to "+t+" failed"}}function a(e,t){if(s()<11.4)throw"flash player is not available";var n=document.createElement("div"),r=e+(e.indexOf("?")>0?"&":"?")+"callInterface="+encodeURIComponent(t),i=['id="'+t+'-Picker"','type="application/x-shockwave-flash"','data="'+r+'"','width="100%" height="100%"','style="position:absolute;left:0;top:0;display:block;z-index:1;outline:0"'];return window.ActiveXObject&&i.push('classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"'),n.innerHTML="<object "+i.join(" ")+'><param name="movie" value="'+r+'" /><param name="wmode" value="transparent" /><param name="allowscriptaccess" value="always" /></object>',n.firstChild}function c(e){var t=e+(p++).toString(16);return t in window?c(e):t}var l=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),f=n(10),h=n(16),p=+new Date,v=function(e){function t(e,n,o){function s(){var t=e.offsetWidth,r=e.offsetHeight,i=void 0;return t&&r&&(i=a(n,l))?void e.appendChild(f.flash=i):void setTimeout(s,1e3)}r(this,t);var u=i(this,Object.getPrototypeOf(t).call(this)),l=c("FlashRuntime");u.callInterface=l,window[l]=u,u.options=o;var f=u;return s(),u}return o(t,e),l(t,[{key:"getOptions",value:function(){var e=this.options;return"function"==typeof e&&(e=e()),e}},{key:"getTransport",value:function(e,t,n){return new h(this,e,t,n)}},{key:"send",value:function(e,t,n,r){u(this.flash,"exec",["send",e,t.id,n,r])}},{key:"abort",value:function(e){try{u(this.flash,"exec",["abort",e.id])}catch(t){}}},{key:"cancel",value:function(e){u(this.flash,"exec",["cancel",e.id])}},{key:"ping",value:function(){u(this.flash,"exec",["pang"])}},{key:"destroy",value:function(){delete window[this.callInterface]}}]),t}(f);e.exports=v},function(e,t,n){"use strict";function r(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}var i=function(){function e(e,t){for(var n=0;n<t.length;n++){var r=t[n];r.enumerable=r.enumerable||!1,r.configurable=!0,"value"in r&&(r.writable=!0),Object.defineProperty(e,r.key,r)}}return function(t,n,r){return n&&e(t.prototype,n),r&&e(t,r),t}}(),o=n(3),s=o.Deferred,u=n(6),a=u.TimeoutError,c=u.AbortError,l=u.NetworkError,f=function(){function e(t){r(this,e),this.flashRuntime=t}return i(e,[{key:"generate",value:function(e){var t=s(),n=this.flashRuntime,r=e.getBlob(),i=void 0,o=function(){n.off("uploadprogress",f),n.off("uploadcomplete",h),n.off("uploaderror",p),i&&clearTimeout(i)},u=function(){o(),n.abort(r.id)},f=function(e){e.id===r.id&&t.notify(e)},h=function(e){return e.id===r.id?(o(),304===e.status||e.status>=200&&e.status<300?(n.cancel(r),t.resolve(e.response)):t.reject(new l(e.status,e.response))):void 0},p=function(e){e.id===r.id&&(o(),t.reject(new c(e.message)))};n.on("uploadprogress",f),n.on("uploadcomplete",h),n.on("uploaderror",p);var v=e.getTimeout();v>0&&(i=setTimeout(function(){u(),t.reject(new a("timeout:"+v))},v));try{n.send(e.getName(),r,e.getUrl(),e.getParams().toString())}catch(d){u(),t.reject(new c(d.message))}var y=t.promise();return y.abort=u,y}}]),e}();e.exports=f}])});
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["UploadCore"] = factory();
+	else
+		root["UploadCore"] = factory();
+})(this, function() {
+return /******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId])
+/******/ 			return installedModules[moduleId].exports;
+/******/
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			exports: {},
+/******/ 			id: moduleId,
+/******/ 			loaded: false
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.loaded = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(0);
+/******/ })
+/************************************************************************/
+/******/ ([
+/* 0 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var Core = __webpack_require__(1);
+	var Events = __webpack_require__(4);
+	
+	var _require = __webpack_require__(5);
+	
+	var Status = _require.Status;
+	
+	Core.Events = Events;
+	Core.Status = Status;
+	Core.UploadCore = Core;
+	Core.VERSION = ("2.1.1");
+	Core.Core = Core;
+	
+	module.exports = Core;
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Emitter = __webpack_require__(2);
+	var Events = __webpack_require__(4);
+	
+	var _require = __webpack_require__(5);
+	
+	var Status = _require.Status;
+	
+	var _require2 = __webpack_require__(6);
+	
+	var QueueLimitError = _require2.QueueLimitError;
+	var FilterError = _require2.FilterError;
+	var DuplicateError = _require2.DuplicateError;
+	var FileExtensionError = _require2.FileExtensionError;
+	var FileSizeError = _require2.FileSizeError;
+	
+	var _require3 = __webpack_require__(3);
+	
+	var formatSize = _require3.formatSize;
+	var parseSize = _require3.parseSize;
+	var normalizeAccept = _require3.normalizeAccept;
+	
+	var FileRequest = __webpack_require__(7);
+	var DndCollector = __webpack_require__(8);
+	var PasteCollector = __webpack_require__(13);
+	var PickerCollector = __webpack_require__(14);
+	
+	var REQUEST_OPTIONS = ['name', 'url', 'params', 'action', 'data', 'headers', 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 'chunkRetries', 'chunkProcessThreads'];
+	
+	var Core = (function (_Emitter) {
+	    _inherits(Core, _Emitter);
+	
+	    function Core() {
+	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	
+	        _classCallCheck(this, Core);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Core).call(this));
+	
+	        _this.autoPending = options.autoPending || options.auto;
+	        _this.capcity = options.capcity || options.queueCapcity || 0;
+	        _this.multiple = options.multiple == null ? true : options.multiple;
+	
+	        _this.accept = normalizeAccept(options.accept);
+	        _this.sizeLimit = parseSize(options.sizeLimit || options.fileSizeLimit || 0);
+	
+	        _this.pending = new Pending(options.processThreads);
+	        _this.stat = new Stat();
+	        _this.constraints = new Constraints();
+	        _this.filters = new Filters();
+	
+	        if (!_this.multiple) {
+	            _this.capcity = 1;
+	        }
+	        if (_this.capcity > 0) {
+	            _this.addConstraint(function () {
+	                return _this.stat.getTotal() >= _this.capcity;
+	            });
+	        }
+	
+	        if (_this.accept && _this.accept.length > 0) {
+	            _this.addFilter(function (file) {
+	                if (!_this.accept.some(function (item) {
+	                    return item.extensions && item.extensions.indexOf(file.ext) > -1;
+	                })) {
+	                    return new FileExtensionError(file, 'extension "' + file.ext + '" is not allowed');
+	                }
+	            });
+	        }
+	
+	        if (_this.sizeLimit > 0) {
+	            _this.addFilter(function (file) {
+	                if (file.size > _this.sizeLimit) {
+	                    return new FileSizeError(file, 'filesize:' + formatSize(file.size) + ' is greater than limit:' + formatSize(_this.sizeLimit));
+	                }
+	            });
+	        }
+	
+	        if (options.preventDuplicate) {
+	            _this.addFilter(function (file) {
+	                if (_this.stat.getFiles().some(function (item) {
+	                    return item.name === file.name && item.size === file.size;
+	                })) {
+	                    return new DuplicateError(file, 'file "' + file.name + '" already in queue');
+	                }
+	            });
+	        }
+	
+	        if (Array.isArray(options.filters)) {
+	            options.fitlers.forEach(function (filter) {
+	                return _this.addFilter(filter);
+	            });
+	        }
+	
+	        var request = options.request || {};
+	        REQUEST_OPTIONS.forEach(function (key) {
+	            if (options.hasOwnProperty(key)) {
+	                request[key] = options[key];
+	            }
+	        });
+	
+	        _this.requestOptions = request;
+	        return _this;
+	    }
+	
+	    _createClass(Core, [{
+	        key: 'createFileRequest',
+	        value: function createFileRequest(file) {
+	            return new FileRequest(file, this.requestOptions);
+	        }
+	    }, {
+	        key: 'isLimit',
+	        value: function isLimit() {
+	            return this.constraints.some();
+	        }
+	    }, {
+	        key: 'addConstraint',
+	        value: function addConstraint(constraint) {
+	            return this.constraints.add(constraint);
+	        }
+	    }, {
+	        key: 'addFilter',
+	        value: function addFilter(filter) {
+	            return this.filters.add(filter);
+	        }
+	    }, {
+	        key: 'add',
+	        value: function add(file) {
+	            var _this2 = this;
+	
+	            if (this.isLimit()) {
+	                this.emit(Events.QUEUE_ERROR, new QueueLimitError());
+	                return -1;
+	            }
+	
+	            var error = this.filters.filter(file);
+	            if (!error && !this.stat.add(file)) {
+	                error = new DuplicateError(file, 'file "' + file.name + '" already in queue');
+	            }
+	
+	            if (error) {
+	                this.emit(Events.QUEUE_FILE_FILTERED, file, error);
+	                this.emit(Events.QUEUE_ERROR, error);
+	                return 0;
+	            }
+	
+	            file.setStatus(Status.QUEUED);
+	
+	            file.on(Events.FILE_STATUS_CHANGE, function (status) {
+	                if (status === Status.CANCELLED) {
+	                    _this2.stat.remove(file);
+	                } else if (status === Status.PENDING) {
+	                    setTimeout(function () {
+	                        if (_this2.pending.add(file) && _this2.pending.size() === 1) {
+	                            _this2.emit(Events.QUEUE_UPLOAD_START);
+	                        }
+	                    }, 1);
+	                }
+	
+	                _this2.emit(Events.QUEUE_STAT_CHANGE, _this2.stat);
+	
+	                if (_this2.stat.getFiles(Status.PROCESS).length < 1) {
+	                    _this2.emit(Events.QUEUE_UPLOAD_END);
+	                }
+	            });
+	
+	            file.setCore(this);
+	
+	            this.emit(Events.QUEUE_FILE_ADDED, file);
+	
+	            this.emit(Events.QUEUE_STAT_CHANGE, this.stat);
+	
+	            if (this.autoPending) {
+	                file.pending();
+	            }
+	
+	            return 1;
+	        }
+	    }, {
+	        key: 'isMultiple',
+	        value: function isMultiple() {
+	            return this.multiple;
+	        }
+	    }, {
+	        key: 'isFull',
+	        value: function isFull() {
+	            return this.capcity > 0 && this.getTotal() >= this.capcity;
+	        }
+	    }, {
+	        key: 'isEmpty',
+	        value: function isEmpty() {
+	            return this.getTotal() < 1;
+	        }
+	    }, {
+	        key: 'getAccept',
+	        value: function getAccept() {
+	            return this.accept;
+	        }
+	    }, {
+	        key: 'getStat',
+	        value: function getStat() {
+	            return this.stat;
+	        }
+	    }, {
+	        key: 'getTotal',
+	        value: function getTotal() {
+	            return this.getStat().getTotal();
+	        }
+	    }, {
+	        key: 'getFiles',
+	        value: function getFiles(flag) {
+	            return this.getStat().getFiles(flag);
+	        }
+	    }, {
+	        key: 'stat',
+	        value: function stat(flag) {
+	            return this.getStat().stat(flag);
+	        }
+	    }, {
+	        key: 'getPickerCollector',
+	        value: function getPickerCollector() {
+	            if (!this.picker) {
+	                this.picker = new PickerCollector(this);
+	            }
+	            return this.picker;
+	        }
+	    }, {
+	        key: 'getDndCollector',
+	        value: function getDndCollector() {
+	            if (!this.dnd) {
+	                this.dnd = new DndCollector(this);
+	            }
+	            return this.dnd;
+	        }
+	    }, {
+	        key: 'getPasteCollector',
+	        value: function getPasteCollector() {
+	            if (!this.paster) {
+	                this.paster = new PasteCollector(this);
+	            }
+	            return this.paster;
+	        }
+	    }], [{
+	        key: 'setSWF',
+	        value: function setSWF(url) {
+	            PickerCollector.setSWF(url);
+	        }
+	    }]);
+	
+	    return Core;
+	})(Emitter);
+	
+	module.exports = Core;
+	
+	var Set = (function () {
+	    function Set() {
+	        _classCallCheck(this, Set);
+	
+	        this._set = [];
+	    }
+	
+	    /**
+	     * 项目总数
+	     *
+	     * @returns {Number}
+	     */
+	
+	    _createClass(Set, [{
+	        key: 'size',
+	        value: function size() {
+	            return this._set.length;
+	        }
+	
+	        /**
+	         * 从头部取出一项
+	         *
+	         * @returns {*}
+	         */
+	
+	    }, {
+	        key: 'shift',
+	        value: function shift() {
+	            return this._set.shift();
+	        }
+	
+	        /**
+	         * 从尾部取出一项
+	         *
+	         * @returns {*}
+	         */
+	
+	    }, {
+	        key: 'pop',
+	        value: function pop() {
+	            return this._set.pop();
+	        }
+	
+	        /**
+	         * 获得所有项
+	         *
+	         * @returns {Array}
+	         */
+	
+	    }, {
+	        key: 'toArray',
+	        value: function toArray() {
+	            return this._set.slice(0);
+	        }
+	
+	        /**
+	         * 添加一项
+	         *
+	         * @param item
+	         * @returns {boolean} success if true
+	         */
+	
+	    }, {
+	        key: 'add',
+	        value: function add(item) {
+	            if (this.has(item)) {
+	                return false;
+	            }
+	            this._set.push(item);
+	            return true;
+	        }
+	
+	        /**
+	         * 是否存在该项
+	         *
+	         * @param item
+	         * @returns {boolean}
+	         */
+	
+	    }, {
+	        key: 'has',
+	        value: function has(item) {
+	            return this._set.indexOf(item) > -1;
+	        }
+	
+	        /**
+	         * 删除某项
+	         *
+	         * @returns {boolean} success if true
+	         */
+	
+	    }, {
+	        key: 'remove',
+	        value: function remove(item) {
+	            var i = this._set.indexOf(item);
+	            if (i > -1) {
+	                this._set.splice(i, 1);
+	                return true;
+	            }
+	            return false;
+	        }
+	
+	        /**
+	         * 清空
+	         */
+	
+	    }, {
+	        key: 'clear',
+	        value: function clear() {
+	            this._set = [];
+	        }
+	    }]);
+	
+	    return Set;
+	})();
+	
+	var Stat = (function () {
+	    function Stat() {
+	        _classCallCheck(this, Stat);
+	
+	        this.files = new Set();
+	    }
+	
+	    _createClass(Stat, [{
+	        key: 'add',
+	        value: function add(file) {
+	            return this.files.add(file);
+	        }
+	    }, {
+	        key: 'remove',
+	        value: function remove(file) {
+	            this.files.remove(file);
+	        }
+	    }, {
+	        key: 'getTotal',
+	        value: function getTotal() {
+	            return this.files.size();
+	        }
+	    }, {
+	        key: 'getFiles',
+	        value: function getFiles(flag) {
+	            var files = this.files.toArray();
+	            if (!flag) {
+	                return files;
+	            }
+	            return files.filter(function (file) {
+	                return !!(file.getStatus() & flag);
+	            });
+	        }
+	    }, {
+	        key: 'stat',
+	        value: function stat(flag) {
+	            var ret = {},
+	                files = this.getFiles(flag);
+	
+	            files.forEach(function (file) {
+	                var status = file.getStatus();
+	                ret[status] = status in ret ? ret[status] + 1 : 1;
+	            });
+	
+	            ret['sum'] = files.length;
+	
+	            return ret;
+	        }
+	    }]);
+	
+	    return Stat;
+	})();
+	
+	var Constraints = (function () {
+	    function Constraints() {
+	        _classCallCheck(this, Constraints);
+	
+	        this.constraints = new Set();
+	    }
+	
+	    _createClass(Constraints, [{
+	        key: 'add',
+	        value: function add(constraint) {
+	            this.constraints.add(constraint);
+	            return this;
+	        }
+	    }, {
+	        key: 'remove',
+	        value: function remove(constraint) {
+	            this.constraints.remove(constraint);
+	            return this;
+	        }
+	    }, {
+	        key: 'some',
+	        value: function some() {
+	            var _this3 = this;
+	
+	            return this.constraints.toArray().some(function (fn) {
+	                return fn.call(_this3);
+	            });
+	        }
+	    }]);
+	
+	    return Constraints;
+	})();
+	
+	var Filters = (function () {
+	    function Filters() {
+	        _classCallCheck(this, Filters);
+	
+	        this.filters = new Set();
+	    }
+	
+	    _createClass(Filters, [{
+	        key: 'add',
+	        value: function add(filter) {
+	            this.filters.add(filter);
+	            return this;
+	        }
+	    }, {
+	        key: 'remove',
+	        value: function remove(filter) {
+	            this.filters.remove(filter);
+	            return this;
+	        }
+	    }, {
+	        key: 'filter',
+	        value: function filter(file) {
+	            var error = null;
+	            this.filters.toArray().every(function (filter) {
+	                var ret = undefined;
+	                try {
+	                    ret = filter(file);
+	                } catch (e) {
+	                    ret = e;
+	                }
+	                if (typeof ret === 'string') {
+	                    error = new FilterError(file, ret);
+	                    return false;
+	                } else if (ret instanceof Error) {
+	                    error = ret instanceof FilterError ? ret : new FilterError(file, ret.toString());
+	                    return false;
+	                }
+	                return true;
+	            });
+	            return error;
+	        }
+	    }]);
+	
+	    return Filters;
+	})();
+	
+	var Pending = (function () {
+	    function Pending(threads) {
+	        _classCallCheck(this, Pending);
+	
+	        this.threads = threads || 2;
+	        this.heading = new Set();
+	        this.pending = new Set();
+	    }
+	
+	    _createClass(Pending, [{
+	        key: 'add',
+	        value: function add(file) {
+	            var _this4 = this;
+	
+	            if (!this.pending.add(file)) return false;
+	
+	            file.session().always(function () {
+	                return _this4.pending.remove(file);
+	            });
+	
+	            this.load();
+	
+	            return true;
+	        }
+	    }, {
+	        key: 'size',
+	        value: function size() {
+	            return this.pending.size() + this.heading.size();
+	        }
+	    }, {
+	        key: 'process',
+	        value: function process(file) {
+	            var _this5 = this;
+	
+	            if (!this.heading.add(file)) return;
+	
+	            file.session().always(function () {
+	                _this5.heading.remove(file);
+	                _this5.load();
+	            });
+	        }
+	    }, {
+	        key: 'load',
+	        value: function load() {
+	            var file;
+	            while (this.heading.size() < this.threads && (file = this.pending.shift())) {
+	                if (file.prepare()) {
+	                    this.process(file);
+	                }
+	            }
+	        }
+	    }]);
+	
+	    return Pending;
+	})();
+
+/***/ },
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var _require = __webpack_require__(3);
+	
+	var Deferred = _require.Deferred;
+	
+	var Emitter = (function () {
+	    function Emitter() {
+	        _classCallCheck(this, Emitter);
+	    }
+	
+	    _createClass(Emitter, [{
+	        key: 'on',
+	        value: function on(event, listener) {
+	            event = event.toLowerCase();
+	            if (!this._events) {
+	                this._events = {};
+	            }
+	
+	            if (!this._events[event]) {
+	                this._events[event] = [];
+	            }
+	
+	            this._events[event].push(listener);
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'once',
+	        value: function once(event, listener) {
+	            event = event.toLowerCase();
+	
+	            var that = this;
+	
+	            function fn() {
+	                that.off(event, fn);
+	                listener.apply(this, arguments);
+	            }
+	
+	            fn.listener = listener;
+	
+	            this.on(event, fn);
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'off',
+	        value: function off(event, listener) {
+	            event = event.toLowerCase();
+	
+	            var listeners = undefined;
+	
+	            if (!this._events || !(listeners = this._events[event])) {
+	                return this;
+	            }
+	
+	            var i = listeners.length;
+	            while (i-- > 0) {
+	                if (listeners[i] === listener || listeners[i].listener === listener) {
+	                    listeners.splice(i, 1);
+	                    break;
+	                }
+	            }
+	
+	            if (listeners.length === 0) {
+	                delete this._events[event];
+	            }
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'removeAllListeners',
+	        value: function removeAllListeners(event) {
+	            if (!event) {
+	                this._events = [];
+	            } else {
+	                delete this._events[event.toLowerCase()];
+	            }
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'setPropagationTarget',
+	        value: function setPropagationTarget(emitter) {
+	            if (emitter instanceof Emitter) {
+	                this.propagationTarget = emitter;
+	            }
+	        }
+	    }, {
+	        key: 'emit',
+	        value: function emit(event) {
+	            for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+	                args[_key - 1] = arguments[_key];
+	            }
+	
+	            this.applyEmit(event, args);
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'applyEmit',
+	        value: function applyEmit(event, args) {
+	            var _this = this;
+	
+	            event = event.toLowerCase();
+	
+	            var listeners = undefined;
+	
+	            if (this._events && (listeners = this._events[event])) {
+	                listeners.slice(0).forEach(function (fn) {
+	                    return fn.apply(_this, args);
+	                });
+	            }
+	
+	            if (this.propagationTarget) {
+	                var pArgs = args.slice(0);
+	                pArgs.unshift(this);
+	                this.propagationTarget.applyEmit(event, pArgs);
+	            }
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'invoke',
+	        value: function invoke(event, data) {
+	            event = event.toLowerCase();
+	
+	            var listeners = undefined;
+	
+	            if (!this._events || !(listeners = this._events[event])) {
+	                listeners = [];
+	            }
+	
+	            return HookInvoker(listeners.slice(0), data, this);
+	        }
+	    }]);
+	
+	    return Emitter;
+	})();
+	
+	module.exports = Emitter;
+	
+	function HookInvoker(hooks, initialData, context) {
+	    var _data = initialData;
+	    var _error = null;
+	    var _aborted = undefined;
+	
+	    var i = Deferred();
+	    var ret = i.promise();
+	
+	    ret.abort = function () {
+	        _aborted = true;
+	    };
+	
+	    var fail = function fail(e) {
+	        if (_aborted) return;
+	        if (e) {
+	            _error = e instanceof Error ? e : new Error(e);
+	        }
+	        i.reject(_error || new Error('Unknown'));
+	    };
+	
+	    var done = function done() {
+	        if (_aborted) return;
+	        if (_error != null) {
+	            fail();
+	        } else {
+	            i.resolve(_data);
+	        }
+	    };
+	
+	    var setData = function setData(data) {
+	        if (data != null && (_data == null || data.constructor === _data.constructor)) {
+	            _data = data;
+	        }
+	    };
+	
+	    var next = function next(data) {
+	        if (_aborted) return;
+	
+	        if (data instanceof Error) {
+	            _error = data;
+	        }
+	
+	        if (_error != null) {
+	            return fail();
+	        }
+	
+	        setData(data);
+	
+	        var hook = hooks.shift();
+	        if (!hook) {
+	            return done();
+	        }
+	        var res = undefined;
+	        try {
+	            res = hook.call(context, _data);
+	        } catch (e) {
+	            return fail(e);
+	        }
+	
+	        if (res && res.then) {
+	            res.then(next, fail);
+	        } else {
+	            next(res);
+	        }
+	    };
+	
+	    setTimeout(next, 1);
+	
+	    return ret;
+	}
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	exports.formatSize = function (size) {
+	    size = parseFloat(size);
+	    var prefixesSI = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'],
+	        base = 1024;
+	    var index = size ? Math.floor(Math.log(size) / Math.log(base)) : 0;
+	    index = Math.min(index, prefixesSI.length - 1);
+	    var powedPrecision = Math.pow(10, index < 2 ? 0 : index > 2 ? 2 : 1);
+	    size = size / Math.pow(base, index);
+	    size = Math.round(size * powedPrecision) / powedPrecision;
+	    return size + prefixesSI[index] + 'B';
+	};
+	
+	exports.parseSize = function (size) {
+	    if (typeof size !== 'string') {
+	        return size;
+	    }
+	
+	    var units = {
+	        t: 1099511627776,
+	        g: 1073741824,
+	        m: 1048576,
+	        k: 1024
+	    };
+	
+	    size = /^([0-9\.]+)([tgmk]?)b?$/i.exec(size);
+	    var u = size[2];
+	    size = +size[1];
+	
+	    if (units.hasOwnProperty(u)) {
+	        size *= units[u];
+	    }
+	    return size;
+	};
+	
+	var ACCEPTs = {
+	    images: {
+	        title: 'Images',
+	        extensions: ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'svg', 'tiff', 'tif', 'ico', 'jpe', 'svgz', 'pct', 'psp', 'ai', 'psd', 'raw', 'webp']
+	    },
+	
+	    audios: {
+	        title: 'Audios',
+	        extensions: ['aac', 'aif', 'flac', 'iff', 'm4a', 'm4b', 'mid', 'midi', 'mp3', 'mpa', 'mpc', 'oga', 'ogg', 'ra', 'ram', 'snd', 'wav', 'wma']
+	    },
+	
+	    videos: {
+	        title: 'Videos',
+	        extensions: ['avi', 'divx', 'flv', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogm', 'ogv', 'ogx', 'rm', 'rmvb', 'smil', 'webm', 'wmv', 'xvid']
+	    }
+	};
+	
+	function normalizeExtensions(extensions) {
+	    if (typeof extensions !== 'string') {
+	        return '';
+	    }
+	
+	    return extensions.toLowerCase().split(/ *[ ,;|+] */).map(function (ext) {
+	        var m = /^\*?\.?(\w+)$/.exec(ext);
+	        return m ? m[1] : null;
+	    }).filter(function (ext) {
+	        return ext !== null;
+	    });
+	}
+	
+	function normalizeAccept(accepts) {
+	    if (!accepts) return null;
+	
+	    if (!Array.isArray(accepts)) {
+	        accepts = [accepts];
+	    }
+	
+	    return accepts.map(function (accept) {
+	        if (typeof accept === 'string' && (accept = accept.toLowerCase()) && ACCEPTs.hasOwnProperty(accept)) {
+	            return ACCEPTs[accept];
+	        } else {
+	            var extensions = normalizeExtensions(accept.extensions || accept);
+	
+	            return extensions.length ? {
+	                title: accept.title || '',
+	                extensions: extensions,
+	                mimeTypes: accept.mimeTypes || ''
+	            } : null;
+	        }
+	    }).filter(function (accept) {
+	        return accept !== null;
+	    });
+	}
+	
+	exports.normalizeAccept = normalizeAccept;
+	
+	function createOptions(option) {
+	    var options = {};
+	    (option.match(/\S+/g) || []).forEach(function (flag) {
+	        options[flag] = true;
+	    });
+	    return options;
+	}
+	
+	function extend(target, source) {
+	    for (var key in source) {
+	        target[key] = source[key];
+	    }
+	    return target;
+	}
+	
+	exports.extend = extend;
+	
+	function isFunction(obj) {
+	    return typeof obj === 'function';
+	}
+	
+	var ArrayFrom = Array.from || function (arrayLike) {
+	    return [].slice.call(arrayLike);
+	};
+	
+	function Callbacks(options) {
+	    options = typeof options === "string" ? createOptions(options) : extend({}, options);
+	
+	    var firing = undefined,
+	        memory = undefined,
+	        _fired = undefined,
+	        firingLength = undefined,
+	        firingIndex = undefined,
+	        firingStart = undefined,
+	        list = [],
+	        _this = undefined,
+	        stack = !options.once && [];
+	
+	    function fire(data) {
+	        memory = options.memory && data;
+	        _fired = true;
+	        firingIndex = firingStart || 0;
+	        firingStart = 0;
+	        firingLength = list.length;
+	        firing = true;
+	        for (; list && firingIndex < firingLength; firingIndex++) {
+	            if (list[firingIndex].apply(data[0], data[1]) === false && options.stopOnFalse) {
+	                memory = false; // To prevent further calls using add
+	                break;
+	            }
+	        }
+	        firing = false;
+	        if (list) {
+	            if (stack) {
+	                if (stack.length) {
+	                    fire(stack.shift());
+	                }
+	            } else if (memory) {
+	                list = [];
+	            } else {
+	                _this.disable();
+	            }
+	        }
+	    }
+	
+	    _this = {
+	        add: function add() {
+	            if (list) {
+	                var start = list.length;
+	
+	                (function add(args) {
+	                    args.forEach(function (fn) {
+	                        if (isFunction(fn)) {
+	                            if (!options.unique || !_this.has(fn)) {
+	                                list.push(fn);
+	                            }
+	                        } else if (Array.isArray(fn)) {
+	                            add(fn);
+	                        }
+	                    });
+	                })(ArrayFrom(arguments));
+	
+	                if (firing) {
+	                    firingLength = list.length;
+	                } else if (memory) {
+	                    firingStart = start;
+	                    fire(memory);
+	                }
+	            }
+	            return this;
+	        },
+	        remove: function remove() {
+	            if (list) {
+	                ArrayFrom(arguments).forEach(function (fn) {
+	                    var i = list.length;
+	                    while (--i >= 0) {
+	                        if (list[i] !== fn) continue;
+	
+	                        list.splice(i, 1);
+	
+	                        if (firing) {
+	                            if (i <= firingLength) {
+	                                firingLength--;
+	                            }
+	                            if (i <= firingIndex) {
+	                                firingIndex--;
+	                            }
+	                        }
+	                    }
+	                });
+	            }
+	            return this;
+	        },
+	        has: function has(fn) {
+	            return fn ? list.indexOf(fn) > -1 : !!(list && list.length);
+	        },
+	        empty: function empty() {
+	            list = [];
+	            firingLength = 0;
+	            return this;
+	        },
+	        disable: function disable() {
+	            list = stack = memory = null;
+	            return this;
+	        },
+	        disabled: function disabled() {
+	            return !list;
+	        },
+	        lock: function lock() {
+	            stack = null;
+	            if (!memory) {
+	                _this.disable();
+	            }
+	            return this;
+	        },
+	        locked: function locked() {
+	            return !stack;
+	        },
+	        fireWith: function fireWith(context, args) {
+	            if (list && (!_fired || stack)) {
+	                args = args || [];
+	                args = [context, args.slice ? args.slice() : args];
+	                if (firing) {
+	                    stack.push(args);
+	                } else {
+	                    fire(args);
+	                }
+	            }
+	            return this;
+	        },
+	        fire: function fire() {
+	            _this.fireWith(this, arguments);
+	            return this;
+	        },
+	        fired: function fired() {
+	            return !!_fired;
+	        }
+	    };
+	
+	    return _this;
+	};
+	
+	function Deferred(func) {
+	    var tuples = [["resolve", "done", Callbacks("once memory"), "resolved"], ["reject", "fail", Callbacks("once memory"), "rejected"], ["notify", "progress", Callbacks("memory")]],
+	        _state = "pending",
+	        deferred = {},
+	        _promise = {
+	        state: function state() {
+	            return _state;
+	        },
+	        always: function always() {
+	            var args = ArrayFrom(arguments);
+	            deferred.done(args).fail(args);
+	            return this;
+	        },
+	        then: function then() /* fnDone, fnFail, fnProgress */{
+	            var fns = arguments;
+	            return Deferred(function (newDefer) {
+	                tuples.forEach(function (tuple, i) {
+	                    var fn = isFunction(fns[i]) && fns[i];
+	                    deferred[tuple[1]](function () {
+	                        var returned = fn && fn.apply(this, arguments);
+	                        if (returned && isFunction(returned.promise)) {
+	                            returned.promise().done(newDefer.resolve).fail(newDefer.reject).progress(newDefer.notify);
+	                        } else {
+	                            newDefer[tuple[0] + "With"](this === _promise ? newDefer.promise() : this, fn ? [returned] : arguments);
+	                        }
+	                    });
+	                });
+	                fns = null;
+	            }).promise();
+	        },
+	        promise: function promise(obj) {
+	            return obj != null ? extend(obj, _promise) : _promise;
+	        }
+	    };
+	
+	    _promise.pipe = _promise.then;
+	
+	    tuples.forEach(function (tuple, i) {
+	        var list = tuple[2],
+	            stateString = tuple[3];
+	
+	        _promise[tuple[1]] = list.add;
+	
+	        if (stateString) {
+	            list.add(function () {
+	                _state = stateString;
+	            }, tuples[i ^ 1][2].disable, tuples[2][2].lock);
+	        }
+	
+	        deferred[tuple[0]] = function () {
+	            deferred[tuple[0] + "With"](this === deferred ? _promise : this, arguments);
+	            return this;
+	        };
+	
+	        deferred[tuple[0] + "With"] = list.fireWith;
+	    });
+	
+	    _promise.promise(deferred);
+	
+	    if (func) {
+	        func.call(deferred, deferred);
+	    }
+	
+	    return deferred;
+	}
+	
+	exports.Deferred = Deferred;
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	module.exports = {
+	    QUEUE_UPLOAD_START: 'queueuploadstart', // 队列上传开始
+	    QUEUE_UPLOAD_END: 'queueuploadend', // 队列上传结束
+	    QUEUE_FILE_ADDED: 'queuefileadded', // 队列添加了一个文件
+	    QUEUE_FILE_FILTERED: 'queuefilefiltered', // 队列过滤了一个文件
+	    QUEUE_ERROR: 'queueerror', // 队列错误
+	    QUEUE_STAT_CHANGE: 'statchange', // 统计发生变化
+	
+	    FILE_UPLOAD_START: 'fileuploadstart', // 文件上传开始
+	    FILE_UPLOAD_PREPARING: 'fileuploadpreparing', // 文件上传准备时
+	    FILE_UPLOAD_PREPARED: 'fileuploadprepared', // 文件上传准备好了
+	    CHUNK_UPLOAD_PREPARING: 'chunkuploadpreparing', // 分块上传准备时
+	    CHUNK_UPLOAD_COMPLETING: 'chunkuploadcompleting', // 分块上传结束时
+	    FILE_UPLOAD_PROGRESS: 'fileuploadprogress', // 文件上传进度中
+	    FILE_UPLOAD_END: 'fileuploadend', // 文件上传结束
+	    FILE_UPLOAD_COMPLETING: 'fileuploadcompleting', // 文件上传结束时
+	    FILE_UPLOAD_SUCCESS: 'fileuploadsuccess', // 文件上传成功
+	    FILE_UPLOAD_ERROR: 'fileuploaderror', // 文件上传失败
+	    FILE_UPLOAD_COMPLETED: 'fileuploadcompleted', // 文件上传完成了
+	
+	    FILE_CANCEL: 'filecancel', // 文件退出
+	    FILE_STATUS_CHANGE: 'filestatuschange' // 文件状态发生变化
+	};
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	exports.Status = {
+	    ALL: 255, // 所有状态
+	
+	    PROCESS: 31, // INITED -> END
+	    INITED: 1, // 初始状态
+	    QUEUED: 2, // 进入队列
+	    PENDING: 4, // 队列中等待
+	    PROGRESS: 8, // 上传中
+	    END: 16, // 上传完成, 等待后续处理
+	
+	    SUCCESS: 32, // 上传成功
+	    ERROR: 64, // 上传出错
+	    CANCELLED: 128 // 上传取消 和 queued 相反, 退出队列
+	};
+	
+	exports.StatusName = {
+	    1: 'inited',
+	    2: 'queued',
+	    4: 'pending',
+	    8: 'progress',
+	    16: 'end',
+	    32: 'success',
+	    64: 'error',
+	    128: 'cancelled'
+	};
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var _Error = (function (_Error2) {
+	    _inherits(_Error, _Error2);
+	
+	    function _Error(message) {
+	        _classCallCheck(this, _Error);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_Error).call(this, message));
+	
+	        _this.message = message;
+	        return _this;
+	    }
+	
+	    return _Error;
+	})(Error);
+	
+	var AbortError = (function (_Error3) {
+	    _inherits(AbortError, _Error3);
+	
+	    function AbortError(message) {
+	        _classCallCheck(this, AbortError);
+	
+	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(AbortError).call(this, message));
+	
+	        _this2.name = 'AbortError';
+	        return _this2;
+	    }
+	
+	    return AbortError;
+	})(_Error);
+	
+	var TimeoutError = (function (_Error4) {
+	    _inherits(TimeoutError, _Error4);
+	
+	    function TimeoutError(message) {
+	        _classCallCheck(this, TimeoutError);
+	
+	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(TimeoutError).call(this, message));
+	
+	        _this3.name = 'TimeoutError';
+	        return _this3;
+	    }
+	
+	    return TimeoutError;
+	})(_Error);
+	
+	var NetworkError = (function (_Error5) {
+	    _inherits(NetworkError, _Error5);
+	
+	    function NetworkError(status, message) {
+	        _classCallCheck(this, NetworkError);
+	
+	        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkError).call(this, message));
+	
+	        _this4.name = 'NetworkError';
+	        _this4.status = status;
+	        return _this4;
+	    }
+	
+	    return NetworkError;
+	})(_Error);
+	
+	var QueueLimitError = (function (_Error6) {
+	    _inherits(QueueLimitError, _Error6);
+	
+	    function QueueLimitError() {
+	        _classCallCheck(this, QueueLimitError);
+	
+	        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(QueueLimitError).call(this, 'queue limit'));
+	
+	        _this5.name = 'QueueLimitError';
+	        return _this5;
+	    }
+	
+	    return QueueLimitError;
+	})(_Error);
+	
+	var FilterError = (function (_Error7) {
+	    _inherits(FilterError, _Error7);
+	
+	    function FilterError(file, message) {
+	        _classCallCheck(this, FilterError);
+	
+	        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(FilterError).call(this, message));
+	
+	        _this6.name = 'FilterError';
+	        _this6.file = file;
+	        return _this6;
+	    }
+	
+	    return FilterError;
+	})(_Error);
+	
+	var DuplicateError = (function (_FilterError) {
+	    _inherits(DuplicateError, _FilterError);
+	
+	    function DuplicateError(file, message) {
+	        _classCallCheck(this, DuplicateError);
+	
+	        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(DuplicateError).call(this, file, message));
+	
+	        _this7.name = 'DuplicateError';
+	        return _this7;
+	    }
+	
+	    return DuplicateError;
+	})(FilterError);
+	
+	var FileExtensionError = (function (_FilterError2) {
+	    _inherits(FileExtensionError, _FilterError2);
+	
+	    function FileExtensionError(file, message) {
+	        _classCallCheck(this, FileExtensionError);
+	
+	        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(FileExtensionError).call(this, file, message));
+	
+	        _this8.name = 'FileExtensionError';
+	        return _this8;
+	    }
+	
+	    return FileExtensionError;
+	})(FilterError);
+	
+	var FileSizeError = (function (_FilterError3) {
+	    _inherits(FileSizeError, _FilterError3);
+	
+	    function FileSizeError(file, message) {
+	        _classCallCheck(this, FileSizeError);
+	
+	        var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(FileSizeError).call(this, file, message));
+	
+	        _this9.name = 'FileSizeError';
+	        return _this9;
+	    }
+	
+	    return FileSizeError;
+	})(FilterError);
+	
+	module.exports = { AbortError: AbortError, TimeoutError: TimeoutError, NetworkError: NetworkError,
+	    QueueLimitError: QueueLimitError, FilterError: FilterError, DuplicateError: DuplicateError, FileExtensionError: FileExtensionError, FileSizeError: FileSizeError };
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var _require = __webpack_require__(3);
+	
+	var parseSize = _require.parseSize;
+	
+	var ChunkResponse = (function () {
+	    /**
+	     * @param {string|null} rawResponse
+	     * @param {ChunkRequest} chunkRequest
+	     */
+	
+	    function ChunkResponse(rawResponse, chunkRequest) {
+	        _classCallCheck(this, ChunkResponse);
+	
+	        this.rawResponse = rawResponse;
+	        this.chunkRequest = chunkRequest;
+	    }
+	
+	    _createClass(ChunkResponse, [{
+	        key: 'getChunkRequest',
+	        value: function getChunkRequest() {
+	            return this.chunkRequest;
+	        }
+	    }, {
+	        key: 'getRawResponse',
+	        value: function getRawResponse() {
+	            return this.rawResponse;
+	        }
+	    }, {
+	        key: 'getResponse',
+	        value: function getResponse() {
+	            return this.response || this.rawResponse;
+	        }
+	    }, {
+	        key: 'getJson',
+	        value: function getJson() {
+	            var response = this.getResponse();
+	            if (response == null) {
+	                return null;
+	            }
+	            if (typeof response.getJson === 'function') {
+	                return response.getJson();
+	            }
+	            if (typeof response === 'string') {
+	                return response === '' ? null : JSON.parse(response);
+	            }
+	            return response;
+	        }
+	    }, {
+	        key: 'setResponse',
+	        value: function setResponse(response) {
+	            this.response = response;
+	            return this;
+	        }
+	    }]);
+	
+	    return ChunkResponse;
+	})();
+	
+	var ChunkRequest = (function () {
+	    /**
+	     *
+	     * @param {int} index
+	     * @param {Blob} blob
+	     * @param {FileRequest} fileRequest
+	     */
+	
+	    function ChunkRequest(index, blob, fileRequest) {
+	        _classCallCheck(this, ChunkRequest);
+	
+	        this.index = index;
+	        this.blob = blob;
+	        this.fileRequest = fileRequest;
+	    }
+	
+	    _createClass(ChunkRequest, [{
+	        key: 'getName',
+	        value: function getName() {
+	            return this.fileRequest.getName();
+	        }
+	    }, {
+	        key: 'getFile',
+	        value: function getFile() {
+	            return this.fileRequest.getFile();
+	        }
+	    }, {
+	        key: 'getBlob',
+	        value: function getBlob() {
+	            return this.blob;
+	        }
+	    }, {
+	        key: 'getIndex',
+	        value: function getIndex() {
+	            return this.index;
+	        }
+	    }, {
+	        key: 'isMultiChunk',
+	        value: function isMultiChunk() {
+	            return this.getFile().source !== this.blob;
+	        }
+	    }, {
+	        key: 'getParams',
+	        value: function getParams() {
+	            if (!this.params) {
+	                this.params = this.fileRequest.getParams().clone();
+	            }
+	            return this.params;
+	        }
+	    }, {
+	        key: 'getParam',
+	        value: function getParam(name) {
+	            return this.getParams().getParam(name);
+	        }
+	    }, {
+	        key: 'setParam',
+	        value: function setParam(name, value) {
+	            this.getParams().setParam(name, value);
+	
+	            return this;
+	        }
+	    }, {
+	        key: 'getFileRequest',
+	        value: function getFileRequest() {
+	            return this.fileRequest;
+	        }
+	    }, {
+	        key: 'getUrl',
+	        value: function getUrl() {
+	            return this.url || this.fileRequest.getUrl();
+	        }
+	    }, {
+	        key: 'setUrl',
+	        value: function setUrl(url) {
+	            this.url = url;
+	            return this;
+	        }
+	    }, {
+	        key: 'getHeaders',
+	        value: function getHeaders() {
+	            if (!this.headers) {
+	                this.headers = this.fileRequest.getHeaders().slice(0);
+	            }
+	            return this.headers;
+	        }
+	    }, {
+	        key: 'setHeader',
+	        value: function setHeader(name, value) {
+	            var headers = this.getHeaders();
+	            headers.push({ name: name, value: value });
+	            return this;
+	        }
+	    }, {
+	        key: 'isWithCredentials',
+	        value: function isWithCredentials() {
+	            return this.fileRequest.isWithCredentials();
+	        }
+	    }, {
+	        key: 'getTimeout',
+	        value: function getTimeout() {
+	            return this.fileRequest.getTimeout();
+	        }
+	    }, {
+	        key: 'createChunkResponse',
+	        value: function createChunkResponse(response) {
+	            return new ChunkResponse(response, this);
+	        }
+	    }]);
+	
+	    return ChunkRequest;
+	})();
+	
+	var FileResponse = (function () {
+	    /**
+	     * @param {ChunkResponse|Object|string} rawResponse
+	     * @param {FileRequest} fileRequest
+	     */
+	
+	    function FileResponse(rawResponse, fileRequest) {
+	        _classCallCheck(this, FileResponse);
+	
+	        this.rawResponse = rawResponse;
+	        this.fileRequest = fileRequest;
+	    }
+	
+	    _createClass(FileResponse, [{
+	        key: 'isFromMultiChunkResponse',
+	        value: function isFromMultiChunkResponse() {
+	            if (this.rawResponse instanceof ChunkResponse) {
+	                return this.rawResponse.getChunkRequest().isMultiChunk();
+	            }
+	            return false;
+	        }
+	    }, {
+	        key: 'getFileRequest',
+	        value: function getFileRequest() {
+	            return this.fileRequest;
+	        }
+	    }, {
+	        key: 'getRawResponse',
+	        value: function getRawResponse() {
+	            return this.rawResponse;
+	        }
+	    }, {
+	        key: 'getResponse',
+	        value: function getResponse() {
+	            if (this.response != null) {
+	                return this.response;
+	            }
+	            if (this.rawResponse instanceof ChunkResponse) {
+	                return this.rawResponse.getResponse();
+	            } else {
+	                return this.rawResponse;
+	            }
+	        }
+	    }, {
+	        key: 'getJson',
+	        value: function getJson() {
+	            var response = this.getResponse();
+	            if (response == null) {
+	                return null;
+	            }
+	            if (typeof response.getJson === 'function') {
+	                return response.getJson();
+	            }
+	            if (typeof response === 'string') {
+	                return response === '' ? null : JSON.parse(response);
+	            }
+	            return response;
+	        }
+	    }, {
+	        key: 'setResponse',
+	        value: function setResponse(response) {
+	            this.response = response;
+	            return this;
+	        }
+	    }]);
+	
+	    return FileResponse;
+	})();
+	
+	var Params = (function () {
+	    function Params(params) {
+	        _classCallCheck(this, Params);
+	
+	        if (Array.isArray(params)) {
+	            this.params = params.slice(0);
+	        } else if ((typeof params === 'undefined' ? 'undefined' : _typeof(params)) === 'object') {
+	            this.params = [];
+	            for (var name in params) {
+	                if (params.hasOwnProperty(name)) {
+	                    this.params.push({ name: name, value: params[name] });
+	                }
+	            }
+	        } else {
+	            this.params = [];
+	        }
+	    }
+	
+	    _createClass(Params, [{
+	        key: 'setParam',
+	        value: function setParam(name, value) {
+	            this.removeParam(name);
+	            this.addParam(name, value);
+	        }
+	    }, {
+	        key: 'addParam',
+	        value: function addParam(name, value) {
+	            this.params.push({ name: name, value: value });
+	        }
+	    }, {
+	        key: 'removeParam',
+	        value: function removeParam(name) {
+	            this.params = this.params.filter(function (param) {
+	                return param.name !== name;
+	            });
+	        }
+	    }, {
+	        key: 'getParam',
+	        value: function getParam(name, single) {
+	            var ret = this.params.filter(function (param) {
+	                return param.name === name;
+	            }).map(function (param) {
+	                return param.value;
+	            });
+	
+	            if (single) {
+	                return ret.shift();
+	            }
+	
+	            return ret;
+	        }
+	    }, {
+	        key: 'clone',
+	        value: function clone() {
+	            return new Params(this.params);
+	        }
+	    }, {
+	        key: 'toArray',
+	        value: function toArray() {
+	            return this.params;
+	        }
+	    }, {
+	        key: 'toString',
+	        value: function toString() {
+	            var params = this.params.map(function (param) {
+	                return encodeURIComponent(param.name) + '=' + (param.value == null ? '' : encodeURIComponent(param.value));
+	            });
+	
+	            return params.join('&'); //.replace( /%20/g, '+');
+	        }
+	    }]);
+	
+	    return Params;
+	})();
+	
+	var MIN_CHUNK_SIZE = 256 * 1024; // 256K
+	
+	var FileRequest = (function () {
+	    function FileRequest(file) {
+	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	
+	        _classCallCheck(this, FileRequest);
+	
+	        this.file = file;
+	        this.name = options.name || 'file';
+	        this.url = options.url || options.action;
+	        this.params = new Params(options.params || options.data);
+	        this.headers = options.headers || [];
+	        this.withCredentials = options.withCredentials;
+	        this.timeout = options.timeout || 0;
+	        this.chunkSize = options.chunkSize || 0;
+	        this.chunkRetries = options.chunkRetries || 0;
+	        this.chunkEnable = options.chunkEnable || false;
+	        this.chunkProcessThreads = options.chunkProcessThreads || 2;
+	    }
+	
+	    _createClass(FileRequest, [{
+	        key: 'getFile',
+	        value: function getFile() {
+	            return this.file;
+	        }
+	    }, {
+	        key: 'getUrl',
+	        value: function getUrl() {
+	            return this.url || '';
+	        }
+	    }, {
+	        key: 'getName',
+	        value: function getName() {
+	            return this.name;
+	        }
+	    }, {
+	        key: 'setName',
+	        value: function setName(name) {
+	            this.name = name;
+	            return this;
+	        }
+	    }, {
+	        key: 'setUrl',
+	        value: function setUrl(url) {
+	            this.url = url;
+	            return this;
+	        }
+	    }, {
+	        key: 'getParams',
+	        value: function getParams() {
+	            return this.params;
+	        }
+	    }, {
+	        key: 'getParam',
+	        value: function getParam(name) {
+	            return this.getParams().getParam(name);
+	        }
+	    }, {
+	        key: 'setParam',
+	        value: function setParam(name, value) {
+	            this.params.setParam(name, value);
+	            return this;
+	        }
+	    }, {
+	        key: 'getHeaders',
+	        value: function getHeaders() {
+	            return this.headers;
+	        }
+	    }, {
+	        key: 'setHeader',
+	        value: function setHeader(name, value) {
+	            this.headers.push({ name: name, value: value });
+	        }
+	    }, {
+	        key: 'isWithCredentials',
+	        value: function isWithCredentials() {
+	            return this.withCredentials;
+	        }
+	    }, {
+	        key: 'setWithCredentials',
+	        value: function setWithCredentials(flag) {
+	            this.withCredentials = flag;
+	            return this;
+	        }
+	    }, {
+	        key: 'getTimeout',
+	        value: function getTimeout() {
+	            return this.timeout;
+	        }
+	    }, {
+	        key: 'setTimeout',
+	        value: function setTimeout(timeout) {
+	            this.timeout = timeout;
+	            return this;
+	        }
+	    }, {
+	        key: 'getChunkSize',
+	        value: function getChunkSize() {
+	            return parseSize(this.chunkSize);
+	        }
+	    }, {
+	        key: 'setChunkSize',
+	        value: function setChunkSize(chunkSize) {
+	            this.chunkSize = chunkSize;
+	            return this;
+	        }
+	    }, {
+	        key: 'getChunkRetries',
+	        value: function getChunkRetries() {
+	            return this.chunkRetries;
+	        }
+	    }, {
+	        key: 'setChunkRetries',
+	        value: function setChunkRetries(retries) {
+	            this.chunkRetries = retries;
+	            return 0;
+	        }
+	    }, {
+	        key: 'isChunkEnable',
+	        value: function isChunkEnable() {
+	            var chunkSize = this.getChunkSize();
+	            return this.chunkEnable && chunkSize > MIN_CHUNK_SIZE && this.file.getRuntime().canSlice() && this.file.size > chunkSize;
+	        }
+	    }, {
+	        key: 'setChunkEnable',
+	        value: function setChunkEnable(flag) {
+	            this.chunkEnable = flag;
+	            return this;
+	        }
+	    }, {
+	        key: 'getChunkProcessThreads',
+	        value: function getChunkProcessThreads() {
+	            return this.chunkProcessThreads;
+	        }
+	    }, {
+	        key: 'setChunkProcessThreads',
+	        value: function setChunkProcessThreads(threads) {
+	            this.chunkProcessThreads = threads;
+	            return this;
+	        }
+	    }, {
+	        key: 'createChunkRequest',
+	        value: function createChunkRequest(index, blob) {
+	            return new ChunkRequest(index, blob, this);
+	        }
+	    }, {
+	        key: 'createFileResponse',
+	        value: function createFileResponse(response) {
+	            return new FileResponse(response, this);
+	        }
+	    }]);
+	
+	    return FileRequest;
+	})();
+	
+	module.exports = FileRequest;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Emitter = __webpack_require__(2);
+	var Runtime = __webpack_require__(9);
+	var File = __webpack_require__(12);
+	
+	var MAX_NUM_ONCE = 100;
+	
+	function createReader(collector) {
+	    return function (dataTransfer, responders) {
+	        var items = dataTransfer.items,
+	            files = dataTransfer.files;
+	        var item = undefined,
+	            times = MAX_NUM_ONCE;
+	        var _break = false;
+	
+	        function collect(file) {
+	            if (--times < 0 || !collector(file, responders)) {
+	                _break = true;
+	                return false;
+	            }
+	            return true;
+	        }
+	
+	        function readEntry(entry) {
+	            if (_break) return;
+	            if (entry.isFile) {
+	                entry.file(function (file) {
+	                    if (!_break) {
+	                        collect(file);
+	                    }
+	                });
+	            } else if (entry.isDirectory) {
+	                entry.createReader().readEntries(function (entries) {
+	                    if (_break) return;
+	                    for (var i = 0, l = entries.length; i < l; i++) {
+	                        if (_break) break;
+	                        readEntry(entries[i]);
+	                    }
+	                });
+	            }
+	        }
+	
+	        for (var i = 0, l = files.length; i < l; i++) {
+	            if (_break) break;
+	            item = items && items[i];
+	
+	            var entry = item && item.webkitGetAsEntry && item.webkitGetAsEntry();
+	
+	            if (entry && entry.isDirectory) {
+	                readEntry(entry);
+	            } else {
+	                if (!collect(files[i])) {
+	                    break;
+	                }
+	            }
+	        }
+	    };
+	}
+	
+	var Area = (function (_Emitter) {
+	    _inherits(Area, _Emitter);
+	
+	    function Area(area) {
+	        _classCallCheck(this, Area);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Area).call(this));
+	
+	        _this.areaElement = area;
+	        return _this;
+	    }
+	
+	    _createClass(Area, [{
+	        key: 'contains',
+	        value: function contains(target) {
+	            return this.areaElement.contains(target);
+	        }
+	    }, {
+	        key: 'start',
+	        value: function start(e, allowed) {
+	            this.emit('start', e, allowed);
+	        }
+	    }, {
+	        key: 'response',
+	        value: function response(e, allowed) {
+	            allowed = allowed && this.contains(e.target);
+	            this.emit('response', e, allowed);
+	            return allowed;
+	        }
+	    }, {
+	        key: 'end',
+	        value: function end(e) {
+	            this.emit('end', e);
+	        }
+	    }]);
+	
+	    return Area;
+	})(Emitter);
+	
+	var Collectors = [];
+	
+	function prepare() {
+	    if (!('DataTransfer' in window) || !('FileList' in window) || !document.addEventListener) {
+	        return;
+	    }
+	
+	    var runtime = Runtime.getInstance();
+	
+	    var started = 0,
+	        enter = 0,
+	        endTimer = undefined;
+	    var dataTransferReader = createReader(function (file, responders) {
+	        if (!responders || responders.length < 1) {
+	            return false;
+	        }
+	        file = new File(runtime, file);
+	        var total = responders.length;
+	        return responders.some(function (responder) {
+	            var ret = responder.recieve(file);
+	            if (ret > 0) {
+	                return true;
+	            }
+	            if (ret < 0) {
+	                total -= 1;
+	            }
+	            return false;
+	        }) || total > 0;
+	    });
+	
+	    var start = function start(e) {
+	        started = 1;
+	        Collectors.forEach(function (responder) {
+	            return responder.start(e);
+	        });
+	    };
+	
+	    var move = function move(e) {
+	        var has = Collectors.filter(function (responder) {
+	            return responder.response(e);
+	        }).length > 0;
+	
+	        var dataTransfer = e.dataTransfer;
+	
+	        if (dataTransfer) {
+	            dataTransfer.dropEffect = has ? 'copy' : 'none';
+	        }
+	        e.preventDefault();
+	    };
+	
+	    var end = function end(e) {
+	        started = 0;
+	        enter = 0;
+	        Collectors.forEach(function (responder) {
+	            return responder.end(e);
+	        });
+	    };
+	
+	    var drag = function drag(e) {
+	        clearTimeout(endTimer);
+	        var isLeave = e.type === 'dragleave';
+	        if (!isLeave && !started) {
+	            start(e);
+	        }
+	        move(e);
+	        if (isLeave) {
+	            endTimer = setTimeout(function () {
+	                return end(e);
+	            }, 100);
+	        }
+	    };
+	    var drop = function drop(e) {
+	        e.preventDefault();
+	
+	        clearTimeout(endTimer);
+	        end(e);
+	
+	        var responders = Collectors.filter(function (responder) {
+	            return responder.contains(e.target);
+	        });
+	
+	        if (responders.length < 1) {
+	            return;
+	        }
+	
+	        var dataTransfer = e.dataTransfer;
+	
+	        try {
+	            if (dataTransfer.getData('text/html')) {
+	                return;
+	            }
+	        } catch (ex) {}
+	
+	        dataTransferReader(dataTransfer, responders);
+	    };
+	
+	    document.addEventListener('dragenter', drag, false);
+	    document.addEventListener('dragover', drag, false);
+	    document.addEventListener('dragleave', drag, false);
+	    document.addEventListener('drop', drop, false);
+	}
+	
+	var DndCollector = (function () {
+	    function DndCollector(core) {
+	        _classCallCheck(this, DndCollector);
+	
+	        if (Collectors.length < 1) {
+	            prepare();
+	        }
+	        Collectors.push(this);
+	
+	        this.core = core;
+	        this.areas = [];
+	    }
+	
+	    _createClass(DndCollector, [{
+	        key: 'addArea',
+	        value: function addArea(area) {
+	            var _this2 = this;
+	
+	            area = new Area(area);
+	            this.areas.push(area);
+	            area.destroy = function () {
+	                area.removeAllListeners();
+	                var i = _this2.areas.indexOf(area);
+	                if (i > -1) {
+	                    _this2.areas.splice(i, 1);
+	                }
+	            };
+	
+	            return area;
+	        }
+	    }, {
+	        key: 'contains',
+	        value: function contains(target) {
+	            return this.areas.some(function (area) {
+	                return area.contains(target);
+	            });
+	        }
+	    }, {
+	        key: 'start',
+	        value: function start(e) {
+	            this.areas.forEach(function (area) {
+	                return area.start(e);
+	            });
+	        }
+	    }, {
+	        key: 'response',
+	        value: function response(e) {
+	            return this.areas.map(function (area) {
+	                return area.response(e);
+	            }).some(function (r) {
+	                return r !== false;
+	            });
+	        }
+	    }, {
+	        key: 'recieve',
+	        value: function recieve(file) {
+	            var ret = this.core.add(file);
+	            if (ret > 0 && !this.core.isMultiple()) {
+	                return -1;
+	            } else {
+	                return ret;
+	            }
+	        }
+	    }, {
+	        key: 'end',
+	        value: function end(e) {
+	            this.areas.forEach(function (area) {
+	                return area.end(e);
+	            });
+	        }
+	    }]);
+	
+	    return DndCollector;
+	})();
+	
+	module.exports = DndCollector;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Runtime = __webpack_require__(10);
+	
+	var _require = __webpack_require__(3);
+	
+	var Deferred = _require.Deferred;
+	
+	var Transport = __webpack_require__(11);
+	
+	var instance = undefined;
+	
+	var Html5Runtime = (function (_Runtime) {
+	    _inherits(Html5Runtime, _Runtime);
+	
+	    function Html5Runtime() {
+	        _classCallCheck(this, Html5Runtime);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Html5Runtime).apply(this, arguments));
+	    }
+	
+	    _createClass(Html5Runtime, [{
+	        key: 'getAsDataUrl',
+	        value: function getAsDataUrl(blob, timeout) {
+	            var i = Deferred(),
+	                fr = new FileReader(),
+	                timer = undefined;
+	
+	            fr.onloadend = function () {
+	                if (fr.readyState == FileReader.DONE) {
+	                    i.resolve(fr.result);
+	                } else {
+	                    i.reject();
+	                }
+	                clearTimeout(timer);
+	                fr.onloadend = null;
+	            };
+	            fr.readAsDataURL(blob);
+	
+	            var abort = function abort() {
+	                fr && fr.abort();
+	                fr = null;
+	            };
+	            if (timeout) {
+	                timer = setTimeout(abort, timeout);
+	            }
+	
+	            var ret = i.promise();
+	            ret.abort = abort;
+	
+	            return ret;
+	        }
+	    }, {
+	        key: 'getTransport',
+	        value: function getTransport() {
+	            if (!this.transport) {
+	                this.transport = new Transport(this);
+	            }
+	            return this.transport;
+	        }
+	    }, {
+	        key: 'canSlice',
+	        value: function canSlice() {
+	            return !!(Blob.prototype.slice || Blob.prototype.mozSlice || Blob.prototype.webkitSlice);
+	        }
+	    }, {
+	        key: 'slice',
+	        value: function slice(blob, start, end) {
+	            var blobSlice = blob.slice || blob.mozSlice || blob.webkitSlice;
+	
+	            return blobSlice.call(blob, start, end);
+	        }
+	    }, {
+	        key: 'md5',
+	        value: function md5(blob) {
+	            var i = Deferred();
+	
+	            if (!window.SparkMD5) {
+	                i.reject();
+	                return i.promise();
+	            }
+	
+	            var chunkSize = 2 * 1024 * 1024,
+	                chunks = Math.ceil(blob.size / chunkSize),
+	                chunk = 0,
+	                spark = new SparkMD5.ArrayBuffer(),
+	                blobSlice = blob.mozSlice || blob.webkitSlice || blob.slice;
+	
+	            var fr = new FileReader();
+	
+	            var _loadNext = function loadNext() {
+	                if (!fr) return;
+	                var start = undefined,
+	                    end = undefined;
+	
+	                start = chunk * chunkSize;
+	                end = Math.min(start + chunkSize, blob.size);
+	
+	                fr.onload = function () {
+	                    spark && spark.append(fr.result);
+	                };
+	
+	                fr.onloadend = function () {
+	                    if (!fr) return;
+	                    if (fr.readyState == FileReader.DONE) {
+	                        if (++chunk < chunks) {
+	                            setTimeout(_loadNext, 1);
+	                        } else {
+	                            setTimeout(function () {
+	                                spark && i.resolve(spark.end());
+	                                _loadNext = blob = spark = null;
+	                            }, 50);
+	                        }
+	                    } else {
+	                        i.reject();
+	                    }
+	                    fr.onloadend = fr.onload = null;
+	                };
+	
+	                fr.readAsArrayBuffer(blobSlice.call(blob, start, end));
+	            };
+	
+	            _loadNext();
+	
+	            var ret = i.promise();
+	            ret.abort = function () {
+	                fr && fr.abort();
+	                spark = null;
+	                fr = null;
+	            };
+	
+	            return ret;
+	        }
+	    }], [{
+	        key: 'getInstance',
+	        value: function getInstance() {
+	            if (!instance) {
+	                instance = new Html5Runtime();
+	            }
+	            return instance;
+	        }
+	    }]);
+	
+	    return Html5Runtime;
+	})(Runtime);
+	
+	module.exports = Html5Runtime;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Emitter = __webpack_require__(2);
+	var Events = __webpack_require__(4);
+	
+	var _require = __webpack_require__(3);
+	
+	var Deferred = _require.Deferred;
+	
+	var _require2 = __webpack_require__(6);
+	
+	var NetworkError = _require2.NetworkError;
+	
+	var Runtime = (function (_Emitter) {
+	    _inherits(Runtime, _Emitter);
+	
+	    function Runtime() {
+	        _classCallCheck(this, Runtime);
+	
+	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Runtime).apply(this, arguments));
+	    }
+	
+	    _createClass(Runtime, [{
+	        key: 'md5',
+	        value: function md5(blob) {
+	            var i = Deferred();
+	            i.reject();
+	            return i.promise();
+	        }
+	    }, {
+	        key: 'getAsDataUrl',
+	        value: function getAsDataUrl(file, timeout) {
+	            var i = Deferred();
+	            i.reject();
+	            return i.promise();
+	        }
+	    }, {
+	        key: 'getTransport',
+	        value: function getTransport() {
+	            return null;
+	        }
+	    }, {
+	        key: 'getUploading',
+	        value: function getUploading() {
+	            if (!this.uploading) {
+	                this.uploading = new Uploading(this);
+	            }
+	            return this.uploading;
+	        }
+	    }, {
+	        key: 'canSlice',
+	        value: function canSlice() {
+	            return false;
+	        }
+	    }, {
+	        key: 'slice',
+	        value: function slice(blob) {
+	            throw new Error('this runtime current not support slice');
+	        }
+	    }, {
+	        key: 'cancel',
+	        value: function cancel(blob) {}
+	    }]);
+	
+	    return Runtime;
+	})(Emitter);
+	
+	module.exports = Runtime;
+	
+	var Uploading = (function () {
+	    function Uploading(runtime) {
+	        _classCallCheck(this, Uploading);
+	
+	        this.runtime = runtime;
+	    }
+	
+	    /**
+	     * @param {FileRequest} request
+	     * @returns {*}
+	     */
+	
+	    _createClass(Uploading, [{
+	        key: 'generate',
+	        value: function generate(request) {
+	            var _this2 = this;
+	
+	            var i = Deferred(),
+	                file = request.getFile(),
+	                runtime = this.runtime;
+	
+	            var source = file.getSource(),
+	                size = file.size,
+	                chunkSize = request.getChunkSize(),
+	                useChunk = request.isChunkEnable(),
+	                threads = Math.max(request.getChunkProcessThreads(), 1),
+	                start = 0,
+	                end = 0,
+	                slots = [];
+	
+	            var getActives = function getActives() {
+	                return slots.reduce(function (sum, slot) {
+	                    return sum + (slot.state() === 'pending' ? 1 : 0);
+	                }, 0);
+	            };
+	
+	            var readChunk = function readChunk() {
+	                var slot = undefined,
+	                    req = undefined,
+	                    blob = undefined;
+	                while (end < size && getActives() < threads) {
+	                    start = end;
+	                    end = Math.min(end + chunkSize, size);
+	                    blob = runtime.slice(source, start, end);
+	                    req = request.createChunkRequest(slots.length, blob);
+	                    slot = _this2.slot(req, request.getChunkRetries());
+	                    slot.progress(progress).done(done).fail(fail);
+	                    slots.push(slot);
+	                }
+	            };
+	
+	            var progress = function progress() {
+	                var total = size - end,
+	                    loaded = 0;
+	                slots.forEach(function (slot) {
+	                    total += slot.total;
+	                    loaded += slot.loaded;
+	                });
+	                i.notify({ total: total, loaded: loaded });
+	            };
+	
+	            var done = function done(res) {
+	                useChunk && readChunk();
+	
+	                if (end >= size && slots.every(function (slot) {
+	                    return slot.state() === 'resolved';
+	                })) {
+	                    i.resolve(res);
+	                }
+	            };
+	
+	            var abort = function abort() {
+	                slots.forEach(function (slot) {
+	                    return slot.abort();
+	                });
+	            };
+	
+	            var fail = function fail(error) {
+	                i.reject(error);
+	                abort();
+	            };
+	
+	            if (useChunk) {
+	                readChunk();
+	            } else {
+	                end = size;
+	                var slot = this.slot(request.createChunkRequest(0, source), 0);
+	                slot.progress(progress).done(done).fail(fail);
+	                slots.push(slot);
+	            }
+	
+	            var ret = i.promise();
+	            ret.abort = abort;
+	
+	            return ret;
+	        }
+	    }, {
+	        key: 'slot',
+	        value: function slot(request, retries) {
+	            var i = Deferred(),
+	                runtime = this.runtime,
+	                core = request.getFile().getCore();
+	
+	            var ret = i.promise();
+	
+	            var progress = function progress(e) {
+	                if (e.total) {
+	                    ret.total = e.total;
+	                }
+	                if (e.loaded) {
+	                    ret.loaded = e.loaded;
+	                }
+	                i.notify(e);
+	            };
+	
+	            var process = function process() {
+	                var prepare, transport, completion;
+	                ret.abort = function () {
+	                    prepare && prepare.abort();
+	                    transport && transport.abort();
+	                    completion && completion.abort();
+	                };
+	                ret.total = request.getBlob().size;
+	                ret.loaded = 0;
+	
+	                prepare = core.invoke(Events.CHUNK_UPLOAD_PREPARING, request);
+	
+	                prepare.then(function (request) {
+	                    transport = runtime.getTransport().generate(request);
+	                    transport.progress(progress);
+	                    return transport;
+	                }).then(function (response) {
+	                    completion = core.invoke(Events.CHUNK_UPLOAD_COMPLETING, request.createChunkResponse(response));
+	                    return completion;
+	                }).done(i.resolve).fail(error);
+	            };
+	
+	            var error = function error(e) {
+	                if (e instanceof NetworkError && retries-- > 0) {
+	                    // retry
+	                    setTimeout(process, 500);
+	                } else {
+	                    i.reject(e);
+	                }
+	                ret.abort();
+	            };
+	
+	            process();
+	
+	            return ret;
+	        }
+	    }]);
+	
+	    return Uploading;
+	})();
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var _require = __webpack_require__(3);
+	
+	var Deferred = _require.Deferred;
+	
+	var _require2 = __webpack_require__(6);
+	
+	var TimeoutError = _require2.TimeoutError;
+	var AbortError = _require2.AbortError;
+	var NetworkError = _require2.NetworkError;
+	
+	var Html5Transport = (function () {
+	    function Html5Transport() {
+	        _classCallCheck(this, Html5Transport);
+	    }
+	
+	    _createClass(Html5Transport, [{
+	        key: 'generate',
+	
+	        /**
+	         * @param {ChunkRequest} request
+	         * @returns {*}
+	         */
+	        value: function generate(request) {
+	            var i = Deferred();
+	            var xhr = new XMLHttpRequest();
+	
+	            var timeoutTimer = undefined;
+	
+	            var clean = function clean() {
+	                xhr.onload = xhr.onerror = null;
+	                if (xhr.upload) {
+	                    xhr.upload.onprogress = null;
+	                }
+	                if (timeoutTimer) {
+	                    clearTimeout(timeoutTimer);
+	                }
+	            };
+	
+	            var abort = function abort() {
+	                clean();
+	                try {
+	                    xhr.abort();
+	                } catch (e) {}
+	            };
+	
+	            var complete = function complete(e) {
+	                clean();
+	                if (!xhr.status && e.type === 'error') {
+	                    return i.reject(new AbortError(e.message));
+	                }
+	                if (xhr.status === 0 || xhr.status === 304 || xhr.status >= 200 && xhr.status < 300) {
+	                    return i.resolve(xhr.responseText);
+	                }
+	                return i.reject(new NetworkError(xhr.status, xhr.statusText));
+	            };
+	
+	            if (xhr.upload) {
+	                xhr.upload.onprogress = function (e) {
+	                    return i.notify(e);
+	                };
+	            }
+	            xhr.onerror = complete;
+	            xhr.onload = complete;
+	
+	            // Timeout
+	            var timeout = request.getTimeout();
+	            if (timeout > 0) {
+	                timeoutTimer = setTimeout(function () {
+	                    abort();
+	                    i.reject(new TimeoutError('timeout:' + timeout));
+	                }, timeout);
+	            }
+	
+	            try {
+	                (function () {
+	                    xhr.open('POST', request.getUrl(), true);
+	                    if (request.isWithCredentials()) {
+	                        xhr.withCredentials = true;
+	                    }
+	
+	                    request.getHeaders().forEach(function (header) {
+	                        return xhr.setRequestHeader(header.name, header.value);
+	                    });
+	
+	                    var formData = new FormData(),
+	                        blob = request.getBlob();
+	
+	                    request.getParams().toArray().forEach(function (param) {
+	                        return formData.append(param.name, param.value);
+	                    });
+	
+	                    formData.append(request.getName(), blob, blob.name || 'blob');
+	
+	                    xhr.send(formData);
+	                })();
+	            } catch (e) {
+	                abort();
+	                i.reject(new AbortError(e.message));
+	            }
+	
+	            var ret = i.promise();
+	            ret.abort = abort;
+	
+	            return ret;
+	        }
+	    }]);
+	
+	    return Html5Transport;
+	})();
+	
+	module.exports = Html5Transport;
+
+/***/ },
+/* 12 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Emitter = __webpack_require__(2);
+	var Events = __webpack_require__(4);
+	
+	var _require = __webpack_require__(3);
+	
+	var Deferred = _require.Deferred;
+	
+	var _require2 = __webpack_require__(5);
+	
+	var Status = _require2.Status;
+	var StatusName = _require2.StatusName;
+	
+	var uid = 0;
+	function guid() {
+	    return 'FILE-' + (uid++).toString(16).toUpperCase();
+	}
+	
+	var RE_EXT = /\.([^.]+)$/,
+	    RE_IMAGE = /^image\/(jpg|jpeg|png|gif|bmp|webp)$/i;
+	function guessExt(blob) {
+	    var m = blob.name && RE_EXT.exec(blob.name);
+	    if (m) {
+	        return m[1];
+	    }
+	    m = blob.type && RE_IMAGE.exec(blob.type);
+	    if (m) {
+	        return m[1];
+	    }
+	    return '';
+	}
+	
+	function guessType(ext) {
+	    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].indexOf(ext.toLowerCase()) > -1) {
+	        return 'image/' + (ext === 'jpg' ? 'jpeg' : ext);
+	    }
+	    return null;
+	}
+	
+	var Progress = (function () {
+	    function Progress(total, loaded) {
+	        _classCallCheck(this, Progress);
+	
+	        this.change(total, loaded);
+	    }
+	
+	    _createClass(Progress, [{
+	        key: 'change',
+	        value: function change(total, loaded) {
+	            this.total = total;
+	            this.loaded = loaded || 0;
+	            this.percentage = this.loaded === this.total ? 100 : Math.ceil(this.loaded / this.total * 100);
+	        }
+	    }, {
+	        key: 'done',
+	        value: function done() {
+	            this.change(this.total, this.total);
+	        }
+	    }]);
+	
+	    return Progress;
+	})();
+	
+	var File = (function (_Emitter) {
+	    _inherits(File, _Emitter);
+	
+	    function File(runtime, source, filename) {
+	        _classCallCheck(this, File);
+	
+	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(File).call(this));
+	
+	        _this.id = guid();
+	
+	        _this.name = source.name || filename || _this.id;
+	
+	        var ext = guessExt(source).toLowerCase();
+	
+	        if (ext && !RE_EXT.test(_this.name)) {
+	            _this.name += '.' + ext;
+	        }
+	
+	        _this.ext = ext;
+	
+	        _this.type = source.type || guessType(_this.ext) || 'application/octet-stream';
+	
+	        _this.lastModified = source.lastModified || +new Date();
+	
+	        _this.size = source.size || 0;
+	
+	        _this.runtime = runtime;
+	
+	        _this.source = source;
+	
+	        _this.status = Status.INITED;
+	
+	        _this.progress = new Progress(_this.size, 0);
+	        return _this;
+	    }
+	
+	    _createClass(File, [{
+	        key: 'getCore',
+	        value: function getCore() {
+	            return this.core;
+	        }
+	    }, {
+	        key: 'setCore',
+	        value: function setCore(core) {
+	            this.core = core;
+	            this.setPropagationTarget(core);
+	        }
+	    }, {
+	        key: 'getRuntime',
+	        value: function getRuntime() {
+	            return this.runtime;
+	        }
+	    }, {
+	        key: 'isImage',
+	        value: function isImage() {
+	            return RE_IMAGE.test(this.type);
+	        }
+	    }, {
+	        key: 'setStatus',
+	        value: function setStatus(status) {
+	            var prevStatus = this.status;
+	
+	            if (prevStatus !== Status.CANCELLED && status !== prevStatus) {
+	                this.status = status;
+	                this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
+	            }
+	        }
+	    }, {
+	        key: 'getStatus',
+	        value: function getStatus() {
+	            return this.status;
+	        }
+	    }, {
+	        key: 'getStatusName',
+	        value: function getStatusName() {
+	            if (this.status in StatusName) {
+	                return StatusName[this.status];
+	            } else {
+	                return 'unknow';
+	            }
+	        }
+	    }, {
+	        key: 'getSource',
+	        value: function getSource() {
+	            return this.source;
+	        }
+	    }, {
+	        key: 'getAsDataUrl',
+	        value: function getAsDataUrl(timeout) {
+	            if (!this._dataUrlPromise) {
+	                this._dataUrlPromise = this.runtime.getAsDataUrl(this.source, timeout);
+	            }
+	            return this._dataUrlPromise;
+	        }
+	    }, {
+	        key: 'md5',
+	        value: function md5() {
+	            if (!this._md5Promise) {
+	                this._md5Promise = this.runtime.md5(this.source);
+	            }
+	            return this._md5Promise;
+	        }
+	    }, {
+	        key: 'session',
+	        value: function session() {
+	            var _this2 = this;
+	
+	            if (this._sessionPromise) {
+	                return this._sessionPromise;
+	            }
+	
+	            var ret = Deferred();
+	
+	            ret.progress(function (progress) {
+	                _this2.setStatus(Status.PROGRESS);
+	                _this2.emit(Events.FILE_UPLOAD_PROGRESS, progress);
+	            }).done(function (response) {
+	                _this2.response = response;
+	                _this2._session = null;
+	                _this2._sessionPromise = null;
+	                _this2._flows = [];
+	                _this2.setStatus(Status.SUCCESS);
+	                _this2.emit(Events.FILE_UPLOAD_SUCCESS, response);
+	            }).fail(function (error) {
+	                _this2._session = null;
+	                _this2._sessionPromise = null;
+	                var flow = undefined;
+	                while (flow = _this2._flows.shift()) {
+	                    flow.abort();
+	                }
+	
+	                if (error instanceof Error) {
+	                    _this2.setStatus(Status.ERROR);
+	                    _this2.emit(Events.FILE_UPLOAD_ERROR, error);
+	                }
+	            }).always(function () {
+	                _this2.emit(Events.FILE_UPLOAD_COMPLETED, _this2.getStatus());
+	            });
+	
+	            this._flows = [];
+	            this._session = ret;
+	            this._sessionPromise = ret.promise();
+	
+	            return this._sessionPromise;
+	        }
+	    }, {
+	        key: 'prepare',
+	        value: function prepare() {
+	            var _this3 = this;
+	
+	            if (this.status !== Status.PENDING || !this.core) {
+	                return false;
+	            }
+	
+	            this.session();
+	            this.setStatus(Status.PROGRESS);
+	
+	            this.emit(Events.FILE_UPLOAD_START);
+	
+	            this.request = this.core.createFileRequest(this);
+	
+	            var ret = this.core.invoke(Events.FILE_UPLOAD_PREPARING, this.request);
+	
+	            this._flows.push(ret);
+	
+	            ret.then(function (request) {
+	                _this3.emit(Events.FILE_UPLOAD_PREPARED, request);
+	
+	                var upload = _this3.runtime.getUploading().generate(request);
+	
+	                _this3._flows.push(upload);
+	
+	                upload.progress(function (e) {
+	                    _this3.progress.change(e.total, e.loaded);
+	                    _this3._session.notify(_this3.progress);
+	                });
+	
+	                return upload;
+	            }).then(function (response) {
+	                return _this3.complete(response);
+	            }, this._session.reject);
+	
+	            return true;
+	        }
+	    }, {
+	        key: 'complete',
+	        value: function complete(response) {
+	            if (this.status !== Status.PROGRESS) return;
+	
+	            var flow = undefined;
+	            while (flow = this._flows.shift()) {
+	                flow.abort();
+	            }
+	
+	            this.progress.done();
+	            this._session.notify(this.progress);
+	
+	            response = this.request.createFileResponse(response);
+	
+	            this.setStatus(Status.END);
+	            this.emit(Events.FILE_UPLOAD_END);
+	
+	            var ret = this.core.invoke(Events.FILE_UPLOAD_COMPLETING, response);
+	
+	            this._flows.push(ret);
+	
+	            ret.then(this._session.resolve, this._session.reject);
+	        }
+	    }, {
+	        key: 'pending',
+	        value: function pending() {
+	            if (this.status === Status.ERROR || this.status === Status.QUEUED) {
+	                this.progress.change(this.size, 0);
+	                this.setStatus(Status.PENDING);
+	            }
+	        }
+	    }, {
+	        key: 'abort',
+	        value: function abort() {
+	            this._session && this._session.reject();
+	            this._session = null;
+	            this._sessionPromise = null;
+	        }
+	    }, {
+	        key: 'cancel',
+	        value: function cancel() {
+	            this.setStatus(Status.CANCELLED);
+	            this.emit(Events.FILE_CANCEL);
+	            this.abort();
+	            this.runtime.cancel(this.source);
+	            this._dataUrlPromise && this._dataUrlPromise.abort();
+	            this._md5Promise && this._md5Promise.abort && this._md5Promise.abort();
+	            this.removeAllListeners();
+	        }
+	    }, {
+	        key: 'destroy',
+	        value: function destroy() {
+	            this.cancel();
+	        }
+	    }]);
+	
+	    return File;
+	})(Emitter);
+	
+	module.exports = File;
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Emitter = __webpack_require__(2);
+	var Runtime = __webpack_require__(9);
+	var File = __webpack_require__(12);
+	
+	var PasteCollector = (function () {
+	    function PasteCollector(core) {
+	        _classCallCheck(this, PasteCollector);
+	
+	        this.core = core;
+	        this.runtime = Runtime.getInstance();
+	    }
+	
+	    _createClass(PasteCollector, [{
+	        key: 'addArea',
+	        value: function addArea(area) {
+	            var core = this.core,
+	                runtime = this.runtime,
+	                emitter = new Emitter();
+	
+	            var paste = function paste(e) {
+	
+	                var clipboardData = e.clipboardData || window.clipboardData,
+	                    items = clipboardData.items,
+	                    files = clipboardData.files;
+	
+	                if (!files && !items) {
+	                    return;
+	                }
+	
+	                var prevent = undefined,
+	                    i = undefined,
+	                    l = undefined,
+	                    file = undefined,
+	                    item = undefined,
+	                    addRet = undefined;
+	
+	                if (files && files.length) {
+	                    // safari has files
+	                    prevent = files.length > 0;
+	                    for (i = 0, l = files.length; i < l; i++) {
+	                        file = new File(runtime, files[i]);
+	
+	                        prevent = 1;
+	
+	                        addRet = core.add(file);
+	                        if (addRet < 0 || addRet > 0 && !core.isMultiple()) {
+	                            break;
+	                        }
+	                    }
+	                } else if (items && items.length) {
+	                    // chrome has items
+	                    var filename = clipboardData.getData('text/plain');
+	                    for (i = 0, l = items.length; i < l && !core.isLimit(); i++) {
+	                        item = items[i];
+	
+	                        if (item.kind !== 'file' || !(file = item.getAsFile())) {
+	                            continue;
+	                        }
+	
+	                        file = new File(runtime, file, filename);
+	                        filename = null;
+	
+	                        prevent = 1;
+	
+	                        addRet = core.add(file);
+	                        if (addRet < 0 || addRet > 0 && !core.isMultiple()) {
+	                            break;
+	                        }
+	                    }
+	                }
+	
+	                if (prevent) {
+	                    e.preventDefault();
+	                    e.stopPropagation();
+	                    emitter.emit('paste', clipboardData);
+	                }
+	            };
+	
+	            if ('DataTransfer' in window && 'FileList' in window && area.addEventListener) {
+	                area.addEventListener('paste', paste, false);
+	            }
+	
+	            emitter.destroy = function () {
+	                emitter.removeAllListeners();
+	                if (area.removeEventListener) {
+	                    area.removeEventListener('paste', paste, false);
+	                }
+	            };
+	
+	            return emitter;
+	        }
+	    }]);
+	
+	    return PasteCollector;
+	})();
+	
+	module.exports = PasteCollector;
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Emitter = __webpack_require__(2);
+	var Html5Runtime = __webpack_require__(9);
+	var FlashRuntime = __webpack_require__(15);
+	var File = __webpack_require__(12);
+	
+	var _require = __webpack_require__(3);
+	
+	var extend = _require.extend;
+	
+	var SWF_URL = '';
+	
+	var createElement = (function () {
+	    var div = document.createElement('div');
+	    return function (html) {
+	        div.innerHTML = html;
+	        html = div.firstChild;
+	        div.removeChild(html);
+	        return html;
+	    };
+	})();
+	
+	var FlashTriggerCollection = (function () {
+	    function FlashTriggerCollection(core, onFiles) {
+	        var _this = this;
+	
+	        _classCallCheck(this, FlashTriggerCollection);
+	
+	        var overlay = createElement('<label style="position:fixed;left:-100px;top:-100px;width:50px;height:50px;display:block;cursor:pointer;overflow:hidden;z-index:99999;opacity:0;filter:alpha(opacity=0)"></label>');
+	
+	        var runtime = new FlashRuntime(overlay, SWF_URL, function () {
+	            return {
+	                accept: core.getAccept(),
+	                multiple: core.isMultiple()
+	            };
+	        });
+	
+	        runtime.on('select', function (e) {
+	            onFiles(e.files, runtime);
+	            _this.current && _this.current.emit('files', e.files, runtime);
+	        });
+	
+	        runtime.on('rollOut', function () {
+	            return _this.hideOverlay();
+	        });
+	
+	        document.body.appendChild(overlay);
+	        this.overlay = overlay;
+	    }
+	
+	    _createClass(FlashTriggerCollection, [{
+	        key: 'hideOverlay',
+	        value: function hideOverlay() {
+	            extend(this.overlay.style, {
+	                left: '-100px',
+	                top: '-100px',
+	                width: '50px',
+	                height: '50px'
+	            });
+	            if (this.current) {
+	                this.current.emit('rollOut');
+	                this.current = null;
+	            }
+	        }
+	    }, {
+	        key: 'add',
+	        value: function add(trigger) {
+	            var _this2 = this;
+	
+	            var overlay = this.overlay,
+	                emitter = new Emitter();
+	            var mouseover = function mouseover() {
+	                var rect = trigger.getBoundingClientRect();
+	                extend(overlay.style, {
+	                    left: rect.left + 'px',
+	                    top: rect.top + 'px',
+	                    width: rect.right - rect.left + 'px',
+	                    height: rect.bottom - rect.top + 'px'
+	                });
+	                emitter.emit('rollOver');
+	                if (_this2.current && _this2.current !== emitter) {
+	                    _this2.current.emit('rollOut');
+	                }
+	                _this2.current = emitter;
+	            };
+	
+	            if (trigger.addEventListener) {
+	                trigger.addEventListener('mouseover', mouseover, false);
+	            } else if (trigger.attachEvent) {
+	                trigger.attachEvent("onmouseover", mouseover);
+	            }
+	
+	            emitter.destroy = function () {
+	                if (_this2.current === emitter) {
+	                    _this2.hideOverlay();
+	                }
+	                emitter.removeAllListeners();
+	                if (trigger.removeEventListener) {
+	                    trigger.removeEventListener('mouseover', mouseover, false);
+	                } else if (trigger.detachEvent) {
+	                    trigger.detachEvent("onmouseover", mouseover);
+	                }
+	            };
+	
+	            return emitter;
+	        }
+	    }]);
+	
+	    return FlashTriggerCollection;
+	})();
+	
+	var Html5Trigger = (function (_Emitter) {
+	    _inherits(Html5Trigger, _Emitter);
+	
+	    function Html5Trigger(trigger, core, onFiles) {
+	        _classCallCheck(this, Html5Trigger);
+	
+	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(Html5Trigger).call(this));
+	
+	        _this3.trigger = trigger;
+	        _this3.core = core;
+	        _this3.label = createElement('<label style="position:absolute;top:0;left:0;width:100%;height:100%;display:inline-block;cursor:pointer;background:#fff;overflow:hidden;opacity:0"></label>');
+	
+	        _this3.onChange = function (e) {
+	            onFiles(e.target.files);
+	            _this3.destroyInput();
+	            _this3.createInput();
+	        };
+	        trigger.appendChild(_this3.label);
+	        _this3.createInput();
+	        return _this3;
+	    }
+	
+	    _createClass(Html5Trigger, [{
+	        key: 'createInput',
+	        value: function createInput() {
+	            var input = createElement('<input type="file" style="position:absolute;clip:rect(1px 1px 1px 1px);" />');
+	
+	            var accept = this.core.getAccept();
+	            if (accept && accept.length > 0) {
+	                accept = accept.map(function (item) {
+	                    return item.mimeTypes || '.' + item.extensions.join(',.');
+	                });
+	
+	                input.setAttribute('accept', accept.join(','));
+	            }
+	            if (this.core.isMultiple()) {
+	                input.setAttribute('multiple', 'multiple');
+	            }
+	
+	            input.addEventListener('change', this.onChange, false);
+	
+	            this.label.appendChild(input);
+	            this.input = input;
+	        }
+	    }, {
+	        key: 'destroyInput',
+	        value: function destroyInput() {
+	            if (!this.input) return;
+	            this.input.removeEventListener('change', this.onChange, false);
+	            this.label.removeChild(this.input);
+	            this.input = null;
+	        }
+	    }, {
+	        key: 'destroy',
+	        value: function destroy() {
+	            this.destroyInput();
+	            this.removeAllListeners();
+	            this.trigger.removeChild(this.label);
+	        }
+	    }]);
+	
+	    return Html5Trigger;
+	})(Emitter);
+	
+	var Html5TriggerCollection = (function () {
+	    function Html5TriggerCollection(core, onFiles) {
+	        _classCallCheck(this, Html5TriggerCollection);
+	
+	        var runtime = Html5Runtime.getInstance();
+	        this.core = core;
+	        this.onFiles = function (files) {
+	            onFiles(files, runtime);
+	        };
+	    }
+	
+	    _createClass(Html5TriggerCollection, [{
+	        key: 'add',
+	        value: function add(trigger) {
+	            return new Html5Trigger(trigger, this.core, this.onFiles);
+	        }
+	    }]);
+	
+	    return Html5TriggerCollection;
+	})();
+	
+	var PickerCollector = (function () {
+	    _createClass(PickerCollector, null, [{
+	        key: 'setSWF',
+	        value: function setSWF(url) {
+	            SWF_URL = url;
+	        }
+	    }]);
+	
+	    function PickerCollector(core) {
+	        _classCallCheck(this, PickerCollector);
+	
+	        var onFiles = function onFiles(files, runtime) {
+	            for (var i = 0, l = files.length; i < l; i++) {
+	                if (core.add(new File(runtime, files[i])) < 0) {
+	                    break;
+	                }
+	            }
+	        };
+	
+	        if ('DataTransfer' in window && 'FileList' in window) {
+	            this.triggerCollection = new Html5TriggerCollection(core, onFiles);
+	        } else {
+	            this.triggerCollection = new FlashTriggerCollection(core, onFiles);
+	        }
+	    }
+	
+	    _createClass(PickerCollector, [{
+	        key: 'addArea',
+	        value: function addArea(area) {
+	            return this.triggerCollection.add(area);
+	        }
+	    }]);
+	
+	    return PickerCollector;
+	})();
+	
+	module.exports = PickerCollector;
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Runtime = __webpack_require__(10);
+	var Transport = __webpack_require__(16);
+	
+	function getFlashVersion() {
+	    var version = undefined;
+	
+	    try {
+	        version = navigator.plugins['Shockwave Flash'];
+	        version = version.description;
+	    } catch (e1) {
+	        try {
+	            version = new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version');
+	        } catch (e2) {
+	            version = '0.0';
+	        }
+	    }
+	    version = version.match(/\d+/g);
+	    return parseFloat(version[0] + '.' + version[1]);
+	}
+	
+	function callFlash(movie, functionName, argumentArray) {
+	    try {
+	        movie.CallFunction('<invoke name="' + functionName + '" returntype="javascript">' + __flash__argumentsToXML(argumentArray || [], 0) + '</invoke>');
+	    } catch (ex) {
+	        throw "Call to " + functionName + " failed";
+	    }
+	}
+	
+	function createFlash(swf, callInterface) {
+	    if (getFlashVersion() < 11.4) {
+	        throw 'flash player is not available';
+	    }
+	    var div = document.createElement('div');
+	    var url = swf + (swf.indexOf('?') > 0 ? '&' : '?') + 'callInterface=' + encodeURIComponent(callInterface);
+	    var attrs = ['id="' + callInterface + '-Picker"', 'type="application/x-shockwave-flash"', 'data="' + url + '"', 'width="100%" height="100%"', 'style="position:absolute;left:0;top:0;display:block;z-index:1;outline:0"'];
+	    if (window.ActiveXObject) {
+	        attrs.push('classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"');
+	    }
+	    div.innerHTML = '<object ' + attrs.join(' ') + '>' + '<param name="movie" value="' + url + '" />' + '<param name="wmode" value="transparent" />' + '<param name="allowscriptaccess" value="always" />' + '</object>';
+	
+	    return div.firstChild;
+	}
+	
+	var _guid = +new Date();
+	function guid(prefix) {
+	    var ret = prefix + (_guid++).toString(16);
+	    if (ret in window) {
+	        return guid(prefix);
+	    }
+	    return ret;
+	}
+	
+	var FlashRuntime = (function (_Runtime) {
+	    _inherits(FlashRuntime, _Runtime);
+	
+	    function FlashRuntime(trigger, swf, options) {
+	        _classCallCheck(this, FlashRuntime);
+	
+	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(FlashRuntime).call(this));
+	
+	        var callInterface = guid('FlashRuntime');
+	
+	        _this2.callInterface = callInterface;
+	        window[callInterface] = _this2;
+	
+	        _this2.options = options;
+	
+	        var _this = _this2;
+	        function display() {
+	            var w = trigger.offsetWidth,
+	                h = trigger.offsetHeight,
+	                flash = undefined;
+	            if (!w || !h || !(flash = createFlash(swf, callInterface))) {
+	                setTimeout(display, 1000);
+	                return;
+	            }
+	
+	            trigger.appendChild(_this.flash = flash);
+	        }
+	
+	        display();
+	        return _this2;
+	    }
+	
+	    _createClass(FlashRuntime, [{
+	        key: 'getOptions',
+	        value: function getOptions() {
+	            var options = this.options;
+	            if (typeof options === 'function') {
+	                options = options();
+	            }
+	            return options;
+	        }
+	    }, {
+	        key: 'getTransport',
+	        value: function getTransport(name, blob, options) {
+	            return new Transport(this, name, blob, options);
+	        }
+	    }, {
+	        key: 'send',
+	        value: function send(name, blob, url, params) {
+	            callFlash(this.flash, 'exec', ['send', name, blob.id, url, params]);
+	        }
+	    }, {
+	        key: 'abort',
+	        value: function abort(blob) {
+	            try {
+	                callFlash(this.flash, 'exec', ['abort', blob.id]);
+	            } catch (e) {}
+	        }
+	    }, {
+	        key: 'cancel',
+	        value: function cancel(blob) {
+	            callFlash(this.flash, 'exec', ['cancel', blob.id]);
+	        }
+	    }, {
+	        key: 'ping',
+	        value: function ping() {
+	            callFlash(this.flash, 'exec', ['pang']);
+	        }
+	    }, {
+	        key: 'destroy',
+	        value: function destroy() {
+	            delete window[this.callInterface];
+	        }
+	    }]);
+	
+	    return FlashRuntime;
+	})(Runtime);
+	
+	module.exports = FlashRuntime;
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var _require = __webpack_require__(3);
+	
+	var Deferred = _require.Deferred;
+	
+	var _require2 = __webpack_require__(6);
+	
+	var TimeoutError = _require2.TimeoutError;
+	var AbortError = _require2.AbortError;
+	var NetworkError = _require2.NetworkError;
+	
+	var FlashTransport = (function () {
+	    function FlashTransport(flashRuntime) {
+	        _classCallCheck(this, FlashTransport);
+	
+	        this.flashRuntime = flashRuntime;
+	    }
+	
+	    /**
+	     * @param {ChunkRequest} request
+	     * @returns {*}
+	     */
+	
+	    _createClass(FlashTransport, [{
+	        key: 'generate',
+	        value: function generate(request) {
+	            var i = Deferred(),
+	                flashRuntime = this.flashRuntime,
+	                blob = request.getBlob();
+	
+	            var timeoutTimer = undefined;
+	
+	            var clean = function clean() {
+	                flashRuntime.off('uploadprogress', progress);
+	                flashRuntime.off('uploadcomplete', complete);
+	                flashRuntime.off('uploaderror', error);
+	                if (timeoutTimer) {
+	                    clearTimeout(timeoutTimer);
+	                }
+	            };
+	            var abort = function abort() {
+	                clean();
+	                flashRuntime.abort(blob.id);
+	            };
+	
+	            var progress = function progress(e) {
+	                if (e.id !== blob.id) return;
+	                i.notify(e);
+	            };
+	
+	            var complete = function complete(e) {
+	                if (e.id !== blob.id) return;
+	                clean();
+	                if (e.status === 304 || e.status >= 200 && e.status < 300) {
+	                    flashRuntime.cancel(blob);
+	                    return i.resolve(e.response);
+	                }
+	                return i.reject(new NetworkError(e.status, e.response));
+	            };
+	
+	            var error = function error(e) {
+	                if (e.id !== blob.id) return;
+	                clean();
+	                i.reject(new AbortError(e.message));
+	            };
+	            flashRuntime.on('uploadprogress', progress);
+	            flashRuntime.on('uploadcomplete', complete);
+	            flashRuntime.on('uploaderror', error);
+	
+	            // Timeout
+	            var timeout = request.getTimeout();
+	            if (timeout > 0) {
+	                timeoutTimer = setTimeout(function () {
+	                    abort();
+	                    i.reject(new TimeoutError('timeout:' + timeout));
+	                }, timeout);
+	            }
+	
+	            try {
+	                flashRuntime.send(request.getName(), blob, request.getUrl(), request.getParams().toString());
+	            } catch (e) {
+	                abort();
+	                i.reject(new AbortError(e.message));
+	            }
+	
+	            var ret = i.promise();
+	            ret.abort = abort;
+	
+	            return ret;
+	        }
+	    }]);
+	
+	    return FlashTransport;
+	})();
+	
+	module.exports = FlashTransport;
+
+/***/ }
+/******/ ])
+});
+;
 //# sourceMappingURL=uploadcore.js.map

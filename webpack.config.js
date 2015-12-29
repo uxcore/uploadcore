@@ -21,7 +21,6 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin(),
         new webpack.DefinePlugin({
             VERSION: JSON.stringify(packageInfo.version)
         })

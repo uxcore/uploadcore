@@ -1,6 +1,6 @@
 {
   "name": "uxcore-uploadcore",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "uxcore uploadcore",
   "main": "dist/uploadcore.js",
   "scripts": {

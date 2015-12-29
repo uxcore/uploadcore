@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.1.1");
+	Core.VERSION = ("2.1.2");
 	Core.Core = Core;
 	
 	module.exports = Core;

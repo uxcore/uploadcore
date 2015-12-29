@@ -2,6 +2,11 @@
 
 ------------
 
+## 2.1.1
+
+`IMPROVED` update babel6.
+`FIXED` use src/index for main.
+
 ## 2.1.0
 
 `IMPROVED` use require&module.exports instead import&export.

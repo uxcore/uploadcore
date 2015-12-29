@@ -1,7 +1,7 @@
 {
-  "name": "uxcore-uploadcore",
-  "version": "2.1.2",
-  "description": "uxcore uploadcore",
+  "name": "uploadcore",
+  "version": "2.2.0",
+  "description": "upload core",
   "main": "dist/uploadcore.js",
   "scripts": {
     "build": "gulp build && gulp min && gulp flash",
@@ -10,10 +10,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:uxcore/uxcore-uploadcore.git"
+    "url": "git@github.com:uxcore/uploadcore.git"
   },
   "bugs": {
-    "url": "http://github.com/uxcore/uxcore-uploadcore/issues"
+    "url": "http://github.com/uxcore/uploadcore/issues"
   },
   "keywords": [
     "react",
@@ -50,5 +50,5 @@
   "author": "onbing",
   "contributors": [],
   "license": "MIT",
-  "homepage": "http://uxcore.github.io/uxcore-uploadcore"
+  "homepage": "http://uxcore.github.io/uploadcore"
 }

@@ -1,4 +1,4 @@
-const {Core, Events, Status} = require('uxcore-uploadcore');
+const {Core, Events, Status} = require('uploadcore');
 
 Core.setSWF('/dist/flashpicker.swf');
 

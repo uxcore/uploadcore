@@ -1,12 +1,12 @@
-# Uxcore UploadCore [![NPM version][npm-image]][npm-url] [![NPM download][download-image]][download-url]
+# UploadCore [![NPM version][npm-image]][npm-url] [![NPM download][download-image]][download-url]
 
-[npm-image]: http://img.shields.io/npm/v/uxcore-uploadcore.svg?style=flat-square
-[npm-url]: https://www.npmjs.org/package/uxcore-uploadcore
-[download-image]: https://img.shields.io/npm/dm/uxcore-uploadcore.svg?style=flat-square
-[download-url]: https://npmjs.org/package/uxcore-uploadcore
+[npm-image]: http://img.shields.io/npm/v/uploadcore.svg?style=flat-square
+[npm-url]: https://www.npmjs.org/package/uploadcore
+[download-image]: https://img.shields.io/npm/dm/uploadcore.svg?style=flat-square
+[download-url]: https://npmjs.org/package/uploadcore
 
 <p align="center">
-  <a href="http://uxcore.github.io/uxcore-uploadcore">
+  <a href="http://uxcore.github.io/uploadcore">
     <img width="360" src="https://img.alicdn.com/tps/TB1aOUSJFXXXXacXXXXXXXXXXXX.svg">
   </a>
 </p>
@@ -23,7 +23,7 @@
 ## Usage 最佳实践
 
 ```js
-import {UploadCore, Events, Status, VERSION} from 'uxcore-uploadcore';
+import {UploadCore, Events, Status, VERSION} from 'uploadcore';
 
 console.log('UploadCore version %s', VERSION);
 

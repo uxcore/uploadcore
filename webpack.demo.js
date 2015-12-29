@@ -23,7 +23,7 @@ module.exports = {
     resolve: {
         extensions: ['', '.js'],
         alias: {
-            'uxcore-uploadcore': path.join(__dirname, "src/index")
+            'uploadcore': path.join(__dirname, "src/index")
         }
     }
 };

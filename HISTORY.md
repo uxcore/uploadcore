@@ -2,6 +2,10 @@
 
 ------------
 
+## 2.2.0
+
+`IMPROVED` rename to `uploadcore`.
+
 ## 2.1.2
 
 `IMPROVED` update babel6.

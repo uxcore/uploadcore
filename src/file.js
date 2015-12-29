@@ -136,9 +136,9 @@ class File extends Emitter {
             return this._sessionPromise;
         }
 
-        let session = Deferred();
+        let ret = Deferred();
 
-        session.progress((progress) => {
+        ret.progress((progress) => {
             this.setStatus(Status.PROGRESS);
             this.emit(Events.FILE_UPLOAD_PROGRESS, progress);
         }).done((response) => {
@@ -165,8 +165,8 @@ class File extends Emitter {
         });
 
         this._flows = [];
-        this._session = session;
-        this._sessionPromise = session.promise();
+        this._session = ret;
+        this._sessionPromise = ret.promise();
 
         return this._sessionPromise;
     }
@@ -183,11 +183,11 @@ class File extends Emitter {
 
         this.request = this.core.createFileRequest(this);
 
-        const prepare = this.core.invoke(Events.FILE_UPLOAD_PREPARING, this.request);
+        let ret = this.core.invoke(Events.FILE_UPLOAD_PREPARING, this.request);
 
-        this._flows.push(prepare);
+        this._flows.push(ret);
 
-        prepare.then((request) => {
+        ret.then((request) => {
             this.emit(Events.FILE_UPLOAD_PREPARED, request);
 
             const upload = this.runtime.getUploading().generate(request);
@@ -221,11 +221,11 @@ class File extends Emitter {
         this.setStatus(Status.END);
         this.emit(Events.FILE_UPLOAD_END);
 
-        const complete = this.core.invoke(Events.FILE_UPLOAD_COMPLETING, response);
+        let ret = this.core.invoke(Events.FILE_UPLOAD_COMPLETING, response);
 
-        this._flows.push(complete);
+        this._flows.push(ret);
 
-        complete.then(this._session.resolve, this._session.reject);
+        ret.then(this._session.resolve, this._session.reject);
     }
 
     pending() {

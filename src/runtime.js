@@ -120,27 +120,27 @@ class Uploading {
             runtime = this.runtime,
             core = request.getFile().getCore();
 
-        let slot = i.promise();
+        let ret = i.promise();
 
         const progress = (e) => {
             if (e.total) {
-                slot.total = e.total;
+                ret.total = e.total;
             }
             if (e.loaded) {
-                slot.loaded = e.loaded;
+                ret.loaded = e.loaded;
             }
             i.notify(e);
         };
 
         const process = () => {
             var prepare, transport, completion;
-            slot.abort = function () {
+            ret.abort = function () {
                 prepare && prepare.abort();
                 transport && transport.abort();
                 completion && completion.abort();
             };
-            slot.total = request.getBlob().size;
-            slot.loaded = 0;
+            ret.total = request.getBlob().size;
+            ret.loaded = 0;
 
             prepare = core.invoke(Events.CHUNK_UPLOAD_PREPARING, request);
 
@@ -161,12 +161,12 @@ class Uploading {
             } else {
                 i.reject(e);
             }
-            slot.abort();
+            ret.abort();
         };
 
         process();
 
-        return slot;
+        return ret;
     }
 }
 

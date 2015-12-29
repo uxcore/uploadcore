@@ -311,16 +311,16 @@ class Stat {
         });
     }
     stat(flag) {
-        let stat = {}, files = this.getFiles(flag);
+        let ret = {}, files = this.getFiles(flag);
 
         files.forEach((file) => {
             let status = file.getStatus();
-            stat[status] = (status in stat) ?  (stat[status] + 1) : 1;
+            ret[status] = (status in ret) ?  (ret[status] + 1) : 1;
         });
 
-        stat['sum'] = files.length;
+        ret['sum'] = files.length;
 
-        return stat;
+        return ret;
     }
 }
 

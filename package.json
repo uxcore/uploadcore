@@ -1,8 +1,8 @@
 {
   "name": "uploadcore",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "upload core",
-  "main": "dist/uploadcore.js",
+  "main": "dist/uploadcore.min.js",
   "scripts": {
     "build": "gulp build && gulp min && gulp flash",
     "start": "npm install && gulp start",

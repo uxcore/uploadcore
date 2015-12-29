@@ -1,6 +1,6 @@
 {
   "name": "uploadcore",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "upload core",
   "main": "dist/uploadcore.min.js",
   "scripts": {
@@ -40,12 +40,6 @@
     "object-assign": "^2.0.0",
     "spark-md5": "^1.0.0",
     "webpack": "^1.8.4"
-  },
-  "babel": {
-    "presets": [
-      "es2015",
-      "react"
-    ]
   },
   "author": "onbing",
   "contributors": [],

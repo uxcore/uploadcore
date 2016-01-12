@@ -68,6 +68,7 @@ class Uploading {
                 end = Math.min(end + chunkSize, size);
                 blob = runtime.slice(source, start, end);
                 req = request.createChunkRequest(slots.length, blob);
+                req.setHeader('Content-Range', 'bytes ' + start + '-' + (end - 1) + '/' + size);
                 slot = this.slot(req, request.getChunkRetries());
                 slot.progress(progress).done(done).fail(fail);
                 slots.push(slot);

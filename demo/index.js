@@ -87,15 +87,16 @@ core.on(Events.FILE_UPLOAD_START, (file) => {
     console.info('filestatuschange', file, status, file.getStatusName());
 });
 
-
+/*
 const dnd = core.getDndCollector();
 
-dnd.addArea(document.documentElement);
+dnd.addArea(document.documentElement);*/
 
 const picker = core.getPickerCollector();
 
 picker.addArea(document.getElementById('button'));
 
+/*
 const paster = core.getPasteCollector();
 
-paster.addArea(document.getElementById('pastearea'));
+paster.addArea(document.getElementById('pastearea'));*/

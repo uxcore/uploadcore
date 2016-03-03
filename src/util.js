@@ -116,34 +116,33 @@ function Callbacks(options) {
 
     let firing, memory, fired, firingLength, firingIndex, firingStart,
         list = [], _this,
-        stack = !options.once && [];
-
-    function fire(data) {
-        memory = options.memory && data;
-        fired = true;
-        firingIndex = firingStart || 0;
-        firingStart = 0;
-        firingLength = list.length;
-        firing = true;
-        for (; list && firingIndex < firingLength; firingIndex++) {
-            if (list[firingIndex].apply(data[0], data[1]) === false && options.stopOnFalse) {
-                memory = false; // To prevent further calls using add
-                break;
-            }
-        }
-        firing = false;
-        if (list) {
-            if (stack) {
-                if (stack.length) {
-                    fire(stack.shift());
+        stack = !options.once && [],
+        fire = function (data) {
+            memory = options.memory && data;
+            fired = true;
+            firingIndex = firingStart || 0;
+            firingStart = 0;
+            firingLength = list.length;
+            firing = true;
+            for (; list && firingIndex < firingLength; firingIndex++) {
+                if (list[firingIndex].apply(data[0], data[1]) === false && options.stopOnFalse) {
+                    memory = false; // To prevent further calls using add
+                    break;
                 }
-            } else if (memory) {
-                list = [];
-            } else {
-                _this.disable();
             }
-        }
-    }
+            firing = false;
+            if (list) {
+                if (stack) {
+                    if (stack.length) {
+                        fire(stack.shift());
+                    }
+                } else if (memory) {
+                    list = [];
+                } else {
+                    _this.disable();
+                }
+            }
+        };
 
     _this = {
         add() {
@@ -258,7 +257,7 @@ function Deferred(func) {
         ["reject", "fail", Callbacks("once memory"), "rejected"],
         ["notify", "progress", Callbacks("memory")]
     ],
-    state = "pending", deferred = {},
+    state = "pending",
     promise = {
         state() {
             return state;
@@ -297,7 +296,7 @@ function Deferred(func) {
         promise(obj) {
             return obj != null ? extend(obj, promise) : promise;
         }
-    };
+    }, deferred = {};
 
     promise.pipe = promise.then;
 

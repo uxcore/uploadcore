@@ -76,8 +76,6 @@ class Emitter {
 
     emit(event, ...args) {
         this.applyEmit(event, args);
-
-        return this;
     }
 
     applyEmit(event, args) {

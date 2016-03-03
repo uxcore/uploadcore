@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.2.2");
+	Core.VERSION = ("2.2.3");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -746,8 +746,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            this.applyEmit(event, args);
-	
-	            return this;
 	        }
 	    }, {
 	        key: 'applyEmit',
@@ -995,9 +993,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        firingStart = undefined,
 	        list = [],
 	        _this = undefined,
-	        stack = !options.once && [];
-	
-	    function fire(data) {
+	        stack = !options.once && [],
+	        fire = function fire(data) {
 	        memory = options.memory && data;
 	        _fired = true;
 	        firingIndex = firingStart || 0;
@@ -1022,7 +1019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                _this.disable();
 	            }
 	        }
-	    }
+	    };
 	
 	    _this = {
 	        add: function add() {
@@ -1124,7 +1121,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function Deferred(func) {
 	    var tuples = [["resolve", "done", Callbacks("once memory"), "resolved"], ["reject", "fail", Callbacks("once memory"), "rejected"], ["notify", "progress", Callbacks("memory")]],
 	        _state = "pending",
-	        deferred = {},
 	        _promise = {
 	        state: function state() {
 	            return _state;
@@ -1154,7 +1150,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        promise: function promise(obj) {
 	            return obj != null ? extend(obj, _promise) : _promise;
 	        }
-	    };
+	    },
+	        deferred = {};
 	
 	    _promise.pipe = _promise.then;
 	
@@ -2463,6 +2460,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    end = Math.min(end + chunkSize, size);
 	                    blob = runtime.slice(source, start, end);
 	                    req = request.createChunkRequest(slots.length, blob);
+	                    req.setHeader('Content-Range', 'bytes ' + start + '-' + (end - 1) + '/' + size);
 	                    slot = _this2.slot(req, request.getChunkRetries());
 	                    slot.progress(progress).done(done).fail(fail);
 	                    slots.push(slot);

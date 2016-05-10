@@ -92,12 +92,12 @@ class File extends Emitter {
         return RE_IMAGE.test(this.type);
     }
 
-    setStatus(status) {
+    setStatus(status, silent) {
         let prevStatus = this.status;
 
         if (prevStatus !== Status.CANCELLED && status !== prevStatus) {
             this.status = status;
-            this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
+            !slient && this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
         }
     }
 
@@ -241,9 +241,9 @@ class File extends Emitter {
         this._sessionPromise = null;
     }
 
-    cancel() {
-        this.setStatus(Status.CANCELLED);
-        this.emit(Events.FILE_CANCEL);
+    cancel(silent) {
+        this.setStatus(Status.CANCELLED, silent);
+        !silent && this.emit(Events.FILE_CANCEL);
         this.abort();
         this.runtime.cancel(this.source);
         this._dataUrlPromise && this._dataUrlPromise.abort();

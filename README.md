@@ -731,6 +731,10 @@ response | `ChunkResponse` or `*` | 用于构造`FileResponse`的原始数据
 
 ### File.cancel
 
+参数 | 类型 | 描述
+--- |----- | ------
+silent | `bool` | 静默行为，为 true 时不触发相应的事件
+
 结束上传会话，退出文件上传队列。
 
 ### File.on

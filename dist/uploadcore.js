@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.2.5");
+	Core.VERSION = ("2.2.6");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -2836,7 +2836,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            if (prevStatus !== Status.CANCELLED && status !== prevStatus) {
 	                this.status = status;
-	                !slient && this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
+	                !silent && this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
 	            }
 	        }
 	    }, {

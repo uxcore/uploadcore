@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.2.4");
+	Core.VERSION = ("2.2.5");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -3354,7 +3354,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        };
 	
-	        if ('DataTransfer' in window && 'FileList' in window) {
+	        if (window.File && window.FileList && window.FileReader) {
 	            this.triggerCollection = new Html5TriggerCollection(core, onFiles);
 	        } else {
 	            this.triggerCollection = new FlashTriggerCollection(core, onFiles);

@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.2.3");
+	Core.VERSION = ("2.2.4");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -758,7 +758,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            if (this._events && (listeners = this._events[event])) {
 	                listeners.slice(0).forEach(function (fn) {
-	                    return fn.apply(_this, args);
+	                    if (listeners.indexOf(fn) !== -1) {
+	                        fn.apply(_this, args);
+	                    }
 	                });
 	            }
 	
@@ -2829,12 +2831,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }, {
 	        key: 'setStatus',
-	        value: function setStatus(status) {
+	        value: function setStatus(status, silent) {
 	            var prevStatus = this.status;
 	
 	            if (prevStatus !== Status.CANCELLED && status !== prevStatus) {
 	                this.status = status;
-	                this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
+	                !slient && this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
 	            }
 	        }
 	    }, {
@@ -2995,9 +2997,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }, {
 	        key: 'cancel',
-	        value: function cancel() {
-	            this.setStatus(Status.CANCELLED);
-	            this.emit(Events.FILE_CANCEL);
+	        value: function cancel(silent) {
+	            this.setStatus(Status.CANCELLED, silent);
+	            !silent && this.emit(Events.FILE_CANCEL);
 	            this.abort();
 	            this.runtime.cancel(this.source);
 	            this._dataUrlPromise && this._dataUrlPromise.abort();

@@ -97,7 +97,7 @@ class File extends Emitter {
 
         if (prevStatus !== Status.CANCELLED && status !== prevStatus) {
             this.status = status;
-            !slient && this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
+            !silent && this.emit(Events.FILE_STATUS_CHANGE, status, prevStatus);
         }
     }
 

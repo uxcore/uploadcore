@@ -84,7 +84,11 @@ class Emitter {
         let listeners;
 
         if (this._events && (listeners = this._events[event])) {
-            listeners.slice(0).forEach(fn => fn.apply(this, args));
+            listeners.slice(0).forEach((fn) => {
+                if (listeners.indexOf(fn) !== -1) {
+                    fn.apply(this, args)
+                }
+            });
         }
 
         if (this.propagationTarget) {

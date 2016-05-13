@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.2.6");
+	Core.VERSION = ("2.2.7");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -135,9 +135,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.constraints = new Constraints();
 	        _this.filters = new Filters();
 	
-	        if (!_this.multiple) {
-	            _this.capcity = 1;
-	        }
 	        if (_this.capcity > 0) {
 	            _this.addConstraint(function () {
 	                return _this.stat.getTotal() >= _this.capcity;

@@ -27,9 +27,6 @@ class Core extends Emitter {
         this.constraints = new Constraints;
         this.filters = new Filters;
 
-        if (!this.multiple) {
-            this.capcity = 1;
-        }
         if (this.capcity > 0) {
             this.addConstraint(() => this.stat.getTotal() >= this.capcity);
         }

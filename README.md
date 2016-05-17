@@ -232,7 +232,7 @@ videos = {
 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 
 'chunkRetries', 'chunkProcessThreads', 'autoPending', 
 'auto', 'capcity', 'queueCapcity', 'sizeLimit', 
-'fileSizeLimit', 'request']
+'fileSizeLimit']
 ```
 
 参数 | 类型 | 描述

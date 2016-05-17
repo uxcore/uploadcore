@@ -21,6 +21,11 @@ const core = new Core({
     preventDuplicate: false
 });
 
+window.core = core;
+core.setOptions({
+    queueCapcity: 2
+});
+
 // 上传完成
 core.on(Events.FILE_UPLOAD_COMPLETING, response => {
     let json = response.getJson();

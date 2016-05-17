@@ -27,9 +27,14 @@ class Core extends Emitter {
         this.constraints = new Constraints;
         this.filters = new Filters;
 
-        if (this.capcity > 0) {
-            this.addConstraint(() => this.stat.getTotal() >= this.capcity);
-        }
+        this.addConstraint(() => {
+            if (this.capcity > 0) {
+                return this.stat.getTotal() >= this.capcity
+            }
+            else {
+                return false;
+            }
+        });
 
         if (this.accept && this.accept.length > 0) {
             this.addFilter((file) => {
@@ -62,7 +67,7 @@ class Core extends Emitter {
             options.fitlers.forEach(filter => this.addFilter(filter));
         }
 
-        const request = options.request || {};
+        let request = options.request || {};
         REQUEST_OPTIONS.forEach((key) => {
             if (options.hasOwnProperty(key)) {
                 request[key] = options[key];
@@ -70,6 +75,23 @@ class Core extends Emitter {
         });
 
         this.requestOptions = request;
+    }
+
+    setOptions(options) {
+        if (typeof options === 'object' && !(options instanceof Array)) {
+            this.autoPending = options.autoPending || options.auto || this.autoPending;
+            this.capcity = options.capcity || options.queueCapcity || this.capcity;
+            this.sizeLimit = parseSize(options.sizeLimit || options.fileSizeLimit || this.sizeLimit);
+            let requestOptions = this.requestOptions
+            REQUEST_OPTIONS.forEach((key) => {
+                if (options.hasOwnProperty(key)) {
+                    requestOptions[key] = options[key];
+                }
+            });
+        }
+        else {
+            console && console.error('setOptions: type error, options should be an object/hashMap');
+        }
     }
 
     createFileRequest(file) {

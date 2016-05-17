@@ -172,7 +172,7 @@ class PickerCollector {
             }
         };
 
-        if (('DataTransfer' in window) && ('FileList' in window)) {
+        if (window.File && window.FileList && window.FileReader) {
             this.triggerCollection = new Html5TriggerCollection(core, onFiles);
         } else {
             this.triggerCollection = new FlashTriggerCollection(core, onFiles);

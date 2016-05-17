@@ -223,6 +223,21 @@ videos = {
 
 静态变量，获得版本号。
 
+### UploadCore.setOptions
+
+修改已经初始化后的 Options，目前支持
+
+```javascript
+['name', 'url', 'params', 'action', 'data', 'headers', 
+'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 
+'chunkRetries', 'chunkProcessThreads', 'autoPending', 
+'auto', 'capcity', 'queueCapcity', 'sizeLimit', 
+'fileSizeLimit', 'request']
+```
+
+参数 | 类型 | 描述
+--- |----- | ------
+options | `object` | 传入参数，同初始化 
 
 ### UploadCore.addConstraint
 

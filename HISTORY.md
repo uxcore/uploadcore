@@ -2,6 +2,10 @@
 
 ------------
 
+## 2.3.0
+
+`IMPROVED` add setOptions.
+
 ## 2.2.0
 
 `IMPROVED` rename to `uploadcore`.

@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.2.7");
+	Core.VERSION = ("2.3.0");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -78,6 +78,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 	
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	
+	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -135,11 +137,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _this.constraints = new Constraints();
 	        _this.filters = new Filters();
 	
-	        if (_this.capcity > 0) {
-	            _this.addConstraint(function () {
+	        _this.addConstraint(function () {
+	            if (_this.capcity > 0) {
 	                return _this.stat.getTotal() >= _this.capcity;
-	            });
-	        }
+	            } else {
+	                return false;
+	            }
+	        });
 	
 	        if (_this.accept && _this.accept.length > 0) {
 	            _this.addFilter(function (file) {
@@ -187,6 +191,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    _createClass(Core, [{
+	        key: 'setOptions',
+	        value: function setOptions(options) {
+	            var _this2 = this;
+	
+	            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object' && !(options instanceof Array)) {
+	                (function () {
+	                    _this2.autoPending = options.autoPending || options.auto || _this2.autoPending;
+	                    _this2.capcity = options.capcity || options.queueCapcity || _this2.capcity;
+	                    _this2.sizeLimit = parseSize(options.sizeLimit || options.fileSizeLimit || _this2.sizeLimit);
+	                    var requestOptions = _this2.requestOptions;
+	                    REQUEST_OPTIONS.forEach(function (key) {
+	                        if (options.hasOwnProperty(key)) {
+	                            requestOptions[key] = options[key];
+	                        }
+	                    });
+	                })();
+	            } else {
+	                console && console.error('setOptions: type error, options should be an object/hashMap');
+	            }
+	        }
+	    }, {
 	        key: 'createFileRequest',
 	        value: function createFileRequest(file) {
 	            return new FileRequest(file, this.requestOptions);
@@ -209,7 +234,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'add',
 	        value: function add(file) {
-	            var _this2 = this;
+	            var _this3 = this;
 	
 	            if (this.isLimit()) {
 	                this.emit(Events.QUEUE_ERROR, new QueueLimitError());
@@ -231,19 +256,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            file.on(Events.FILE_STATUS_CHANGE, function (status) {
 	                if (status === Status.CANCELLED) {
-	                    _this2.stat.remove(file);
+	                    _this3.stat.remove(file);
 	                } else if (status === Status.PENDING) {
 	                    setTimeout(function () {
-	                        if (_this2.pending.add(file) && _this2.pending.size() === 1) {
-	                            _this2.emit(Events.QUEUE_UPLOAD_START);
+	                        if (_this3.pending.add(file) && _this3.pending.size() === 1) {
+	                            _this3.emit(Events.QUEUE_UPLOAD_START);
 	                        }
 	                    }, 1);
 	                }
 	
-	                _this2.emit(Events.QUEUE_STAT_CHANGE, _this2.stat);
+	                _this3.emit(Events.QUEUE_STAT_CHANGE, _this3.stat);
 	
-	                if (_this2.stat.getFiles(Status.PROCESS).length < 1) {
-	                    _this2.emit(Events.QUEUE_UPLOAD_END);
+	                if (_this3.stat.getFiles(Status.PROCESS).length < 1) {
+	                    _this3.emit(Events.QUEUE_UPLOAD_END);
 	                }
 	            });
 	
@@ -526,10 +551,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'some',
 	        value: function some() {
-	            var _this3 = this;
+	            var _this4 = this;
 	
 	            return this.constraints.toArray().some(function (fn) {
-	                return fn.call(_this3);
+	                return fn.call(_this4);
 	            });
 	        }
 	    }]);
@@ -595,12 +620,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(Pending, [{
 	        key: 'add',
 	        value: function add(file) {
-	            var _this4 = this;
+	            var _this5 = this;
 	
 	            if (!this.pending.add(file)) return false;
 	
 	            file.session().always(function () {
-	                return _this4.pending.remove(file);
+	                return _this5.pending.remove(file);
 	            });
 	
 	            this.load();
@@ -615,13 +640,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'process',
 	        value: function process(file) {
-	            var _this5 = this;
+	            var _this6 = this;
 	
 	            if (!this.heading.add(file)) return;
 	
 	            file.session().always(function () {
-	                _this5.heading.remove(file);
-	                _this5.load();
+	                _this6.heading.remove(file);
+	                _this6.load();
 	            });
 	        }
 	    }, {

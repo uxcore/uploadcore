@@ -8,13 +8,15 @@ const {extend} = require('../util');
 let SWF_URL = '';
 
 const createElement = (() => {
-    const div = document.createElement('div');
-    return (html) => {
-        div.innerHTML = html;
-        html = div.firstChild;
-        div.removeChild(html);
-        return html;
-    };
+    if (typeof window == 'object') {
+        var div = document.createElement('div');
+        return function (html) {
+            div.innerHTML = html;
+            html = div.firstChild;
+            div.removeChild(html);
+            return html;
+        };
+    }
 })();
 
 class FlashTriggerCollection {

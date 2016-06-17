@@ -8,8 +8,12 @@ const {extend} = require('../util');
 let SWF_URL = '';
 
 const createElement = (() => {
-    const div = document.createElement('div');
-    return (html) => {
+    if (typeof document !== 'object') {
+        return;
+    }
+    
+    var div = document.createElement('div');
+    return function (html) {
         div.innerHTML = html;
         html = div.firstChild;
         div.removeChild(html);

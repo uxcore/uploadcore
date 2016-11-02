@@ -66,7 +66,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("2.3.0");
+	Core.VERSION = ("2.3.1");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -1505,9 +1505,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function ChunkRequest(index, blob, fileRequest) {
 	        _classCallCheck(this, ChunkRequest);
 	
-	        this.index = index;
-	        this.blob = blob;
+	        this.index = index || 0;
 	        this.fileRequest = fileRequest;
+	        this.blob = blob || fileRequest.getFile().source;
 	    }
 	
 	    _createClass(ChunkRequest, [{
@@ -1524,6 +1524,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'getBlob',
 	        value: function getBlob() {
 	            return this.blob;
+	        }
+	    }, {
+	        key: 'getBlobName',
+	        value: function getBlobName() {
+	            return this.isMultiChunk() ? this.blob.name || 'blob' : this.getFile().name;
 	        }
 	    }, {
 	        key: 'getIndex',
@@ -2526,7 +2531,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                readChunk();
 	            } else {
 	                end = size;
-	                var slot = this.slot(request.createChunkRequest(0, source), 0);
+	                var slot = this.slot(request.createChunkRequest(), 0);
 	                slot.progress(progress).done(done).fail(fail);
 	                slots.push(slot);
 	            }
@@ -2690,14 +2695,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        return xhr.setRequestHeader(header.name, header.value);
 	                    });
 	
-	                    var formData = new FormData(),
-	                        blob = request.getBlob();
+	                    var formData = new FormData();
 	
 	                    request.getParams().toArray().forEach(function (param) {
 	                        return formData.append(param.name, param.value);
 	                    });
 	
-	                    formData.append(request.getName(), blob, blob.name || 'blob');
+	                    formData.append(request.getName(), request.getBlob(), request.getBlobName());
 	
 	                    xhr.send(formData);
 	                })();
@@ -3162,6 +3166,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
+	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+	
 	var Emitter = __webpack_require__(2);
 	var Html5Runtime = __webpack_require__(9);
 	var FlashRuntime = __webpack_require__(15);
@@ -3174,6 +3180,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SWF_URL = '';
 	
 	var createElement = (function () {
+	    if ((typeof document === 'undefined' ? 'undefined' : _typeof(document)) !== 'object') {
+	        return;
+	    }
+	
 	    var div = document.createElement('div');
 	    return function (html) {
 	        div.innerHTML = html;

@@ -101,7 +101,7 @@ const picker = core.getPickerCollector();
 
 picker.addArea(document.getElementById('button'));
 
-/*
+
 const paster = core.getPasteCollector();
 
-paster.addArea(document.getElementById('pastearea'));*/
+paster.addArea(document.getElementById('pastearea'));

@@ -50,9 +50,9 @@ class ChunkRequest {
      * @param {FileRequest} fileRequest
      */
     constructor(index, blob, fileRequest) {
-        this.index = index;
-        this.blob = blob;
+        this.index = index || 0;
         this.fileRequest = fileRequest;
+        this.blob = blob || fileRequest.getFile().source;
     }
 
     getName() {
@@ -65,6 +65,10 @@ class ChunkRequest {
 
     getBlob() {
         return this.blob;
+    }
+
+    getBlobName() {
+        return this.isMultiChunk() ? (this.blob.name || 'blob') : this.getFile().name;
     }
 
     getIndex() {

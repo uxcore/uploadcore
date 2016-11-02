@@ -105,7 +105,7 @@ class Uploading {
             readChunk();
         } else {
             end = size;
-            let slot = this.slot(request.createChunkRequest(0, source), 0);
+            let slot = this.slot(request.createChunkRequest(), 0);
             slot.progress(progress).done(done).fail(fail);
             slots.push(slot);
         }

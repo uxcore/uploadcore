@@ -63,11 +63,11 @@ class Html5Transport {
 
             request.getHeaders().forEach((header) => xhr.setRequestHeader(header.name, header.value));
 
-            const formData = new FormData, blob = request.getBlob();
+            const formData = new FormData;
 
             request.getParams().toArray().forEach((param) => formData.append(param.name, param.value));
 
-            formData.append(request.getName(), blob, blob.name || 'blob');
+            formData.append(request.getName(), request.getBlob(), request.getBlobName());
 
             xhr.send(formData);
         } catch (e) {

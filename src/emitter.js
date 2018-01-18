@@ -60,7 +60,7 @@ class Emitter {
 
     removeAllListeners(event) {
         if (!event) {
-            this._events = [];
+            this._events = {};
         } else {
             delete this._events[event.toLowerCase()];
         }

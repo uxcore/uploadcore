@@ -44,5 +44,8 @@
   "author": "onbing",
   "contributors": [],
   "license": "MIT",
-  "homepage": "http://uxcore.github.io/uploadcore"
+  "homepage": "http://uxcore.github.io/uploadcore",
+  "dependencies": {
+    "blob-to-buffer": "^1.2.7"
+  }
 }

@@ -4,7 +4,7 @@
   "description": "upload core",
   "main": "dist/uploadcore.min.js",
   "scripts": {
-    "build": "gulp build && gulp min && gulp flash",
+    "build": "gulp build && gulp min",
     "start": "gulp start",
     "dev": "gulp start"
   },

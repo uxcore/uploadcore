@@ -75,13 +75,5 @@ gulp.task("min", function (callback) {
     callback();
 });
 
-gulp.task('flash', function (callback) {
-    gulp.src('src/flash/bin/FlashPicker.swf')
-        .pipe(rename('flashpicker.swf'))
-        .pipe(gulp.dest('dist'));
-
-    callback();
-});
-
 
 

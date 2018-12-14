@@ -52,16 +52,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var Core = __webpack_require__(1);
 	var Events = __webpack_require__(4);
 	
-	var _require = __webpack_require__(5);
-	
-	var Status = _require.Status;
+	var _require = __webpack_require__(5),
+	    Status = _require.Status;
 	
 	Core.Events = Events;
 	Core.Status = Status;
@@ -71,15 +70,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	module.exports = Core;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
-	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -90,23 +89,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Emitter = __webpack_require__(2);
 	var Events = __webpack_require__(4);
 	
-	var _require = __webpack_require__(5);
+	var _require = __webpack_require__(5),
+	    Status = _require.Status;
 	
-	var Status = _require.Status;
+	var _require2 = __webpack_require__(6),
+	    QueueLimitError = _require2.QueueLimitError,
+	    FilterError = _require2.FilterError,
+	    DuplicateError = _require2.DuplicateError,
+	    FileExtensionError = _require2.FileExtensionError,
+	    FileSizeError = _require2.FileSizeError;
 	
-	var _require2 = __webpack_require__(6);
-	
-	var QueueLimitError = _require2.QueueLimitError;
-	var FilterError = _require2.FilterError;
-	var DuplicateError = _require2.DuplicateError;
-	var FileExtensionError = _require2.FileExtensionError;
-	var FileSizeError = _require2.FileSizeError;
-	
-	var _require3 = __webpack_require__(3);
-	
-	var formatSize = _require3.formatSize;
-	var parseSize = _require3.parseSize;
-	var normalizeAccept = _require3.normalizeAccept;
+	var _require3 = __webpack_require__(3),
+	    formatSize = _require3.formatSize,
+	    parseSize = _require3.parseSize,
+	    normalizeAccept = _require3.normalizeAccept;
 	
 	var FileRequest = __webpack_require__(7);
 	var DndCollector = __webpack_require__(8);
@@ -115,15 +111,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var REQUEST_OPTIONS = ['name', 'url', 'params', 'action', 'data', 'headers', 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 'chunkRetries', 'chunkProcessThreads'];
 	
-	var Core = (function (_Emitter) {
+	var Core = function (_Emitter) {
 	    _inherits(Core, _Emitter);
 	
 	    function Core() {
-	        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 	
 	        _classCallCheck(this, Core);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Core).call(this));
+	        var _this = _possibleConstructorReturn(this, (Core.__proto__ || Object.getPrototypeOf(Core)).call(this));
 	
 	        _this.autoPending = options.autoPending || options.auto;
 	        _this.capcity = options.capcity || options.queueCapcity || 0;
@@ -193,20 +189,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(Core, [{
 	        key: 'setOptions',
 	        value: function setOptions(options) {
-	            var _this2 = this;
-	
 	            if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object' && !(options instanceof Array)) {
-	                (function () {
-	                    _this2.autoPending = options.autoPending || options.auto || _this2.autoPending;
-	                    _this2.capcity = options.capcity || options.queueCapcity || _this2.capcity;
-	                    _this2.sizeLimit = parseSize(options.sizeLimit || options.fileSizeLimit || _this2.sizeLimit);
-	                    var requestOptions = _this2.requestOptions;
-	                    REQUEST_OPTIONS.forEach(function (key) {
-	                        if (options.hasOwnProperty(key)) {
-	                            requestOptions[key] = options[key];
-	                        }
-	                    });
-	                })();
+	                this.autoPending = options.autoPending || options.auto || this.autoPending;
+	                this.capcity = options.capcity || options.queueCapcity || this.capcity;
+	                this.sizeLimit = parseSize(options.sizeLimit || options.fileSizeLimit || this.sizeLimit);
+	                var requestOptions = this.requestOptions;
+	                REQUEST_OPTIONS.forEach(function (key) {
+	                    if (options.hasOwnProperty(key)) {
+	                        requestOptions[key] = options[key];
+	                    }
+	                });
 	            } else {
 	                console && console.error('setOptions: type error, options should be an object/hashMap');
 	            }
@@ -234,7 +226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'add',
 	        value: function add(file) {
-	            var _this3 = this;
+	            var _this2 = this;
 	
 	            if (this.isLimit()) {
 	                this.emit(Events.QUEUE_ERROR, new QueueLimitError());
@@ -256,19 +248,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            file.on(Events.FILE_STATUS_CHANGE, function (status) {
 	                if (status === Status.CANCELLED) {
-	                    _this3.stat.remove(file);
+	                    _this2.stat.remove(file);
 	                } else if (status === Status.PENDING) {
 	                    setTimeout(function () {
-	                        if (_this3.pending.add(file) && _this3.pending.size() === 1) {
-	                            _this3.emit(Events.QUEUE_UPLOAD_START);
+	                        if (_this2.pending.add(file) && _this2.pending.size() === 1) {
+	                            _this2.emit(Events.QUEUE_UPLOAD_START);
 	                        }
 	                    }, 1);
 	                }
 	
-	                _this3.emit(Events.QUEUE_STAT_CHANGE, _this3.stat);
+	                _this2.emit(Events.QUEUE_STAT_CHANGE, _this2.stat);
 	
-	                if (_this3.stat.getFiles(Status.PROCESS).length < 1) {
-	                    _this3.emit(Events.QUEUE_UPLOAD_END);
+	                if (_this2.stat.getFiles(Status.PROCESS).length < 1) {
+	                    _this2.emit(Events.QUEUE_UPLOAD_END);
 	                }
 	            });
 	
@@ -356,11 +348,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Core;
-	})(Emitter);
+	}(Emitter);
 	
 	module.exports = Core;
 	
-	var Set = (function () {
+	var Set = function () {
 	    function Set() {
 	        _classCallCheck(this, Set);
 	
@@ -372,6 +364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * @returns {Number}
 	     */
+	
 	
 	    _createClass(Set, [{
 	        key: 'size',
@@ -474,9 +467,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Set;
-	})();
+	}();
 	
-	var Stat = (function () {
+	var Stat = function () {
 	    function Stat() {
 	        _classCallCheck(this, Stat);
 	
@@ -527,9 +520,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Stat;
-	})();
+	}();
 	
-	var Constraints = (function () {
+	var Constraints = function () {
 	    function Constraints() {
 	        _classCallCheck(this, Constraints);
 	
@@ -551,18 +544,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'some',
 	        value: function some() {
-	            var _this4 = this;
+	            var _this3 = this;
 	
 	            return this.constraints.toArray().some(function (fn) {
-	                return fn.call(_this4);
+	                return fn.call(_this3);
 	            });
 	        }
 	    }]);
 	
 	    return Constraints;
-	})();
+	}();
 	
-	var Filters = (function () {
+	var Filters = function () {
 	    function Filters() {
 	        _classCallCheck(this, Filters);
 	
@@ -586,7 +579,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function filter(file) {
 	            var error = null;
 	            this.filters.toArray().every(function (filter) {
-	                var ret = undefined;
+	                var ret = void 0;
 	                try {
 	                    ret = filter(file);
 	                } catch (e) {
@@ -606,9 +599,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Filters;
-	})();
+	}();
 	
-	var Pending = (function () {
+	var Pending = function () {
 	    function Pending(threads) {
 	        _classCallCheck(this, Pending);
 	
@@ -620,12 +613,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    _createClass(Pending, [{
 	        key: 'add',
 	        value: function add(file) {
-	            var _this5 = this;
+	            var _this4 = this;
 	
 	            if (!this.pending.add(file)) return false;
 	
 	            file.session().always(function () {
-	                return _this5.pending.remove(file);
+	                return _this4.pending.remove(file);
 	            });
 	
 	            this.load();
@@ -640,13 +633,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'process',
 	        value: function process(file) {
-	            var _this6 = this;
+	            var _this5 = this;
 	
 	            if (!this.heading.add(file)) return;
 	
 	            file.session().always(function () {
-	                _this6.heading.remove(file);
-	                _this6.load();
+	                _this5.heading.remove(file);
+	                _this5.load();
 	            });
 	        }
 	    }, {
@@ -660,25 +653,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    }]);
-	
-	    return Pending;
-	})();
 
-/***/ },
+	    return Pending;
+	}();
+
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _require = __webpack_require__(3);
+	var _require = __webpack_require__(3),
+	    Deferred = _require.Deferred;
 	
-	var Deferred = _require.Deferred;
-	
-	var Emitter = (function () {
+	var Emitter = function () {
 	    function Emitter() {
 	        _classCallCheck(this, Emitter);
 	    }
@@ -722,7 +714,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function off(event, listener) {
 	            event = event.toLowerCase();
 	
-	            var listeners = undefined;
+	            var listeners = void 0;
 	
 	            if (!this._events || !(listeners = this._events[event])) {
 	                return this;
@@ -746,7 +738,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        key: 'removeAllListeners',
 	        value: function removeAllListeners(event) {
 	            if (!event) {
-	                this._events = [];
+	                this._events = {};
 	            } else {
 	                delete this._events[event.toLowerCase()];
 	            }
@@ -776,7 +768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            event = event.toLowerCase();
 	
-	            var listeners = undefined;
+	            var listeners = void 0;
 	
 	            if (this._events && (listeners = this._events[event])) {
 	                listeners.slice(0).forEach(function (fn) {
@@ -799,7 +791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function invoke(event, data) {
 	            event = event.toLowerCase();
 	
-	            var listeners = undefined;
+	            var listeners = void 0;
 	
 	            if (!this._events || !(listeners = this._events[event])) {
 	                listeners = [];
@@ -810,14 +802,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Emitter;
-	})();
+	}();
 	
 	module.exports = Emitter;
 	
 	function HookInvoker(hooks, initialData, context) {
 	    var _data = initialData;
 	    var _error = null;
-	    var _aborted = undefined;
+	    var _aborted = void 0;
 	
 	    var i = Deferred();
 	    var ret = i.promise();
@@ -866,7 +858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (!hook) {
 	            return done();
 	        }
-	        var res = undefined;
+	        var res = void 0;
 	        try {
 	            res = hook.call(context, _data);
 	        } catch (e) {
@@ -885,9 +877,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ret;
 	}
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 	
@@ -1009,14 +1001,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	function Callbacks(options) {
 	    options = typeof options === "string" ? createOptions(options) : extend({}, options);
 	
-	    var firing = undefined,
-	        memory = undefined,
-	        _fired = undefined,
-	        firingLength = undefined,
-	        firingIndex = undefined,
-	        firingStart = undefined,
+	    var firing = void 0,
+	        memory = void 0,
+	        _fired = void 0,
+	        firingLength = void 0,
+	        firingIndex = void 0,
+	        firingStart = void 0,
 	        list = [],
-	        _this = undefined,
+	        _this = void 0,
 	        stack = !options.once && [],
 	        fire = function fire(data) {
 	        memory = options.memory && data;
@@ -1210,9 +1202,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	exports.Deferred = Deferred;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 	
@@ -1240,9 +1232,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    FILE_STATUS_CHANGE: 'filestatuschange' // 文件状态发生变化
 	};
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 	
@@ -1272,9 +1264,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    128: 'cancelled'
 	};
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	'use strict';
 	
@@ -1284,58 +1276,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _Error = (function (_Error2) {
+	var _Error = function (_Error2) {
 	    _inherits(_Error, _Error2);
 	
 	    function _Error(message) {
 	        _classCallCheck(this, _Error);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(_Error).call(this, message));
+	        var _this = _possibleConstructorReturn(this, (_Error.__proto__ || Object.getPrototypeOf(_Error)).call(this, message));
 	
 	        _this.message = message;
 	        return _this;
 	    }
 	
 	    return _Error;
-	})(Error);
+	}(Error);
 	
-	var AbortError = (function (_Error3) {
+	var AbortError = function (_Error3) {
 	    _inherits(AbortError, _Error3);
 	
 	    function AbortError(message) {
 	        _classCallCheck(this, AbortError);
 	
-	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(AbortError).call(this, message));
+	        var _this2 = _possibleConstructorReturn(this, (AbortError.__proto__ || Object.getPrototypeOf(AbortError)).call(this, message));
 	
 	        _this2.name = 'AbortError';
 	        return _this2;
 	    }
 	
 	    return AbortError;
-	})(_Error);
+	}(_Error);
 	
-	var TimeoutError = (function (_Error4) {
+	var TimeoutError = function (_Error4) {
 	    _inherits(TimeoutError, _Error4);
 	
 	    function TimeoutError(message) {
 	        _classCallCheck(this, TimeoutError);
 	
-	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(TimeoutError).call(this, message));
+	        var _this3 = _possibleConstructorReturn(this, (TimeoutError.__proto__ || Object.getPrototypeOf(TimeoutError)).call(this, message));
 	
 	        _this3.name = 'TimeoutError';
 	        return _this3;
 	    }
 	
 	    return TimeoutError;
-	})(_Error);
+	}(_Error);
 	
-	var NetworkError = (function (_Error5) {
+	var NetworkError = function (_Error5) {
 	    _inherits(NetworkError, _Error5);
 	
 	    function NetworkError(status, message) {
 	        _classCallCheck(this, NetworkError);
 	
-	        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(NetworkError).call(this, message));
+	        var _this4 = _possibleConstructorReturn(this, (NetworkError.__proto__ || Object.getPrototypeOf(NetworkError)).call(this, message));
 	
 	        _this4.name = 'NetworkError';
 	        _this4.status = status;
@@ -1343,30 +1335,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    return NetworkError;
-	})(_Error);
+	}(_Error);
 	
-	var QueueLimitError = (function (_Error6) {
+	var QueueLimitError = function (_Error6) {
 	    _inherits(QueueLimitError, _Error6);
 	
 	    function QueueLimitError() {
 	        _classCallCheck(this, QueueLimitError);
 	
-	        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(QueueLimitError).call(this, 'queue limit'));
+	        var _this5 = _possibleConstructorReturn(this, (QueueLimitError.__proto__ || Object.getPrototypeOf(QueueLimitError)).call(this, 'queue limit'));
 	
 	        _this5.name = 'QueueLimitError';
 	        return _this5;
 	    }
 	
 	    return QueueLimitError;
-	})(_Error);
+	}(_Error);
 	
-	var FilterError = (function (_Error7) {
+	var FilterError = function (_Error7) {
 	    _inherits(FilterError, _Error7);
 	
 	    function FilterError(file, message) {
 	        _classCallCheck(this, FilterError);
 	
-	        var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(FilterError).call(this, message));
+	        var _this6 = _possibleConstructorReturn(this, (FilterError.__proto__ || Object.getPrototypeOf(FilterError)).call(this, message));
 	
 	        _this6.name = 'FilterError';
 	        _this6.file = file;
@@ -1374,78 +1366,76 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	
 	    return FilterError;
-	})(_Error);
+	}(_Error);
 	
-	var DuplicateError = (function (_FilterError) {
+	var DuplicateError = function (_FilterError) {
 	    _inherits(DuplicateError, _FilterError);
 	
 	    function DuplicateError(file, message) {
 	        _classCallCheck(this, DuplicateError);
 	
-	        var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(DuplicateError).call(this, file, message));
+	        var _this7 = _possibleConstructorReturn(this, (DuplicateError.__proto__ || Object.getPrototypeOf(DuplicateError)).call(this, file, message));
 	
 	        _this7.name = 'DuplicateError';
 	        return _this7;
 	    }
 	
 	    return DuplicateError;
-	})(FilterError);
+	}(FilterError);
 	
-	var FileExtensionError = (function (_FilterError2) {
+	var FileExtensionError = function (_FilterError2) {
 	    _inherits(FileExtensionError, _FilterError2);
 	
 	    function FileExtensionError(file, message) {
 	        _classCallCheck(this, FileExtensionError);
 	
-	        var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(FileExtensionError).call(this, file, message));
+	        var _this8 = _possibleConstructorReturn(this, (FileExtensionError.__proto__ || Object.getPrototypeOf(FileExtensionError)).call(this, file, message));
 	
 	        _this8.name = 'FileExtensionError';
 	        return _this8;
 	    }
 	
 	    return FileExtensionError;
-	})(FilterError);
+	}(FilterError);
 	
-	var FileSizeError = (function (_FilterError3) {
+	var FileSizeError = function (_FilterError3) {
 	    _inherits(FileSizeError, _FilterError3);
 	
 	    function FileSizeError(file, message) {
 	        _classCallCheck(this, FileSizeError);
 	
-	        var _this9 = _possibleConstructorReturn(this, Object.getPrototypeOf(FileSizeError).call(this, file, message));
+	        var _this9 = _possibleConstructorReturn(this, (FileSizeError.__proto__ || Object.getPrototypeOf(FileSizeError)).call(this, file, message));
 	
 	        _this9.name = 'FileSizeError';
 	        return _this9;
 	    }
 	
 	    return FileSizeError;
-	})(FilterError);
+	}(FilterError);
 	
 	module.exports = { AbortError: AbortError, TimeoutError: TimeoutError, NetworkError: NetworkError,
 	    QueueLimitError: QueueLimitError, FilterError: FilterError, DuplicateError: DuplicateError, FileExtensionError: FileExtensionError, FileSizeError: FileSizeError };
 
-/***/ },
+/***/ }),
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
-	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _require = __webpack_require__(3);
+	var _require = __webpack_require__(3),
+	    parseSize = _require.parseSize;
 	
-	var parseSize = _require.parseSize;
-	
-	var ChunkResponse = (function () {
+	var ChunkResponse = function () {
 	    /**
 	     * @param {string|null} rawResponse
 	     * @param {ChunkRequest} chunkRequest
 	     */
-	
 	    function ChunkResponse(rawResponse, chunkRequest) {
 	        _classCallCheck(this, ChunkResponse);
 	
@@ -1492,16 +1482,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return ChunkResponse;
-	})();
+	}();
 	
-	var ChunkRequest = (function () {
+	var ChunkRequest = function () {
 	    /**
 	     *
 	     * @param {int} index
 	     * @param {Blob} blob
 	     * @param {FileRequest} fileRequest
 	     */
-	
 	    function ChunkRequest(index, blob, fileRequest) {
 	        _classCallCheck(this, ChunkRequest);
 	
@@ -1609,14 +1598,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return ChunkRequest;
-	})();
+	}();
 	
-	var FileResponse = (function () {
+	var FileResponse = function () {
 	    /**
 	     * @param {ChunkResponse|Object|string} rawResponse
 	     * @param {FileRequest} fileRequest
 	     */
-	
 	    function FileResponse(rawResponse, fileRequest) {
 	        _classCallCheck(this, FileResponse);
 	
@@ -1678,9 +1666,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return FileResponse;
-	})();
+	}();
 	
-	var Params = (function () {
+	var Params = function () {
 	    function Params(params) {
 	        _classCallCheck(this, Params);
 	
@@ -1753,13 +1741,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Params;
-	})();
+	}();
 	
 	var MIN_CHUNK_SIZE = 256 * 1024; // 256K
 	
-	var FileRequest = (function () {
+	var FileRequest = function () {
 	    function FileRequest(file) {
-	        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	        var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 	
 	        _classCallCheck(this, FileRequest);
 	
@@ -1909,17 +1897,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return FileRequest;
-	})();
+	}();
 	
 	module.exports = FileRequest;
 
-/***/ },
+/***/ }),
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -1937,7 +1925,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (dataTransfer, responders) {
 	        var items = dataTransfer.items,
 	            files = dataTransfer.files;
-	        var item = undefined,
+	        var item = void 0,
 	            times = MAX_NUM_ONCE;
 	        var _break = false;
 	
@@ -1985,13 +1973,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	}
 	
-	var Area = (function (_Emitter) {
+	var Area = function (_Emitter) {
 	    _inherits(Area, _Emitter);
 	
 	    function Area(area) {
 	        _classCallCheck(this, Area);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Area).call(this));
+	        var _this = _possibleConstructorReturn(this, (Area.__proto__ || Object.getPrototypeOf(Area)).call(this));
 	
 	        _this.areaElement = area;
 	        return _this;
@@ -2022,7 +2010,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Area;
-	})(Emitter);
+	}(Emitter);
 	
 	var Collectors = [];
 	
@@ -2035,7 +2023,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	    var started = 0,
 	        enter = 0,
-	        endTimer = undefined;
+	        endTimer = void 0;
 	    var dataTransferReader = createReader(function (file, responders) {
 	        if (!responders || responders.length < 1) {
 	            return false;
@@ -2126,7 +2114,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    document.addEventListener('drop', drop, false);
 	}
 	
-	var DndCollector = (function () {
+	var DndCollector = function () {
 	    function DndCollector(core) {
 	        _classCallCheck(this, DndCollector);
 	
@@ -2199,17 +2187,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return DndCollector;
-	})();
+	}();
 	
 	module.exports = DndCollector;
 
-/***/ },
+/***/ }),
 /* 9 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -2219,21 +2207,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var Runtime = __webpack_require__(10);
 	
-	var _require = __webpack_require__(3);
-	
-	var Deferred = _require.Deferred;
+	var _require = __webpack_require__(3),
+	    Deferred = _require.Deferred;
 	
 	var Transport = __webpack_require__(11);
 	
-	var instance = undefined;
+	var instance = void 0;
 	
-	var Html5Runtime = (function (_Runtime) {
+	var Html5Runtime = function (_Runtime) {
 	    _inherits(Html5Runtime, _Runtime);
 	
 	    function Html5Runtime() {
 	        _classCallCheck(this, Html5Runtime);
 	
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Html5Runtime).apply(this, arguments));
+	        return _possibleConstructorReturn(this, (Html5Runtime.__proto__ || Object.getPrototypeOf(Html5Runtime)).apply(this, arguments));
 	    }
 	
 	    _createClass(Html5Runtime, [{
@@ -2241,7 +2228,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function getAsDataUrl(blob, timeout) {
 	            var i = Deferred(),
 	                fr = new FileReader(),
-	                timer = undefined;
+	                timer = void 0;
 	
 	            fr.onloadend = function () {
 	                if (fr.readyState == FileReader.DONE) {
@@ -2307,8 +2294,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	            var _loadNext = function loadNext() {
 	                if (!fr) return;
-	                var start = undefined,
-	                    end = undefined;
+	                var start = void 0,
+	                    end = void 0;
 	
 	                start = chunk * chunkSize;
 	                end = Math.min(start + chunkSize, blob.size);
@@ -2359,17 +2346,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Html5Runtime;
-	})(Runtime);
+	}(Runtime);
 	
 	module.exports = Html5Runtime;
 
-/***/ },
+/***/ }),
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -2380,21 +2367,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Emitter = __webpack_require__(2);
 	var Events = __webpack_require__(4);
 	
-	var _require = __webpack_require__(3);
+	var _require = __webpack_require__(3),
+	    Deferred = _require.Deferred;
 	
-	var Deferred = _require.Deferred;
+	var _require2 = __webpack_require__(6),
+	    NetworkError = _require2.NetworkError;
 	
-	var _require2 = __webpack_require__(6);
-	
-	var NetworkError = _require2.NetworkError;
-	
-	var Runtime = (function (_Emitter) {
+	var Runtime = function (_Emitter) {
 	    _inherits(Runtime, _Emitter);
 	
 	    function Runtime() {
 	        _classCallCheck(this, Runtime);
 	
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(Runtime).apply(this, arguments));
+	        return _possibleConstructorReturn(this, (Runtime.__proto__ || Object.getPrototypeOf(Runtime)).apply(this, arguments));
 	    }
 	
 	    _createClass(Runtime, [{
@@ -2440,11 +2425,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Runtime;
-	})(Emitter);
+	}(Emitter);
 	
 	module.exports = Runtime;
 	
-	var Uploading = (function () {
+	var Uploading = function () {
 	    function Uploading(runtime) {
 	        _classCallCheck(this, Uploading);
 	
@@ -2455,6 +2440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {FileRequest} request
 	     * @returns {*}
 	     */
+	
 	
 	    _createClass(Uploading, [{
 	        key: 'generate',
@@ -2481,9 +2467,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	
 	            var readChunk = function readChunk() {
-	                var slot = undefined,
-	                    req = undefined,
-	                    blob = undefined;
+	                var slot = void 0,
+	                    req = void 0,
+	                    blob = void 0;
 	                while (end < size && getActives() < threads) {
 	                    start = end;
 	                    end = Math.min(end + chunkSize, size);
@@ -2597,31 +2583,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return ret;
 	        }
 	    }]);
-	
-	    return Uploading;
-	})();
 
-/***/ },
+	    return Uploading;
+	}();
+
+/***/ }),
 /* 11 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var _require = __webpack_require__(3);
+	var _require = __webpack_require__(3),
+	    Deferred = _require.Deferred;
 	
-	var Deferred = _require.Deferred;
+	var _require2 = __webpack_require__(6),
+	    TimeoutError = _require2.TimeoutError,
+	    AbortError = _require2.AbortError,
+	    NetworkError = _require2.NetworkError;
 	
-	var _require2 = __webpack_require__(6);
-	
-	var TimeoutError = _require2.TimeoutError;
-	var AbortError = _require2.AbortError;
-	var NetworkError = _require2.NetworkError;
-	
-	var Html5Transport = (function () {
+	var Html5Transport = function () {
 	    function Html5Transport() {
 	        _classCallCheck(this, Html5Transport);
 	    }
@@ -2637,7 +2621,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var i = Deferred();
 	            var xhr = new XMLHttpRequest();
 	
-	            var timeoutTimer = undefined;
+	            var timeoutTimer = void 0;
 	
 	            var clean = function clean() {
 	                xhr.onload = xhr.onerror = null;
@@ -2685,26 +2669,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            try {
-	                (function () {
-	                    xhr.open('POST', request.getUrl(), true);
-	                    if (request.isWithCredentials()) {
-	                        xhr.withCredentials = true;
-	                    }
+	                xhr.open('POST', request.getUrl(), true);
+	                if (request.isWithCredentials()) {
+	                    xhr.withCredentials = true;
+	                }
 	
-	                    request.getHeaders().forEach(function (header) {
-	                        return xhr.setRequestHeader(header.name, header.value);
-	                    });
+	                request.getHeaders().forEach(function (header) {
+	                    return xhr.setRequestHeader(header.name, header.value);
+	                });
 	
-	                    var formData = new FormData();
+	                var formData = new FormData();
 	
-	                    request.getParams().toArray().forEach(function (param) {
-	                        return formData.append(param.name, param.value);
-	                    });
+	                request.getParams().toArray().forEach(function (param) {
+	                    return formData.append(param.name, param.value);
+	                });
 	
-	                    formData.append(request.getName(), request.getBlob(), request.getBlobName());
+	                formData.append(request.getName(), request.getBlob(), request.getBlobName());
 	
-	                    xhr.send(formData);
-	                })();
+	                xhr.send(formData);
 	            } catch (e) {
 	                abort();
 	                i.reject(new AbortError(e.message));
@@ -2718,17 +2700,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Html5Transport;
-	})();
+	}();
 	
 	module.exports = Html5Transport;
 
-/***/ },
+/***/ }),
 /* 12 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
@@ -2739,14 +2721,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Emitter = __webpack_require__(2);
 	var Events = __webpack_require__(4);
 	
-	var _require = __webpack_require__(3);
+	var _require = __webpack_require__(3),
+	    Deferred = _require.Deferred;
 	
-	var Deferred = _require.Deferred;
-	
-	var _require2 = __webpack_require__(5);
-	
-	var Status = _require2.Status;
-	var StatusName = _require2.StatusName;
+	var _require2 = __webpack_require__(5),
+	    Status = _require2.Status,
+	    StatusName = _require2.StatusName;
 	
 	var uid = 0;
 	function guid() {
@@ -2774,7 +2754,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return null;
 	}
 	
-	var Progress = (function () {
+	var Progress = function () {
 	    function Progress(total, loaded) {
 	        _classCallCheck(this, Progress);
 	
@@ -2796,15 +2776,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return Progress;
-	})();
+	}();
 	
-	var File = (function (_Emitter) {
+	var File = function (_Emitter) {
 	    _inherits(File, _Emitter);
 	
 	    function File(runtime, source, filename) {
 	        _classCallCheck(this, File);
 	
-	        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(File).call(this));
+	        var _this = _possibleConstructorReturn(this, (File.__proto__ || Object.getPrototypeOf(File)).call(this));
 	
 	        _this.id = guid();
 	
@@ -2924,7 +2904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }).fail(function (error) {
 	                _this2._session = null;
 	                _this2._sessionPromise = null;
-	                var flow = undefined;
+	                var flow = void 0;
 	                while (flow = _this2._flows.shift()) {
 	                    flow.abort();
 	                }
@@ -2987,7 +2967,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        value: function complete(response) {
 	            if (this.status !== Status.PROGRESS) return;
 	
-	            var flow = undefined;
+	            var flow = void 0;
 	            while (flow = this._flows.shift()) {
 	                flow.abort();
 	            }
@@ -3040,17 +3020,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return File;
-	})(Emitter);
+	}(Emitter);
 	
 	module.exports = File;
 
-/***/ },
+/***/ }),
 /* 13 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -3058,7 +3038,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Runtime = __webpack_require__(9);
 	var File = __webpack_require__(12);
 	
-	var PasteCollector = (function () {
+	var PasteCollector = function () {
 	    function PasteCollector(core) {
 	        _classCallCheck(this, PasteCollector);
 	
@@ -3083,12 +3063,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    return;
 	                }
 	
-	                var prevent = undefined,
-	                    i = undefined,
-	                    l = undefined,
-	                    file = undefined,
-	                    item = undefined,
-	                    addRet = undefined;
+	                var prevent = void 0,
+	                    i = void 0,
+	                    l = void 0,
+	                    file = void 0,
+	                    item = void 0,
+	                    addRet = void 0;
 	
 	                if (files && files.length) {
 	                    // safari has files
@@ -3148,38 +3128,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return PasteCollector;
-	})();
+	}();
 	
 	module.exports = PasteCollector;
 
-/***/ },
+/***/ }),
 /* 14 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
-	
 	var Emitter = __webpack_require__(2);
 	var Html5Runtime = __webpack_require__(9);
-	var FlashRuntime = __webpack_require__(15);
 	var File = __webpack_require__(12);
 	
-	var _require = __webpack_require__(3);
+	var _require = __webpack_require__(3),
+	    extend = _require.extend;
 	
-	var extend = _require.extend;
-	
-	var SWF_URL = '';
-	
-	var createElement = (function () {
+	var createElement = function () {
 	    if ((typeof document === 'undefined' ? 'undefined' : _typeof(document)) !== 'object') {
 	        return;
 	    }
@@ -3191,120 +3163,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	        div.removeChild(html);
 	        return html;
 	    };
-	})();
+	}();
 	
-	var FlashTriggerCollection = (function () {
-	    function FlashTriggerCollection(core, onFiles) {
+	var Html5TriggerCollection = function () {
+	    function Html5TriggerCollection(core, onFiles) {
 	        var _this = this;
 	
-	        _classCallCheck(this, FlashTriggerCollection);
+	        _classCallCheck(this, Html5TriggerCollection);
 	
-	        var overlay = createElement('<label style="position:fixed;left:-100px;top:-100px;width:50px;height:50px;display:block;cursor:pointer;overflow:hidden;z-index:99999;opacity:0;filter:alpha(opacity=0)"></label>');
-	
-	        var runtime = new FlashRuntime(overlay, SWF_URL, function () {
-	            return {
-	                accept: core.getAccept(),
-	                multiple: core.isMultiple()
-	            };
-	        });
-	
-	        runtime.on('select', function (e) {
-	            onFiles(e.files, runtime);
-	            _this.current && _this.current.emit('files', e.files, runtime);
-	        });
-	
-	        runtime.on('rollOut', function () {
-	            return _this.hideOverlay();
-	        });
-	
-	        document.body.appendChild(overlay);
-	        this.overlay = overlay;
+	        var runtime = Html5Runtime.getInstance();
+	        this.core = core;
+	        this.onFiles = function (files) {
+	            onFiles(files, runtime);
+	        };
+	        this.onChange = function (e) {
+	            _this.onFiles(e.target.files);
+	            _this.destroyInput();
+	            _this.createInput();
+	        };
+	        this.createInput();
 	    }
 	
-	    _createClass(FlashTriggerCollection, [{
-	        key: 'hideOverlay',
-	        value: function hideOverlay() {
-	            extend(this.overlay.style, {
-	                left: '-100px',
-	                top: '-100px',
-	                width: '50px',
-	                height: '50px'
-	            });
-	            if (this.current) {
-	                this.current.emit('rollOut');
-	                this.current = null;
-	            }
+	    _createClass(Html5TriggerCollection, [{
+	        key: 'destroyInput',
+	        value: function destroyInput() {
+	            if (!this.input) return;
+	            this.input.removeEventListener('change', this.onChange, false);
+	            document.body.removeChild(this.input);
+	            this.input = null;
 	        }
 	    }, {
-	        key: 'add',
-	        value: function add(trigger) {
-	            var _this2 = this;
-	
-	            var overlay = this.overlay,
-	                emitter = new Emitter();
-	            var mouseover = function mouseover() {
-	                var rect = trigger.getBoundingClientRect();
-	                extend(overlay.style, {
-	                    left: rect.left + 'px',
-	                    top: rect.top + 'px',
-	                    width: rect.right - rect.left + 'px',
-	                    height: rect.bottom - rect.top + 'px'
-	                });
-	                emitter.emit('rollOver');
-	                if (_this2.current && _this2.current !== emitter) {
-	                    _this2.current.emit('rollOut');
-	                }
-	                _this2.current = emitter;
-	            };
-	
-	            if (trigger.addEventListener) {
-	                trigger.addEventListener('mouseover', mouseover, false);
-	            } else if (trigger.attachEvent) {
-	                trigger.attachEvent("onmouseover", mouseover);
-	            }
-	
-	            emitter.destroy = function () {
-	                if (_this2.current === emitter) {
-	                    _this2.hideOverlay();
-	                }
-	                emitter.removeAllListeners();
-	                if (trigger.removeEventListener) {
-	                    trigger.removeEventListener('mouseover', mouseover, false);
-	                } else if (trigger.detachEvent) {
-	                    trigger.detachEvent("onmouseover", mouseover);
-	                }
-	            };
-	
-	            return emitter;
-	        }
-	    }]);
-	
-	    return FlashTriggerCollection;
-	})();
-	
-	var Html5Trigger = (function (_Emitter) {
-	    _inherits(Html5Trigger, _Emitter);
-	
-	    function Html5Trigger(trigger, core, onFiles) {
-	        _classCallCheck(this, Html5Trigger);
-	
-	        var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(Html5Trigger).call(this));
-	
-	        _this3.trigger = trigger;
-	        _this3.core = core;
-	        _this3.label = createElement('<label style="position:absolute;top:0;left:0;width:100%;height:100%;display:inline-block;cursor:pointer;background:#fff;overflow:hidden;opacity:0"></label>');
-	
-	        _this3.onChange = function (e) {
-	            onFiles(e.target.files);
-	            _this3.destroyInput();
-	            _this3.createInput();
-	        };
-	        trigger.appendChild(_this3.label);
-	        _this3.createInput();
-	        return _this3;
-	    }
-	
-	    _createClass(Html5Trigger, [{
 	        key: 'createInput',
 	        value: function createInput() {
 	            var input = createElement('<input type="file" style="position:absolute;clip:rect(1px 1px 1px 1px);" />');
@@ -3322,56 +3210,35 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	
 	            input.addEventListener('change', this.onChange, false);
-	
-	            this.label.appendChild(input);
+	            document.body.appendChild(input);
 	            this.input = input;
 	        }
 	    }, {
-	        key: 'destroyInput',
-	        value: function destroyInput() {
-	            if (!this.input) return;
-	            this.input.removeEventListener('change', this.onChange, false);
-	            this.label.removeChild(this.input);
-	            this.input = null;
-	        }
-	    }, {
-	        key: 'destroy',
-	        value: function destroy() {
-	            this.destroyInput();
-	            this.removeAllListeners();
-	            this.trigger.removeChild(this.label);
-	        }
-	    }]);
-	
-	    return Html5Trigger;
-	})(Emitter);
-	
-	var Html5TriggerCollection = (function () {
-	    function Html5TriggerCollection(core, onFiles) {
-	        _classCallCheck(this, Html5TriggerCollection);
-	
-	        var runtime = Html5Runtime.getInstance();
-	        this.core = core;
-	        this.onFiles = function (files) {
-	            onFiles(files, runtime);
-	        };
-	    }
-	
-	    _createClass(Html5TriggerCollection, [{
 	        key: 'add',
 	        value: function add(trigger) {
-	            return new Html5Trigger(trigger, this.core, this.onFiles);
+	            var _this2 = this;
+	
+	            var fn = function fn() {
+	                _this2.input.click();
+	            };
+	            trigger.addEventListener('click', fn);
+	
+	            return {
+	                destroy: function destroy() {
+	                    trigger.removeEventListener('click', fn);
+	                }
+	            };
 	        }
 	    }]);
 	
 	    return Html5TriggerCollection;
-	})();
+	}();
 	
-	var PickerCollector = (function () {
+	var PickerCollector = function () {
 	    _createClass(PickerCollector, null, [{
 	        key: 'setSWF',
 	        value: function setSWF(url) {
-	            SWF_URL = url;
+	            // empty
 	        }
 	    }]);
 	
@@ -3386,11 +3253,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        };
 	
-	        if (window.File && window.FileList && window.FileReader) {
-	            this.triggerCollection = new Html5TriggerCollection(core, onFiles);
-	        } else {
-	            this.triggerCollection = new FlashTriggerCollection(core, onFiles);
-	        }
+	        this.triggerCollection = new Html5TriggerCollection(core, onFiles);
 	    }
 	
 	    _createClass(PickerCollector, [{
@@ -3401,263 +3264,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }]);
 	
 	    return PickerCollector;
-	})();
+	}();
 	
 	module.exports = PickerCollector;
 
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Runtime = __webpack_require__(10);
-	var Transport = __webpack_require__(16);
-	
-	function getFlashVersion() {
-	    var version = undefined;
-	
-	    try {
-	        version = navigator.plugins['Shockwave Flash'];
-	        version = version.description;
-	    } catch (e1) {
-	        try {
-	            version = new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version');
-	        } catch (e2) {
-	            version = '0.0';
-	        }
-	    }
-	    version = version.match(/\d+/g);
-	    return parseFloat(version[0] + '.' + version[1]);
-	}
-	
-	function callFlash(movie, functionName, argumentArray) {
-	    try {
-	        movie.CallFunction('<invoke name="' + functionName + '" returntype="javascript">' + __flash__argumentsToXML(argumentArray || [], 0) + '</invoke>');
-	    } catch (ex) {
-	        throw "Call to " + functionName + " failed";
-	    }
-	}
-	
-	function createFlash(swf, callInterface) {
-	    if (getFlashVersion() < 11.4) {
-	        throw 'flash player is not available';
-	    }
-	    var div = document.createElement('div');
-	    var url = swf + (swf.indexOf('?') > 0 ? '&' : '?') + 'callInterface=' + encodeURIComponent(callInterface);
-	    var attrs = ['id="' + callInterface + '-Picker"', 'type="application/x-shockwave-flash"', 'data="' + url + '"', 'width="100%" height="100%"', 'style="position:absolute;left:0;top:0;display:block;z-index:1;outline:0"'];
-	    if (window.ActiveXObject) {
-	        attrs.push('classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"');
-	    }
-	    div.innerHTML = '<object ' + attrs.join(' ') + '>' + '<param name="movie" value="' + url + '" />' + '<param name="wmode" value="transparent" />' + '<param name="allowscriptaccess" value="always" />' + '</object>';
-	
-	    return div.firstChild;
-	}
-	
-	var _guid = +new Date();
-	function guid(prefix) {
-	    var ret = prefix + (_guid++).toString(16);
-	    if (ret in window) {
-	        return guid(prefix);
-	    }
-	    return ret;
-	}
-	
-	var FlashRuntime = (function (_Runtime) {
-	    _inherits(FlashRuntime, _Runtime);
-	
-	    function FlashRuntime(trigger, swf, options) {
-	        _classCallCheck(this, FlashRuntime);
-	
-	        var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(FlashRuntime).call(this));
-	
-	        var callInterface = guid('FlashRuntime');
-	
-	        _this2.callInterface = callInterface;
-	        window[callInterface] = _this2;
-	
-	        _this2.options = options;
-	
-	        var _this = _this2;
-	        function display() {
-	            var w = trigger.offsetWidth,
-	                h = trigger.offsetHeight,
-	                flash = undefined;
-	            if (!w || !h || !(flash = createFlash(swf, callInterface))) {
-	                setTimeout(display, 1000);
-	                return;
-	            }
-	
-	            trigger.appendChild(_this.flash = flash);
-	        }
-	
-	        display();
-	        return _this2;
-	    }
-	
-	    _createClass(FlashRuntime, [{
-	        key: 'getOptions',
-	        value: function getOptions() {
-	            var options = this.options;
-	            if (typeof options === 'function') {
-	                options = options();
-	            }
-	            return options;
-	        }
-	    }, {
-	        key: 'getTransport',
-	        value: function getTransport(name, blob, options) {
-	            return new Transport(this, name, blob, options);
-	        }
-	    }, {
-	        key: 'send',
-	        value: function send(name, blob, url, params) {
-	            callFlash(this.flash, 'exec', ['send', name, blob.id, url, params]);
-	        }
-	    }, {
-	        key: 'abort',
-	        value: function abort(blob) {
-	            try {
-	                callFlash(this.flash, 'exec', ['abort', blob.id]);
-	            } catch (e) {}
-	        }
-	    }, {
-	        key: 'cancel',
-	        value: function cancel(blob) {
-	            callFlash(this.flash, 'exec', ['cancel', blob.id]);
-	        }
-	    }, {
-	        key: 'ping',
-	        value: function ping() {
-	            callFlash(this.flash, 'exec', ['pang']);
-	        }
-	    }, {
-	        key: 'destroy',
-	        value: function destroy() {
-	            delete window[this.callInterface];
-	        }
-	    }]);
-	
-	    return FlashRuntime;
-	})(Runtime);
-	
-	module.exports = FlashRuntime;
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var _require = __webpack_require__(3);
-	
-	var Deferred = _require.Deferred;
-	
-	var _require2 = __webpack_require__(6);
-	
-	var TimeoutError = _require2.TimeoutError;
-	var AbortError = _require2.AbortError;
-	var NetworkError = _require2.NetworkError;
-	
-	var FlashTransport = (function () {
-	    function FlashTransport(flashRuntime) {
-	        _classCallCheck(this, FlashTransport);
-	
-	        this.flashRuntime = flashRuntime;
-	    }
-	
-	    /**
-	     * @param {ChunkRequest} request
-	     * @returns {*}
-	     */
-	
-	    _createClass(FlashTransport, [{
-	        key: 'generate',
-	        value: function generate(request) {
-	            var i = Deferred(),
-	                flashRuntime = this.flashRuntime,
-	                blob = request.getBlob();
-	
-	            var timeoutTimer = undefined;
-	
-	            var clean = function clean() {
-	                flashRuntime.off('uploadprogress', progress);
-	                flashRuntime.off('uploadcomplete', complete);
-	                flashRuntime.off('uploaderror', error);
-	                if (timeoutTimer) {
-	                    clearTimeout(timeoutTimer);
-	                }
-	            };
-	            var abort = function abort() {
-	                clean();
-	                flashRuntime.abort(blob.id);
-	            };
-	
-	            var progress = function progress(e) {
-	                if (e.id !== blob.id) return;
-	                i.notify(e);
-	            };
-	
-	            var complete = function complete(e) {
-	                if (e.id !== blob.id) return;
-	                clean();
-	                if (e.status === 304 || e.status >= 200 && e.status < 300) {
-	                    flashRuntime.cancel(blob);
-	                    return i.resolve(e.response);
-	                }
-	                return i.reject(new NetworkError(e.status, e.response));
-	            };
-	
-	            var error = function error(e) {
-	                if (e.id !== blob.id) return;
-	                clean();
-	                i.reject(new AbortError(e.message));
-	            };
-	            flashRuntime.on('uploadprogress', progress);
-	            flashRuntime.on('uploadcomplete', complete);
-	            flashRuntime.on('uploaderror', error);
-	
-	            // Timeout
-	            var timeout = request.getTimeout();
-	            if (timeout > 0) {
-	                timeoutTimer = setTimeout(function () {
-	                    abort();
-	                    i.reject(new TimeoutError('timeout:' + timeout));
-	                }, timeout);
-	            }
-	
-	            try {
-	                flashRuntime.send(request.getName(), blob, request.getUrl(), request.getParams().toString());
-	            } catch (e) {
-	                abort();
-	                i.reject(new AbortError(e.message));
-	            }
-	
-	            var ret = i.promise();
-	            ret.abort = abort;
-	
-	            return ret;
-	        }
-	    }]);
-	
-	    return FlashTransport;
-	})();
-	
-	module.exports = FlashTransport;
-
-/***/ }
+/***/ })
 /******/ ])
 });
 ;

@@ -40,7 +40,7 @@ class Html5TriggerCollection {
     }
 
     createInput() {
-        const input = createElement('<input type="file" style="position:absolute;clip:rect(1px 1px 1px 1px);" />');
+        const input = createElement('<input type="file" style="display:none" />');
 
         let accept = this.core.getAccept();
         if (accept && accept.length > 0) {

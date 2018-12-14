@@ -65,7 +65,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("3.0.0");
+	Core.VERSION = ("3.0.1");
 	Core.Core = Core;
 	
 	module.exports = Core;
@@ -3195,7 +3195,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'createInput',
 	        value: function createInput() {
-	            var input = createElement('<input type="file" style="position:absolute;clip:rect(1px 1px 1px 1px);" />');
+	            var input = createElement('<input type="file" style="display:none" />');
 	
 	            var accept = this.core.getAccept();
 	            if (accept && accept.length > 0) {

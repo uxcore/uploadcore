@@ -1,6 +1,6 @@
 {
   "name": "uploadcore",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "upload core",
   "main": "dist/uploadcore.min.js",
   "scripts": {

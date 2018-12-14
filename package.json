@@ -5,8 +5,8 @@
   "main": "dist/uploadcore.min.js",
   "scripts": {
     "build": "gulp build && gulp min && gulp flash",
-    "start": "npm install && gulp start",
-    "dev": "npm install && gulp start"
+    "start": "gulp start",
+    "dev": "gulp start"
   },
   "repository": {
     "type": "git",

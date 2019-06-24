@@ -62,11 +62,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _require = __webpack_require__(5),
 	    Status = _require.Status;
 	
+	var File = __webpack_require__(12);
+	
 	Core.Events = Events;
 	Core.Status = Status;
 	Core.UploadCore = Core;
-	Core.VERSION = ("3.0.1");
+	Core.VERSION = ("3.1.0");
 	Core.Core = Core;
+	Core.File = File;
 	
 	module.exports = Core;
 

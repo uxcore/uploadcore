@@ -2,6 +2,7 @@ const Emitter = require('./emitter');
 const Events = require('./events');
 const {Deferred} = require('./util');
 const {Status, StatusName} = require('./status');
+const HTML5Runtime = require('./html5/runtime');
 
 let uid = 0;
 function guid() {
@@ -66,7 +67,7 @@ class File extends Emitter {
 
         this.size = source.size || 0;
 
-        this.runtime = runtime;
+        this.runtime = runtime || HTML5Runtime.getInstance();
 
         this.source = source;
 

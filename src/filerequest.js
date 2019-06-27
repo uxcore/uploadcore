@@ -1,376 +1,404 @@
 const {parseSize} = require('./util');
 
 class ChunkResponse {
-    /**
-     * @param {string|null} rawResponse
-     * @param {ChunkRequest} chunkRequest
-     */
-    constructor(rawResponse, chunkRequest) {
-        this.rawResponse = rawResponse;
-        this.chunkRequest = chunkRequest;
-    }
+  /**
+   * @param {string|null} rawResponse
+   * @param {ChunkRequest} chunkRequest
+   */
+  constructor(rawResponse, chunkRequest) {
+    this.rawResponse = rawResponse;
+    this.chunkRequest = chunkRequest;
+  }
 
-    getChunkRequest() {
-        return this.chunkRequest;
-    }
+  getChunkRequest() {
+    return this.chunkRequest;
+  }
 
-    getRawResponse() {
-        return this.rawResponse;
-    }
+  getRawResponse() {
+    return this.rawResponse;
+  }
 
-    getResponse() {
-        return this.response || this.rawResponse;
-    }
+  getResponse() {
+    return this.response || this.rawResponse;
+  }
 
-    getJson() {
-        const response = this.getResponse();
-        if (response == null) {
-            return null;
-        }
-        if (typeof response.getJson === 'function') {
-            return response.getJson();
-        }
-        if (typeof response === 'string') {
-            return response === '' ? null : JSON.parse(response);
-        }
-        return response;
+  getJson() {
+    const response = this.getResponse();
+    if (response == null) {
+      return null;
     }
+    if (typeof response.getJson === 'function') {
+      return response.getJson();
+    }
+    if (typeof response === 'string') {
+      return response === '' ? null : JSON.parse(response);
+    }
+    return response;
+  }
 
-    setResponse(response) {
-        this.response = response;
-        return this;
-    }
+  setResponse(response) {
+    this.response = response;
+    return this;
+  }
 }
 
 class ChunkRequest {
-    /**
-     *
-     * @param {int} index
-     * @param {Blob} blob
-     * @param {FileRequest} fileRequest
-     */
-    constructor(index, blob, fileRequest) {
-        this.index = index || 0;
-        this.fileRequest = fileRequest;
-        this.blob = blob || fileRequest.getFile().source;
-    }
+  /**
+   *
+   * @param {int} index
+   * @param {Blob} blob
+   * @param {FileRequest} fileRequest
+   */
+  constructor(index, blob, fileRequest) {
+    this.index = index || 0;
+    this.fileRequest = fileRequest;
+    this.blob = blob || fileRequest.getFile().source;
+  }
 
-    getName() {
-        return this.fileRequest.getName();
-    }
+  getName() {
+    return this.fileRequest.getName();
+  }
 
-    getFile() {
-        return this.fileRequest.getFile();
-    }
+  getFile() {
+    return this.fileRequest.getFile();
+  }
 
-    getBlob() {
-        return this.blob;
-    }
+  getBlob() {
+    return this.blob;
+  }
 
-    getBlobName() {
-        return this.isMultiChunk() ? (this.blob.name || 'blob') : this.getFile().name;
-    }
+  getBlobName() {
+    return this.isMultiChunk() ? (this.blob.name || 'blob') : this.getFile().name;
+  }
 
-    getIndex() {
-        return this.index;
-    }
+  getIndex() {
+    return this.index;
+  }
 
-    isMultiChunk() {
-        return this.getFile().source !== this.blob;
-    }
+  isMultiChunk() {
+    return this.getFile().source !== this.blob;
+  }
 
-    getParams() {
-        if (!this.params) {
-            this.params = this.fileRequest.getParams().clone();
-        }
-        return this.params;
+  getParams() {
+    if (!this.params) {
+      this.params = this.fileRequest.getParams().clone();
     }
+    return this.params;
+  }
 
-    getParam(name) {
-        return this.getParams().getParam(name);
+  getMethod() {
+    return this.fileRequest.getMethod();
+  }
+
+  getSendAsBinary() {
+    return this.fileRequest.getSendAsBinary();
+  }
+
+  getParam(name) {
+    return this.getParams().getParam(name);
+  }
+
+  setParam(name, value) {
+    this.getParams().setParam(name, value);
+
+    return this;
+  }
+
+  getFileRequest() {
+    return this.fileRequest;
+  }
+
+  getUrl() {
+    return this.url || this.fileRequest.getUrl();
+  }
+
+  setUrl(url) {
+    this.url = url;
+    return this;
+  }
+
+  getHeaders() {
+    if (!this.headers) {
+      this.headers = this.fileRequest.getHeaders().slice(0);
     }
+    return this.headers;
+  }
 
-    setParam(name, value) {
-        this.getParams().setParam(name, value);
+  setHeader(name, value) {
+    var headers = this.getHeaders();
+    headers.push({name: name, value: value});
+    return this;
+  }
 
-        return this;
-    }
+  isWithCredentials() {
+    return this.fileRequest.isWithCredentials();
+  }
 
-    getFileRequest() {
-        return this.fileRequest;
-    }
+  getTimeout() {
+    return this.fileRequest.getTimeout();
+  }
 
-    getUrl() {
-        return this.url || this.fileRequest.getUrl();
-    }
-
-    setUrl(url) {
-        this.url = url;
-        return this;
-    }
-
-    getHeaders() {
-        if (!this.headers) {
-            this.headers = this.fileRequest.getHeaders().slice(0);
-        }
-        return this.headers;
-    }
-
-    setHeader(name, value) {
-        var headers = this.getHeaders();
-        headers.push({name: name, value: value});
-        return this;
-    }
-
-    isWithCredentials() {
-        return this.fileRequest.isWithCredentials();
-    }
-
-    getTimeout() {
-        return this.fileRequest.getTimeout();
-    }
-
-    createChunkResponse(response) {
-        return new ChunkResponse(response, this);
-    }
+  createChunkResponse(response) {
+    return new ChunkResponse(response, this);
+  }
 }
 
 class FileResponse {
-    /**
-     * @param {ChunkResponse|Object|string} rawResponse
-     * @param {FileRequest} fileRequest
-     */
-    constructor(rawResponse, fileRequest) {
-        this.rawResponse = rawResponse;
-        this.fileRequest = fileRequest;
-    }
+  /**
+   * @param {ChunkResponse|Object|string} rawResponse
+   * @param {FileRequest} fileRequest
+   */
+  constructor(rawResponse, fileRequest) {
+    this.rawResponse = rawResponse;
+    this.fileRequest = fileRequest;
+  }
 
-    isFromMultiChunkResponse() {
-        if (this.rawResponse instanceof ChunkResponse) {
-            return this.rawResponse.getChunkRequest().isMultiChunk();
-        }
-        return false;
+  isFromMultiChunkResponse() {
+    if (this.rawResponse instanceof ChunkResponse) {
+      return this.rawResponse.getChunkRequest().isMultiChunk();
     }
+    return false;
+  }
 
-    getFileRequest() {
-        return this.fileRequest;
-    }
+  getFileRequest() {
+    return this.fileRequest;
+  }
 
-    getRawResponse() {
-        return this.rawResponse;
-    }
+  getRawResponse() {
+    return this.rawResponse;
+  }
 
-    getResponse() {
-        if (this.response != null) {
-            return this.response;
-        }
-        if (this.rawResponse instanceof ChunkResponse) {
-            return this.rawResponse.getResponse();
-        } else {
-            return this.rawResponse;
-        }
+  getResponse() {
+    if (this.response != null) {
+      return this.response;
     }
+    if (this.rawResponse instanceof ChunkResponse) {
+      return this.rawResponse.getResponse();
+    } else {
+      return this.rawResponse;
+    }
+  }
 
-    getJson() {
-        const response = this.getResponse();
-        if (response == null) {
-            return null;
-        }
-        if (typeof response.getJson === 'function') {
-            return response.getJson();
-        }
-        if (typeof response === 'string') {
-            return response === '' ? null : JSON.parse(response);
-        }
-        return response;
+  getJson() {
+    const response = this.getResponse();
+    if (response == null) {
+      return null;
     }
+    if (typeof response.getJson === 'function') {
+      return response.getJson();
+    }
+    if (typeof response === 'string') {
+      return response === '' ? null : JSON.parse(response);
+    }
+    return response;
+  }
 
-    setResponse(response) {
-        this.response = response;
-        return this;
-    }
+  setResponse(response) {
+    this.response = response;
+    return this;
+  }
 }
 
 class Params {
-    constructor(params) {
-        if (Array.isArray(params)) {
-            this.params = params.slice(0);
-        } else if (typeof params === 'object') {
-            this.params = [];
-            for (let name in params) {
-                if (params.hasOwnProperty(name)) {
-                    this.params.push({name, value: params[name]});
-                }
-            }
-        } else {
-            this.params = [];
+  constructor(params) {
+    if (Array.isArray(params)) {
+      this.params = params.slice(0);
+    } else if (typeof params === 'object') {
+      this.params = [];
+      for (let name in params) {
+        if (params.hasOwnProperty(name)) {
+          this.params.push({name, value: params[name]});
         }
+      }
+    } else {
+      this.params = [];
+    }
+  }
+
+  setParam(name, value) {
+    this.removeParam(name);
+    this.addParam(name, value);
+  }
+
+  addParam(name, value) {
+    this.params.push({name, value});
+  }
+
+  removeParam(name) {
+    this.params = this.params.filter((param) => param.name !== name);
+  }
+
+  getParam(name, single) {
+    let ret = this.params.filter((param) => param.name === name)
+      .map((param) => param.value);
+
+    if (single) {
+      return ret.shift();
     }
 
-    setParam(name, value) {
-        this.removeParam(name);
-        this.addParam(name, value);
-    }
+    return ret;
+  }
 
-    addParam(name, value) {
-        this.params.push({name, value});
-    }
+  clone() {
+    return new Params(this.params);
+  }
 
-    removeParam(name) {
-        this.params = this.params.filter((param) => param.name !== name);
-    }
+  toArray() {
+    return this.params;
+  }
 
-    getParam(name, single) {
-        let ret = this.params.filter((param) => param.name === name)
-            .map((param) => param.value);
+  toString() {
+    const params = this.params.map((param) => {
+      return encodeURIComponent(param.name) + '=' + (param.value == null ? '' : encodeURIComponent(param.value));
+    });
 
-        if (single) {
-            return ret.shift();
-        }
-
-        return ret;
-    }
-
-    clone() {
-        return new Params(this.params);
-    }
-
-    toArray() {
-        return this.params;
-    }
-
-    toString() {
-        const params = this.params.map((param) => {
-            return encodeURIComponent(param.name) + '=' + (param.value == null ? '' : encodeURIComponent(param.value));
-        });
-
-        return params.join('&'); //.replace( /%20/g, '+');
-    }
+    return params.join('&'); //.replace( /%20/g, '+');
+  }
 }
 
 const MIN_CHUNK_SIZE = 256 * 1024; // 256K
 
 class FileRequest {
-    constructor(file, options = {}) {
-        this.file = file;
-        this.name = options.name || 'file';
-        this.url = options.url || options.action;
-        this.params = new Params(options.params || options.data);
-        this.headers = options.headers || [];
-        this.withCredentials = options.withCredentials;
-        this.timeout = options.timeout || 0;
-        this.chunkSize = options.chunkSize || 0;
-        this.chunkRetries = options.chunkRetries || 0;
-        this.chunkEnable = options.chunkEnable || false;
-        this.chunkProcessThreads = options.chunkProcessThreads || 2;
-    }
+  constructor(file, options = {}) {
+    this.file = file;
+    this.name = options.name || 'file';
+    this.url = options.url || options.action;
+    this.method = options.method || 'POST';
+    this.sendAsBinary = options.sendAsBinary || false;
+    this.params = new Params(options.params || options.data);
+    this.headers = options.headers || [];
+    this.withCredentials = options.withCredentials;
+    this.timeout = options.timeout || 0;
+    this.chunkSize = options.chunkSize || 0;
+    this.chunkRetries = options.chunkRetries || 0;
+    this.chunkEnable = options.chunkEnable || false;
+    this.chunkProcessThreads = options.chunkProcessThreads || 2;
+  }
 
-    getFile() {
-        return this.file;
-    }
+  getFile() {
+    return this.file;
+  }
 
-    getUrl() {
-        return this.url || '';
-    }
+  getUrl() {
+    return this.url || '';
+  }
 
-    getName() {
-        return this.name;
-    }
+  getName() {
+    return this.name;
+  }
 
-    setName(name) {
-        this.name = name;
-        return this;
-    }
+  setName(name) {
+    this.name = name;
+    return this;
+  }
 
-    setUrl(url) {
-        this.url = url;
-        return this;
-    }
+  setUrl(url) {
+    this.url = url;
+    return this;
+  }
 
-    getParams() {
-        return this.params;
-    }
+  getParams() {
+    return this.params;
+  }
 
-    getParam(name) {
-        return this.getParams().getParam(name);
-    }
+  getParam(name) {
+    return this.getParams().getParam(name);
+  }
 
-    setParam(name, value) {
-        this.params.setParam(name, value);
-        return this;
-    }
+  setParam(name, value) {
+    this.params.setParam(name, value);
+    return this;
+  }
 
-    getHeaders() {
-        return this.headers;
-    }
+  getMethod() {
+    return this.method;
+  }
 
-    setHeader(name, value) {
-        this.headers.push({name: name, value: value});
-    }
+  setMethod(method) {
+    this.method = method;
+    return this;
+  }
 
-    isWithCredentials() {
-        return this.withCredentials;
-    }
+  getSendAsBinary() {
+    return this.sendAsBinary;
+  }
 
-    setWithCredentials(flag) {
-        this.withCredentials = flag;
-        return this;
-    }
+  setSendAsBinary(sendAsBinary) {
+    this.sendAsBinary = sendAsBinary;
+    return this;
+  }
 
-    getTimeout() {
-        return this.timeout;
-    }
+  getHeaders() {
+    return this.headers;
+  }
 
-    setTimeout(timeout) {
-        this.timeout = timeout;
-        return this;
-    }
+  setHeader(name, value) {
+    this.headers.push({name: name, value: value});
+  }
 
-    getChunkSize() {
-        return parseSize(this.chunkSize);
-    }
+  isWithCredentials() {
+    return this.withCredentials;
+  }
 
-    setChunkSize(chunkSize) {
-        this.chunkSize = chunkSize;
-        return this;
-    }
+  setWithCredentials(flag) {
+    this.withCredentials = flag;
+    return this;
+  }
 
-    getChunkRetries() {
-        return this.chunkRetries;
-    }
+  getTimeout() {
+    return this.timeout;
+  }
 
-    setChunkRetries(retries) {
-        this.chunkRetries = retries;
-        return 0;
-    }
+  setTimeout(timeout) {
+    this.timeout = timeout;
+    return this;
+  }
 
-    isChunkEnable() {
-        const chunkSize = this.getChunkSize();
-        return this.chunkEnable && chunkSize > MIN_CHUNK_SIZE
-            && this.file.getRuntime().canSlice() && this.file.size > chunkSize;
-    }
+  getChunkSize() {
+    return parseSize(this.chunkSize);
+  }
 
-    setChunkEnable(flag) {
-        this.chunkEnable = flag;
-        return this;
-    }
+  setChunkSize(chunkSize) {
+    this.chunkSize = chunkSize;
+    return this;
+  }
 
-    getChunkProcessThreads() {
-        return this.chunkProcessThreads;
-    }
+  getChunkRetries() {
+    return this.chunkRetries;
+  }
 
-    setChunkProcessThreads(threads) {
-        this.chunkProcessThreads = threads;
-        return this;
-    }
+  setChunkRetries(retries) {
+    this.chunkRetries = retries;
+    return 0;
+  }
 
-    createChunkRequest(index, blob) {
-        return new ChunkRequest(index, blob, this);
-    }
+  isChunkEnable() {
+    const chunkSize = this.getChunkSize();
+    return this.chunkEnable && chunkSize > MIN_CHUNK_SIZE
+      && this.file.getRuntime().canSlice() && this.file.size > chunkSize;
+  }
 
-    createFileResponse(response) {
-        return new FileResponse(response, this);
-    }
+  setChunkEnable(flag) {
+    this.chunkEnable = flag;
+    return this;
+  }
+
+  getChunkProcessThreads() {
+    return this.chunkProcessThreads;
+  }
+
+  setChunkProcessThreads(threads) {
+    this.chunkProcessThreads = threads;
+    return this;
+  }
+
+  createChunkRequest(index, blob) {
+    return new ChunkRequest(index, blob, this);
+  }
+
+  createFileResponse(response) {
+    return new FileResponse(response, this);
+  }
 }
 
 module.exports = FileRequest;

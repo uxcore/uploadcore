@@ -8,7 +8,7 @@ const DndCollector = require('./collector/dnd');
 const PasteCollector = require('./collector/paste');
 const PickerCollector = require('./collector/picker');
 
-const REQUEST_OPTIONS = ['name', 'url', 'params', 'action', 'data', 'headers', 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 'chunkRetries', 'chunkProcessThreads'];
+const REQUEST_OPTIONS = ['name', 'url', 'params', 'method', 'sendAsBinary', 'action', 'data', 'headers', 'withCredentials', 'timeout', 'chunkEnable', 'chunkSize', 'chunkRetries', 'chunkProcessThreads'];
 
 class Core extends Emitter {
 

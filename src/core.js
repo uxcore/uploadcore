@@ -95,6 +95,9 @@ class Core extends Emitter {
     }
 
     createFileRequest(file) {
+        if (typeof this.requestOptions.params === 'function'){
+            this.requestOptions.params = this.requestOptions.params(file);
+        }
         return new FileRequest(file, this.requestOptions);
     }
 

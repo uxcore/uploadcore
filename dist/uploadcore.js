@@ -209,6 +209,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }, {
 	        key: 'createFileRequest',
 	        value: function createFileRequest(file) {
+	            if (typeof this.requestOptions.params === 'function') {
+	                this.requestOptions.params = this.requestOptions.params();
+	            }
 	            return new FileRequest(file, this.requestOptions);
 	        }
 	    }, {
